@@ -33,6 +33,9 @@ CPP_FILES =\
 	learner.cpp\
 	matrix.cpp\
 	rand.cpp\
+	perceptron.cpp\
+	perceptron_node.cpp\
+	perceptron_rule_perceptron_node.cpp\
 
 ################
 # Lists

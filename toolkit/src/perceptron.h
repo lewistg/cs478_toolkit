@@ -13,7 +13,7 @@ class Perceptron : public SupervisedLearner
          * @param r
          * @return 
          */
-		Perceptron(Rand& r);
+		Perceptron();
 
 		/**
 		 * Deconstructor
@@ -35,6 +35,10 @@ class Perceptron : public SupervisedLearner
 	private:
         /**Map from label index to list of perceptrons*/
        	std::vector< std::vector<PerceptronRulePerceptronNode> > _labelIndexToNodes;
+
+		/** 
+		 * Creates the list of perceptrons
+		 */
 };
 
 #endif

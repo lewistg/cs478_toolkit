@@ -36,6 +36,7 @@ CPP_FILES =\
 	perceptron.cpp\
 	perceptron_node.cpp\
 	perceptron_rule_perceptron_node.cpp\
+	data_utils.cpp\
 
 ################
 # Lists

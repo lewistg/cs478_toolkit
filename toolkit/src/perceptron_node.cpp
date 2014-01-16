@@ -41,6 +41,12 @@ double PerceptronNode::getLearningRate() const
 	return _learningRate;
 }
 
+double PerceptronNode::getWeight(size_t weightIndex) const
+{
+	assert(weightIndex < _weights.size());
+	return _weights[weightIndex];
+}
+
 NodeOutput PerceptronNode::getOutput(const std::vector<double>& input)
 {
 	assert(input.size() == _weights.size() - 1); // recall the bias is handled implicitly

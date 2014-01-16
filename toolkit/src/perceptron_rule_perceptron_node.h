@@ -1,6 +1,7 @@
 #ifndef _PERCEPTRON_RULE_PERCEPTRON_NODE_H_
 #define _PERCEPTRON_RULE_PERCEPTRON_NODE_H_
 
+#include <string>
 #include "perceptron_node.h"
 
 class PerceptronRulePerceptronNode: public PerceptronNode 
@@ -20,6 +21,11 @@ class PerceptronRulePerceptronNode: public PerceptronNode
 		 * Override
 		 */
 		virtual void train(Matrix& features, Matrix& labels);
+
+		/**
+		 * To-string method
+		 */
+		std::string toString() const;
 
 	private:
 };

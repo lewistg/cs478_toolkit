@@ -1,8 +1,9 @@
 #include <vector>
 #include "perceptron.h"
 #include "error.h"
+#include <float.h>
 
-Perceptron::Perceptron():SupervisedLearner()
+Perceptron::Perceptron(Rand& rand):_rand(rand)
 {
 }
 
@@ -39,7 +40,8 @@ void Perceptron::train(Matrix& features, Matrix& labels)
 	}
 
 	// train all of the perceptron nodes on all the data
-	for(size_t i = 0; i < features.rows(); i++)	
+	features.shuffleRows(_rand, &labels);
+	for(size_t epochs = 0; epochs < 1; epochs++)
 	{
 		for(size_t j = 0; j < labels.cols(); j++)	
 		{
@@ -54,5 +56,26 @@ void Perceptron::train(Matrix& features, Matrix& labels)
 
 void Perceptron::predict(const std::vector<double>& features, std::vector<double>& labels)
 {
+	static size_t call = 0;
+	call +=1;
 
+	for(size_t j = 0; j < labels.size(); j++)	
+	{
+		assert(j < _labelIndexToNodes.size());
+		double label = 0.0;
+		double maxNetValue = -DBL_MAX;
+		for(size_t k = 0; k < _labelIndexToNodes[j].size(); k++)
+		{
+			NodeOutput output = _labelIndexToNodes[j][k].getOutput(features);
+			std::cout << _labelIndexToNodes[j][k].toString() << " predicts " << output.output 
+					<< " with net value "  << output.netOutput << std::endl;
+			if(output.output == 1.0 && output.netOutput > maxNetValue)
+			{
+				label = static_cast<double>(k);
+				maxNetValue = output.netOutput;
+			}
+		}
+		labels[j] = label;
+	}
+	std::cout << std::endl;
 }

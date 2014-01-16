@@ -13,7 +13,7 @@ class Perceptron : public SupervisedLearner
          * @param r
          * @return 
          */
-		Perceptron();
+		Perceptron(Rand& rand);
 
 		/**
 		 * Deconstructor
@@ -33,6 +33,8 @@ class Perceptron : public SupervisedLearner
 		virtual void predict(const std::vector<double>& features, std::vector<double>& labels);
 
 	private:
+		/** Pseudo-random number generator */ 
+		Rand& _rand; 
         /**Map from label index to list of perceptrons*/
        	std::vector< std::vector<PerceptronRulePerceptronNode> > _labelIndexToNodes;
 

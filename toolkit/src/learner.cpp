@@ -61,6 +61,7 @@ double SupervisedLearner::measureAccuracy(Matrix& features, Matrix& labels, Matr
 		{
 			const vector<double>& feat = features.row(i);
 			size_t targ = (size_t)labels[i][0];
+			std::cout << "For data labled: " << targ << std::endl;
 			if(targ >= labelValues)
 				ThrowError("The label is out of range");
 			if(pOutStats)

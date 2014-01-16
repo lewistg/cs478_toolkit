@@ -70,6 +70,11 @@ class PerceptronNode
 		 */
 		double getLearningRate() const;
 
+		/**
+		 * Gets the given weight
+		 */
+		double getWeight(size_t weightIndex) const;
+
 	private:
         /**The weights vector for the perceptron node*/
         std::vector<double> _weights;

@@ -41,6 +41,8 @@ def votingTask():
 	votingData = parseCsvData("voting_accuracy.csv")
 	print createLatexTable(votingData)
 
+	modelData = parseCsvData("final_models.csv")
+	print createLatexTable(modelData)
 
 def main():
 	#linSepTables()

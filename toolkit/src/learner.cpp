@@ -19,7 +19,7 @@ using std::cout;
 
 namespace
 {
-	bool DEBUG = true;
+	bool DEBUG = false;
 }
 
 double SupervisedLearner::measureAccuracy(Matrix& features, Matrix& labels, Matrix* pOutStats)

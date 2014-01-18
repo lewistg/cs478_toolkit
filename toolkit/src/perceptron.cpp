@@ -77,14 +77,9 @@ void Perceptron::train(Matrix& features, Matrix& labels)
 		}
 
 		_epochsToTrain += 1;
-		if(_epochsToTrain > 1000)
-		{
-			outputCurrModel();
-			return;
-		}
 
 		// decide if we should stop training or not
-		/*Matrix stats;
+		Matrix stats;
 		currAccuracy = measureAccuracy(features, labels, &stats);
 		if(TRAINING_STATS)
 			outputCurrStats(currAccuracy, stats);
@@ -109,7 +104,7 @@ void Perceptron::train(Matrix& features, Matrix& labels)
 		}
 		prevAccuracy = currAccuracy;
         if(DEBUG)
-			std::cout << currAccuracy << std::endl;*/
+			std::cout << currAccuracy << std::endl;
 	}
 }
 

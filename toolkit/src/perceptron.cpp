@@ -3,13 +3,17 @@
 #include "error.h"
 #include <float.h>
 #include <cmath>
+#include <sstream>
 
 namespace 
 {
 	bool DEBUG = false;
+    bool TRAINING_STATS = true;
 }
 
-Perceptron::Perceptron(Rand& rand):_rand(rand)
+Perceptron::Perceptron(Rand& rand):
+	_rand(rand),
+	_epochsToTrain(0)
 {
 }
 
@@ -18,11 +22,8 @@ Perceptron::~Perceptron()
 
 }
 
-void Perceptron::train(Matrix& features, Matrix& labels)
+void Perceptron::createPerceptronNodes(Matrix& features, Matrix& labels)
 {
-	if(features.rows() != labels.rows())
-		ThrowError("Expected the features and labels to have the same number of rows");
-
 	// create a list of perceptrons for each label
 	for(size_t i = 0; i < labels.cols(); i++)
 	{
@@ -44,6 +45,15 @@ void Perceptron::train(Matrix& features, Matrix& labels)
 			_labelIndexToNodes.push_back(classNodes);
 		}
 	}
+}
+
+void Perceptron::train(Matrix& features, Matrix& labels)
+{
+	if(features.rows() != labels.rows())
+		ThrowError("Expected the features and labels to have the same number of rows");
+
+	createPerceptronNodes(features, labels);
+	_epochsToTrain = 0;
 
 	// train all of the perceptron nodes on all the data
 	double prevAccuracy = 0.0;
@@ -51,19 +61,24 @@ void Perceptron::train(Matrix& features, Matrix& labels)
 	size_t epochsWithoutChange = 0;
 	while(true)
 	{
-		//features.shuffleRows(_rand, &labels);
-		for(size_t epochs = 0; epochs < 1; epochs++)
+		features.shuffleRows(_rand, &labels);
+		for(size_t j = 0; j < labels.cols(); j++)	
 		{
-			for(size_t j = 0; j < labels.cols(); j++)	
+			assert(j < _labelIndexToNodes.size());
+			for(size_t k = 0; k < _labelIndexToNodes[j].size(); k++)
 			{
-				assert(j < _labelIndexToNodes.size());
-				for(size_t k = 0; k < _labelIndexToNodes[j].size(); k++)
-				{
-					_labelIndexToNodes[j][k].train(features, labels);
-				}
+				_labelIndexToNodes[j][k].train(features, labels);
 			}
 		}
-		currAccuracy = measureAccuracy(features, labels, NULL);
+
+		_epochsToTrain += 1;
+
+		// decide if we should stop training or not
+		Matrix stats;
+		currAccuracy = measureAccuracy(features, labels, &stats);
+		if(TRAINING_STATS)
+			outputCurrStats(currAccuracy, stats);
+
 		if(fabs(currAccuracy - prevAccuracy) < 0.01)
 		{
 			if(epochsWithoutChange < 5)
@@ -79,6 +94,29 @@ void Perceptron::train(Matrix& features, Matrix& labels)
         if(DEBUG)
 			std::cout << currAccuracy << std::endl;
 	}
+}
+
+void Perceptron::outputCurrStats(double accuracy, Matrix& stats) const
+{
+	std::stringstream outputLabel;
+	std::stringstream dataOutput;
+	outputLabel << "Current epoch\t";
+	dataOutput << _epochsToTrain << "\t";
+
+	outputLabel << "Set accuracy\t";
+	dataOutput << accuracy << "\t";
+
+	outputLabel << "Set error rate\t";
+	dataOutput << 1.0 - accuracy << "\t";
+
+	for(size_t i = 0; i < stats.cols(); i++)
+	{
+		outputLabel << "Label #: " << i << "\t";
+		dataOutput << stats[0][i] << "/" << stats[1][i] << "\t";
+	}
+
+	std::cout << outputLabel.str() << std::endl;	
+	std::cout << dataOutput.str() << std::endl;
 }
 
 void Perceptron::predict(const std::vector<double>& features, std::vector<double>& labels)
@@ -99,7 +137,7 @@ void Perceptron::predict(const std::vector<double>& features, std::vector<double
 			NodeOutput output = _labelIndexToNodes[j][k].getOutput(features);
 			if(DEBUG)
 			{
-				std::cout << _labelIndexToNodes[j][k].toString() << " predicts " << output.output 
+				std::cout << "\t" << _labelIndexToNodes[j][k].toString() << " predicts " << output.output 
 						<< " with net value "  << output.netOutput << std::endl;
 			}
 
@@ -118,4 +156,9 @@ void Perceptron::predict(const std::vector<double>& features, std::vector<double
 		labels[j] = (allNeg ? labelNeg : labelPos);
 	}
 	//std::cout << std::endl;
+}
+
+long long Perceptron::getEpochsToTrain() const
+{
+	return _epochsToTrain;
 }

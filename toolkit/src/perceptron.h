@@ -32,15 +32,28 @@ class Perceptron : public SupervisedLearner
          */
 		virtual void predict(const std::vector<double>& features, std::vector<double>& labels);
 
+        /**
+         * Gets the amount of epochs it took to train
+         */
+        long long getEpochsToTrain() const;
+
 	private:
 		/** Pseudo-random number generator */ 
 		Rand& _rand; 
         /**Map from label index to list of perceptrons*/
        	std::vector< std::vector<PerceptronRulePerceptronNode> > _labelIndexToNodes;
+        /**The epochs that it takes to train*/
+        long long _epochsToTrain;
 
-		/** 
-		 * Creates the list of perceptrons
+		/**
+		 * Helper method for creating perceptrons
 		 */
+		void createPerceptronNodes(Matrix& features, Matrix& labels);
+
+        /**
+         * Prints out current training stats
+         */
+        void outputCurrStats(double accuracy, Matrix& stats) const;
 };
 
 #endif

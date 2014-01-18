@@ -61,10 +61,10 @@ public:
 	void setSize(size_t rows, size_t cols);
 
 	// Returns the number of rows in the matrix
-	size_t rows() { return m_data.size(); }
+	size_t rows() const { return m_data.size(); }
 
 	// Returns the number of columns (or attributes) in the matrix
-	size_t cols() { return m_attr_name.size(); }
+	size_t cols() const { return m_attr_name.size(); }
 
 	// Returns the name of the specified attribute
 	std::string& attrName(size_t col) { return m_attr_name[col]; }

@@ -200,6 +200,12 @@ void doit(ArgParser& parser)
 		cout << "Set accuracy: " << accuracy << "\n";
 		cout<< "\nTraining time: " << (timeAfterTraining - timeBeforeTraining) << " seconds\n";
 		cout<< "\nTesting time: " << (timeAfterTesting - timeBeforeTesting) << " seconds\n";
+
+		// Additional training stats
+		Perceptron* perceptronLearner = dynamic_cast<Perceptron*>(learner);
+		if(perceptronLearner != NULL)
+			cout << "\nEpochs to train: " << perceptronLearner->getEpochsToTrain() << "\n";
+
 		cout.flush();
 	}
 	else if ( evaluation.compare ( "static" ) == 0 )

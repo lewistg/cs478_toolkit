@@ -17,6 +17,11 @@
 using std::vector;
 using std::cout;
 
+namespace
+{
+	bool DEBUG = true;
+}
+
 double SupervisedLearner::measureAccuracy(Matrix& features, Matrix& labels, Matrix* pOutStats)
 {
 	// Check assumptions
@@ -61,6 +66,8 @@ double SupervisedLearner::measureAccuracy(Matrix& features, Matrix& labels, Matr
 		{
 			const vector<double>& feat = features.row(i);
 			size_t targ = (size_t)labels[i][0];
+			if(DEBUG)
+				cout << "target: " << targ << std::endl;
 			if(targ >= labelValues)
 				ThrowError("The label is out of range");
 			if(pOutStats)

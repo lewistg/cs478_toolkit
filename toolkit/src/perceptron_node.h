@@ -4,6 +4,7 @@
 #include <vector>
 #include <cassert>
 #include <iostream>
+#include <string>
 #include "matrix.h"
 
 /**
@@ -42,18 +43,24 @@ class PerceptronNode
         /**
          * Output given the input
          */
-        NodeOutput getOutput(const std::vector<double>& input);
+        NodeOutput getOutput(const std::vector<double>& input) const;
+
+		/**
+		 * Returns the target class
+		 */
+		double getTargetClass() const;
+
+		/**
+		 * To-string method 
+         * @return 
+         */
+		virtual std::string toString() const = 0;
 
 	protected:
 		/**
 		 * Returns target label index
          */
 		size_t getTargetLabelIndex() const;
-
-		/**
-		 * Returns the target class
-		 */
-		double getTargetClass() const;
 
 		/**
 		 * Adjusts the weights by the given delta

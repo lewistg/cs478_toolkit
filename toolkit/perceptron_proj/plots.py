@@ -24,7 +24,8 @@ def partOne():
 	for i in range(-3, 11):
 		x = i / 10.0
 		xLine.append(x)
-		yLine.append((17.0/5.0) * x)
+		#yLine.append((17.0/5.0) * x)
+		yLine.append((162.0/7.0) * x)
 	plt.plot(xLine, yLine)
 
 	plt.xlabel("x", fontsize=18)
@@ -81,9 +82,9 @@ def partLearningRate():
 	plt.show()
 
 def main():
+	partOne()
 	#nonLinSepPoints()
-	#partOne()
-	partLearningRate()
+	#partLearningRate()
 
 if __name__ == "__main__":
 	main()

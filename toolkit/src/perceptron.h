@@ -54,6 +54,24 @@ class Perceptron : public SupervisedLearner
          * Prints out current training stats
          */
         void outputCurrStats(double accuracy, Matrix& stats) const;
+
+		/**
+		 * Prints teh current model
+		 */
+		void outputCurrModel() const;
+
+		/**
+		 * Binary prediction
+		 * @return The label
+		 */
+		double getBinaryPrediction(const std::vector<double>& features, const PerceptronNode& binaryNode) const;
+
+		/**
+		 * Gets the prediction based on a list of nodes. This is for when the label could
+		 * more than one thing.
+		 */
+		double getMulitNodePrediction(const std::vector<double>& features, 
+				const std::vector<PerceptronRulePerceptronNode>& nodes) const;
 };
 
 #endif

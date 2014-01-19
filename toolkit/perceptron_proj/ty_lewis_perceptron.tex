@@ -4,17 +4,21 @@
 \usepackage{amsfonts}
 \usepackage{booktabs}
 \usepackage{graphicx}
+\usepackage{wrapfig}
 \usepackage{amssymb}
 \usepackage{float}
 \usepackage{caption}
 \usepackage{subcaption}
 \usepackage[left=1.0in,top=1.0in,right=1.0in,bottom=1.0in]{geometry}
+\usepackage{titling}
+\setlength{\droptitle}{-4cm}
 \renewcommand{\arraystretch}{1.1}
 
 \title{Perceptron Project}
 \author{Ty Lewis}
 \begin{document} 
 \maketitle
+\vspace{-10pt}
 \section*{Introduction}
 The ``perceptron" is a simple machine learning algorithm capable of classifying... In this report we experiment with perceptron algorithm. This is done by, first, examining how well it labels linearly separable data versus data that is not linearly separable. Second, the perceptron is tested on 
 
@@ -22,18 +26,21 @@ The ``perceptron" is a simple machine learning algorithm capable of classifying.
 
 Sensitivity to linear separability was tested using training instances of two features $x \in [-1, 1]$ and $y \in [-1, 1]$. These $x$ and $y$ pairs were labeled either \emph{red} or \emph{blue}. One training set contained 4 red instances that were linearly separable from 4 blue instances. Another training set contained 4 red instances that were not linearly separable from the 4 blue instances. The perceptron trained on each set, stopping when 5 epochs had past without more than a 1 percent change in accuracy was observed between epochs.
 
+\begin{wrapfigure}{r}{0.6\textwidth}
+\vspace{-20pt}
+\centering
+\includegraphics[width=0.58\textwidth]{learning_rate_vs_epochs.eps} 
+\vspace{-10pt}
+\caption{Learning rate vs. epochs}
+\vspace{-20pt}
+\end{wrapfigure}
+
 In one set of experiments, the effect of the learning rate on the amount of epochs it took to train was measured. The perceptron was trained using learning rates varying from $0.2$ to $2$. For each learning rate, 5 trials were run and the average number of epochs it took to finish training was measured. The graph in Figure 1 summarizes the results of this experiment.
 
 \subsection*{Discussion of results}
 
 A few features of this graph stand out. Note that for the linearly separable data, the number of epochs it took to train was relatively small. Conversely, it took much longer to train on the non-linearly separable data. It also appears that there is a high amount of variance in the non-linearly separable data. Indeed, for some learning rate experiments, the amount of epochs it took to train varied from as low as 9 all the way up to 80 or from 13 to 124. This was not the case for the linearly separable data. Overall, it doesn't appear that the number of epochs is very affected by this range of learning rates.
 
-\begin{figure}[H]
-\begin{center}
-	\includegraphics[scale=0.5]{learning_rate_vs_epochs.eps} 
-\end{center}
-\caption{Graph that shows the effect of learning rate upon the amount of epochs it takes to train.}
-\end{figure}
 
 To see the For a learning rate of $0.1$, the following results were obtained.
 
@@ -51,6 +58,8 @@ To see the For a learning rate of $0.1$, the following results were obtained.
 
 \section*{Voting task}
 
+\begin{wrapfigure}{r}{0.6\textwidth}
+\begin{center}
 \begin{tabular}{cccc}
 \toprule
 Trial	&	Training set accuracy	&	Test set accuracy 	&	Epochs to train\\
@@ -64,8 +73,11 @@ Trial	&	Training set accuracy	&	Test set accuracy 	&	Epochs to train\\
 Average	&	96.94	&	94.22	&	39.6\\
 \bottomrule
 \end{tabular}
+\end{center}
+\end{wrapfigure}
 
 
+\begin{wrapfigure}{r}{0.6\textwidth}
 \begin{tabular}{ccccccc}
 \toprule
 Trial	&	1	&	2	&	3	&	4	&	5	&	Average\\
@@ -89,11 +101,11 @@ $w_{15}$	&	-0.5	&	-0.2	&	0.1	&	-0.4	&	-0.3	&	-0.26\\
 $w_{16}$	&	1.6	&	1.2	&	0.9	&	2.6	&	0.8	&	1.42\\
 \bottomrule
 \end{tabular}
-
+\end{wrapfigure}
 
 
 \section*{Iris task}
 
-Note that for this learning task training is stopped once 100 epochs have passed without a significant improvement in the best model found so far. Recall, that for previous experiments  
+Note that for the iris learning task, training is stopped once 100 epochs have passed without a significant improvement in the best model found so far. (Using the stopping criteria from previous experiments often never halted training; the training set accuracy simply thrashed from as low as 60\% to as high as 90\%.)
 
 \end{document}

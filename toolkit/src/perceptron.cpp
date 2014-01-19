@@ -7,7 +7,7 @@
 
 namespace 
 {
-	bool DEBUG = true;
+	bool DEBUG = false;
     bool TRAINING_STATS = true;
 }
 
@@ -60,10 +60,6 @@ void Perceptron::train(Matrix& features, Matrix& labels)
 	createPerceptronNodes(features, labels);
 	_epochsToTrain = 0;
 
-	// train all of the perceptron nodes on all the data
-	double prevAccuracy = 0.0;
-	double currAccuracy = 0.0;
-	size_t epochsWithoutChange = 0;
 	while(true)
 	{
 		features.shuffleRows(_rand, &labels);
@@ -78,34 +74,58 @@ void Perceptron::train(Matrix& features, Matrix& labels)
 
 		_epochsToTrain += 1;
 
+		if(_epochsToTrain >= 100000)
+			return;
+
 		// decide if we should stop training or not
-		Matrix stats;
-		currAccuracy = measureAccuracy(features, labels, &stats);
-		if(TRAINING_STATS)
-			outputCurrStats(currAccuracy, stats);
-
-		if(fabs(currAccuracy - prevAccuracy) < 0.01)
+		if(accuracyNotChanging(_epochsToTrain, features, labels))
 		{
-			if(epochsWithoutChange < 5)
-			{
+			outputCurrModel();
+			break;
+		}
+	}
+}
 
-				epochsWithoutChange += 1;
-			}
-			else
-			{
-				if(TRAINING_STATS)
-					outputCurrModel();
-				return;
-			}
+bool Perceptron::accuracyNotChanging(long long epochsTrainedSoFar, Matrix& features, Matrix& labels)
+{
+	static double prevAccuracy = 0.0;
+	static double currAccuracy = 0.0;
+	static size_t epochsWithoutChange = 0;
+
+	if(epochsTrainedSoFar <= 1)
+	{
+		prevAccuracy = 0.0;
+		currAccuracy = 0.0;
+		epochsWithoutChange = 0;
+	}
+
+	Matrix stats;
+	currAccuracy = measureAccuracy(features, labels, &stats);
+	if(TRAINING_STATS)
+		outputCurrStats(currAccuracy, stats);
+
+	if(fabs(currAccuracy - prevAccuracy) < 0.01)
+	{
+		if(epochsWithoutChange < 5)
+		{
+			epochsWithoutChange += 1;
 		}
 		else
 		{
-				epochsWithoutChange = 0;
+			if(TRAINING_STATS)
+				outputCurrModel();
+			return true;
 		}
-		prevAccuracy = currAccuracy;
-        if(DEBUG)
-			std::cout << currAccuracy << std::endl;
 	}
+	else
+	{
+			epochsWithoutChange = 0;
+	}
+	prevAccuracy = currAccuracy;
+	if(DEBUG)
+		std::cout << currAccuracy << std::endl;
+
+	return false;
 }
 
 void Perceptron::outputCurrStats(double accuracy, Matrix& stats) const
@@ -150,7 +170,7 @@ void Perceptron::predict(const std::vector<double>& features, std::vector<double
 	for(size_t j = 0; j < labels.size(); j++)	
 	{
 		assert(j < _labelIndexToNodes.size());
-		bool binaryLabel = (_labelIndexToNodes.size() == 1);
+		bool binaryLabel = (_labelIndexToNodes[j].size() == 1);
 		if(binaryLabel)
 			labels[j] = getBinaryPrediction(features, _labelIndexToNodes[j][0]);
 		else

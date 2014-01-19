@@ -72,6 +72,18 @@ class Perceptron : public SupervisedLearner
 		 */
 		double getMulitNodePrediction(const std::vector<double>& features, 
 				const std::vector<PerceptronRulePerceptronNode>& nodes) const;
+
+		/**
+		 * Signals training to stop once 5 epochs have passed without
+		 * changing accuracy more than 1 percent.
+		 */
+		bool accuracyNotChanging(long long epochsTrainedSoFar, Matrix& features, Matrix& labels);
+
+		/**
+		 * Signals training to stop once 100 epochs have passed without
+		 * improvement upon the best model that has been found.
+		 */
+		bool bestModelNotImproved(long long epochsTrainedSoFar, Matrix& features, Matrix& labels);
 };
 
 #endif

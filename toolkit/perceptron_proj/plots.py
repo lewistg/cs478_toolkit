@@ -81,6 +81,8 @@ def partLearningRate():
 	plt.ylabel("Number of Epochs", fontsize=18)
 	plt.show()
 
+def nonStopIris():
+
 def main():
 	partOne()
 	#nonLinSepPoints()

@@ -60,6 +60,7 @@ void Perceptron::train(Matrix& features, Matrix& labels)
 	createPerceptronNodes(features, labels);
 	_epochsToTrain = 0;
 
+	std::vector< std::vector<PerceptronRulePerceptronNode> > bestModel;
 	while(true)
 	{
 		features.shuffleRows(_rand, &labels);
@@ -74,16 +75,47 @@ void Perceptron::train(Matrix& features, Matrix& labels)
 
 		_epochsToTrain += 1;
 
-		if(_epochsToTrain >= 100000)
-			return;
-
 		// decide if we should stop training or not
-		if(accuracyNotChanging(_epochsToTrain, features, labels))
+		/*if(accuracyNotChanging(_epochsToTrain, features, labels))
 		{
+			outputCurrModel();
+			break;
+		}*/
+		if(bestModelNotImproved(_epochsToTrain, features, labels, bestModel))
+		{
+			_labelIndexToNodes = bestModel;
 			outputCurrModel();
 			break;
 		}
 	}
+}
+
+bool Perceptron::bestModelNotImproved(long long epochsTrainedSoFar, 
+		Matrix& features, Matrix& labels, 
+		std::vector< std::vector<PerceptronRulePerceptronNode> >& bestModel)
+{
+	static double bestAccuracy = 0.0;
+	static size_t epochsWithoutImprovement = 0;
+	if(epochsTrainedSoFar <= 1)
+	{
+		bestAccuracy = 0.0;	
+		epochsWithoutImprovement = 0;
+	}
+
+	Matrix stats;
+	double currAccuracy = measureAccuracy(features, labels, &stats);
+	if(currAccuracy > bestAccuracy)
+	{
+		bestModel =  _labelIndexToNodes;
+		bestAccuracy = currAccuracy;
+		epochsWithoutImprovement = 0;
+	}
+	else
+	{
+		epochsWithoutImprovement += 1;
+	}
+
+	return (epochsWithoutImprovement >= 100);
 }
 
 bool Perceptron::accuracyNotChanging(long long epochsTrainedSoFar, Matrix& features, Matrix& labels)

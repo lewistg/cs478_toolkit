@@ -40,7 +40,7 @@ class Perceptron : public SupervisedLearner
 	private:
 		/** Pseudo-random number generator */ 
 		Rand& _rand; 
-        /**Map from label index to list of perceptrons*/
+        /**Map from label index to list of perceptrons. Essentially this stores the model*/
        	std::vector< std::vector<PerceptronRulePerceptronNode> > _labelIndexToNodes;
         /**The epochs that it takes to train*/
         long long _epochsToTrain;
@@ -83,7 +83,9 @@ class Perceptron : public SupervisedLearner
 		 * Signals training to stop once 100 epochs have passed without
 		 * improvement upon the best model that has been found.
 		 */
-		bool bestModelNotImproved(long long epochsTrainedSoFar, Matrix& features, Matrix& labels);
+		bool bestModelNotImproved(long long epochsTrainedSoFar, 
+				Matrix& features, Matrix& labels, 
+				std::vector< std::vector<PerceptronRulePerceptronNode> >& bestModel);
 };
 
 #endif

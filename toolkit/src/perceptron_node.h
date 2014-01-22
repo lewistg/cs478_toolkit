@@ -24,6 +24,11 @@ struct NodeOutput
 class PerceptronNode
 {
 	public:
+		/**
+		 * Default constructor
+         */
+        PerceptronNode();
+
         /**
          * Constructor
          * @param nWeight - The number of weights

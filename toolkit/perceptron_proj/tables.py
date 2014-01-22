@@ -44,9 +44,28 @@ def votingTask():
 	modelData = parseCsvData("final_models.csv")
 	print createLatexTable(modelData)
 
+	avgModelData = parseCsvData("voting_average_model.csv")
+	print createLatexTable(avgModelData)
+
+def irisTask():
+	votingData = parseCsvData("iris_accuracy.csv")
+	print createLatexTable(votingData)
+
+	modelData = parseCsvData("iris_model.csv")
+	print createLatexTable(modelData)
+
+	modelData = parseCsvData("avg_iris_model.csv")
+	print createLatexTable(modelData)
+
+def myExperiment():
+	modelData = parseCsvData("nlt_models.csv")
+	print createLatexTable(modelData)
+
 def main():
 	#linSepTables()
-	votingTask()
+	#votingTask()
+	#irisTask()
+	myExperiment()
 
 if __name__ == "__main__":
 	main()

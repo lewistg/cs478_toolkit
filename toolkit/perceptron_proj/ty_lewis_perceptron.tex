@@ -6,6 +6,7 @@
 \usepackage{graphicx}
 \usepackage{wrapfig}
 \usepackage{amssymb}
+\usepackage{placeins}
 \usepackage{float}
 \usepackage{caption}
 \usepackage{subcaption}
@@ -13,6 +14,8 @@
 \usepackage{titling}
 \setlength{\droptitle}{-4cm}
 \renewcommand{\arraystretch}{1.1}
+\usepackage{setspace}
+\singlespacing
 
 \title{Perceptron Project}
 \author{Ty Lewis}
@@ -58,8 +61,11 @@ To see the For a learning rate of $0.1$, the following results were obtained.
 
 \section*{Voting task}
 
-\begin{wrapfigure}{r}{0.6\textwidth}
-\begin{center}
+In this learning task, the perceptron seeks to identify Democrats and Republicans based on their stance on various issues. The table to the belows summarizes the performance of the perceptron for five trials. Note that in each trial the data was randomly split 70\% training and 30\% for testing.
+
+%\begin{wrapfigure}{r}{0.6\textwidth}
+\begin{figure}[H]
+\centering
 \begin{tabular}{cccc}
 \toprule
 Trial	&	Training set accuracy	&	Test set accuracy 	&	Epochs to train\\
@@ -73,39 +79,107 @@ Trial	&	Training set accuracy	&	Test set accuracy 	&	Epochs to train\\
 Average	&	96.94	&	94.22	&	39.6\\
 \bottomrule
 \end{tabular}
-\end{center}
-\end{wrapfigure}
+\caption{Accuracy of perceptron trained and tested for voting task}
+\end{figure}
+%\end{wrapfigure}
 
+Below is a graph depicting how the average error rate for the five trials changed after each epoch. Notice that after just a few epochs, the average error rate is already very low. The graph is also very sporadic. This may be due to the fact that trial 4 took much longer to train on than the others, essentially the average error rate consists of only trial 4's data beyond the $46$th epoch. Despite the sporadic data behavior, it is somewhat discernible that there is a general downward trend as the epoch continue.
 
+\bigskip
+
+%\begin{center}
+%\begin{figure}[H]
 \begin{wrapfigure}{r}{0.6\textwidth}
-\begin{tabular}{ccccccc}
+\centering
+\includegraphics[width=0.55\textwidth]{error.pdf} 
+\caption{Learning rate vs. epochs}
+\vspace{-30pt}
+\end{wrapfigure}
+%\end{figure}
+%\end{center}
+
+For each trial, the final weights were extracted from the perceptron's model. The average of these weights is shown in the table below. Note that $w_i$ refers to the $i$th feature in the attributes section of the \emph{voting.arff} file (excluding the label feature). The last weight, $w_{16}$ is the bias weight.
+
+\subsection*{Discussion of model}
+
+The perceptron outputs a 0 if the feature pattern indicates a Democrat and a 1 for Republican. In other words the net-value is negative for Democrats and positive for Republicans. Notice that the largest negative weights are $w_3, w_4$, and $w_9$ which respectively refer to ``physician-fee-freeze", ``el-salvador-aide", and ``immigration." We can take these large negative weights to mean that these are the most significant indicators of a Democrat. Alternatively, $w_{10}, w_2$, and $w_8$ are the largest positive weights. They correspond to ``synfuels-corporation-cutback", ``adoption-of-the-budget-resolution", and ``mx-missile" respectively. Similarly, these are the most significant predictors of a Republican. 
+
+\begin{figure}[h]
+\centering
+
+\begin{tabular}{c|c||c|c||c|c||c|c||c|c}
 \toprule
-Trial	&	1	&	2	&	3	&	4	&	5	&	Average\\
+\multicolumn{10}{c}{Voting Task Model} \\
 \hline
-$w_0$	&	0.1	&	0.1	&	0.3	&	0.2	&	0.1	&	0.16\\
-$w_1$	&	0.4	&	0.2	&	0.3	&	0.5	&	0.1	&	0.3\\
-$w_2$	&	1.1	&	0.7	&	0.5	&	1	&	0.5	&	0.76\\
-$w_3$	&	-1.9	&	-1.5	&	-1.7	&	-2.5	&	-1.8	&	-1.88\\
-$w_4$	&	-0.7	&	-0.6	&	-0.2	&	-1.4	&	-0.4	&	-0.66\\
-$w_5$	&	2.78E-017	&	0.2	&	0.3	&	2.78E-017	&	0.2	&	1.40E-001\\
-$w_6$	&	-0.1	&	-0.2	&	-0.3	&	-1.1	&	-0.3	&	-0.4\\
-$w_7$	&	-0.8	&	-0.8	&	-0.9	&	-1.3	&	-0.2	&	-0.8\\
-$w_8$	&	0.6	&	0.5	&	1	&	1	&	0.7	&	0.76\\
-$w_9$	&	-0.5	&	-0.4	&	-0.6	&	-0.8	&	-0.4	&	-0.54\\
-$w_{10}$	&	0.9	&	0.9	&	1	&	1.1	&	1.3	&	1.04\\
-$w_{11}$	&	-2.78E-017	&	-0.1	&	-0.3	&	-2.78E-017	&	0.3	&	-2.00E-002\\
-$w_{12}$	&	-0.3	&	0.1	&	-0.4	&	-0.1	&	0.2	&	-0.1\\
-$w_{13}$	&	0.2	&	0.1	&	0.1	&	0.4	&	-0.2	&	0.12\\
-$w_{14}$	&	0.7	&	0.7	&	0.7	&	0.2	&	0.1	&	0.48\\
-$w_{15}$	&	-0.5	&	-0.2	&	0.1	&	-0.4	&	-0.3	&	-0.26\\
-$w_{16}$	&	1.6	&	1.2	&	0.9	&	2.6	&	0.8	&	1.42\\
+$w_{0}$	&	0.16	&	$w_{4}$	&	-0.66	&	$w_{8}$	&	0.76	&	$w_{12}$	&	-0.1	&	$w_{16}$	&	1.42\\
+$w_{1}$	&	0.3	&	$w_{5}$	&	0.14	&	$w_{9}$	&	-0.54	&	$w_{13}$	&	0.12	&		&	\\
+$w_{2}$	&	0.76	&	$w_{6}$	&	-0.4	&	$w_{10}$	&	1.04	&	$w_{14}$	&	0.48	&		&	\\
+$w_{3}$	&	-1.88	&	$w_{7}$	&	-0.8	&	$w_{11}$	&	-0.02	&	$w_{15}$	&	-0.26	&		&	\\
 \bottomrule
 \end{tabular}
-\end{wrapfigure}
-
+\caption{Average weights for perceptron model after training on voting task.}
+\end{figure}
 
 \section*{Iris task}
 
-Note that for the iris learning task, training is stopped once 100 epochs have passed without a significant improvement in the best model found so far. (Using the stopping criteria from previous experiments often never halted training; the training set accuracy simply thrashed from as low as 60\% to as high as 90\%.)
+\textbf{Note:} For the iris learning task, training is stopped once 100 epochs have passed without a significant improvement in the best model found so far. (Using the stopping criteria from previous experiments often never halted training; the training set accuracy simply thrashed from as low as 60\% to as high as 90\%, never converging.)
+
+Below is the table showing accuracy of the model for the training set and the test set.
+
+\begin{center}
+\begin{tabular}{cccc}
+\toprule
+Trial	&	Training set accuracy	&	Test set accuracy 	&	Epochs to train\\
+\hline
+1	&	95.2	&	95.6	&	121\\
+2	&	95.2	&	88.2	&	110\\
+3	&	95.2	&	93.3	&	164\\
+4	&	96.2	&	91.1	&	191\\
+5	&	95.2	&	97.8	&	106\\
+Average	&	95.4	&	93.2	&	138.4\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+For this data set there were three possible output classes that could be assigned to each instance, namely iris-setosa, iris-versicolor, and iris-virginica. In order to deal with this, a perceptron was created for flower type and trained to identify only that type. The table below shows the average weights for each perceptron. Again, the $i$th weight corresponds to the $i$th feature in the \emph{iris.arff} file (excluding the label attribute) and $w_5$ is the bias weight.
+
+\begin{center}
+\begin{tabular}{lccccc}
+\toprule
+\multicolumn{6}{c}{Iris Task Models} \\
+\hline
+Flower Modeled	&	$w_0$	&	$w_1$	&	$w_2$	&	$w_4$	&	$w_5$\\
+\hline
+Iris-setosa	&	0.158	&	0.514	&	-0.8	&	-0.386	&	0.1\\
+Iris-versicolor	&	1.114	&	-3.714	&	2.006	&	-4.922	&	3.18\\
+Iris-virginica	&	-2.426	&	-2.716	&	3.974	&	3.816	&	-1.58\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection*{Discussion of model}
+
+\section*{My own experiment}
+
+For my own experiment, I experimented with separating points using a degree-3 polynomial. Similar to the first part of this lab, I created seven $x$ and $y$ coordinate pairs lying on either side of the polynomial $y = x^3 - 3x^2 - x + 5$. I then created an \emph{arff} file containing the attributes $x$, $y$, $x^3$, $x^2$, and color. The seven points that came from the left of the curve were labeled ``red" and the ones to the right of the curve were labeled ``blue."
+
+The table below shows the resulting weights after five trials running in the training evaluation method. Each set of weights resulted in 100\% accuracy.
+
+\begin{center}
+\begin{tabular}{cccccc}
+\toprule
+Trial & $w_0$ & $w_1$ & $w_2$ & $w_3$ & $w_4$ \\
+\hline
+1 & 4.38409	&	2.90633	&	-3.84122	&	9.51148	&	-10.9\\
+2 & 5.34182	&	3.06776	&	-3.93253	&	9.24562	&	-11\\
+3 & 5.17142	&	3.58455	&	-4.57759	&	11.1096	&	-12.6\\
+4 & 5.91608	&	3.64871	&	-4.92576	&	11.6396	&	-12.3\\
+5 & 6.66132	&	4.23084	&	-5.01142	&	11.8543	&	-15.3\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+
+The graph below shows a plot of the points along with each of the parabolas defined by the weights in table above. 
 
 \end{document}

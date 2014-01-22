@@ -115,6 +115,10 @@ bool Perceptron::bestModelNotImproved(long long epochsTrainedSoFar,
 		epochsWithoutImprovement += 1;
 	}
 
+
+	if(TRAINING_STATS)
+		outputCurrStats(currAccuracy, stats);
+
 	return (epochsWithoutImprovement >= 100);
 }
 

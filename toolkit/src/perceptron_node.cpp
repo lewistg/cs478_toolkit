@@ -1,5 +1,11 @@
 #include "perceptron_node.h"
 
+PerceptronNode::PerceptronNode():
+	_learningRate(0.0), _targetLabelIndex(0), _targetClass(0)
+{
+
+}
+
 PerceptronNode::PerceptronNode(size_t nFeatures, double learningRate, size_t targetLabelIndex, double targetClass):
 	_weights(nFeatures + 1), // add one for the bias weight
 	_learningRate(learningRate),

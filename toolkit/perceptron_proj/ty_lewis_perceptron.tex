@@ -20,8 +20,8 @@
 \title{Perceptron Project}
 \author{Ty Lewis}
 \begin{document} 
-\maketitle
-\vspace{-10pt}
+%\maketitle
+%\vspace{-10pt}
 \section*{Introduction}
 The ``perceptron" is a simple machine learning algorithm capable of classifying... In this report we experiment with perceptron algorithm. This is done by, first, examining how well it labels linearly separable data versus data that is not linearly separable. Second, the perceptron is tested on 
 
@@ -159,27 +159,16 @@ Iris-virginica	&	-2.426	&	-2.716	&	3.974	&	3.816	&	-1.58\\
 
 \subsection*{Discussion of model}
 
+Considering the weights of largest magnitude for each flower in the model above. It appears that the model has learned that the most indicative features for classifying the iris-setosa is sepal width and petal length and for iris-versicolor petal length and petal width seem most important. Interestingly, for iris-virginica the model has given approximately equal weight to sepal length and sepal width for determining a flower is not an iris-virginica, and it it has also given approximately equal weights to petal length and petal width for determining a flower is an iris-virginica.
+
 \section*{My own experiment}
 
-For my own experiment, I experimented with separating points using a degree-3 polynomial. Similar to the first part of this lab, I created seven $x$ and $y$ coordinate pairs lying on either side of the polynomial $y = x^3 - 3x^2 - x + 5$. I then created an \emph{arff} file containing the attributes $x$, $y$, $x^3$, $x^2$, and color. The seven points that came from the left of the curve were labeled ``red" and the ones to the right of the curve were labeled ``blue."
+For my own experiment I worked with the data set pictured in the graph below. This data set consists of $x$ $y$ pairs of points labeled either \emph{red} or \emph{blue}. Notice that the blue points are randomly distributed around the green points and the red points are randomly distributed around the yellow points. The green and yellow points were also randomly distributed.
 
-The table below shows the resulting weights after five trials running in the training evaluation method. Each set of weights resulted in 100\% accuracy.
-
-\begin{center}
-\begin{tabular}{cccccc}
-\toprule
-Trial & $w_0$ & $w_1$ & $w_2$ & $w_3$ & $w_4$ \\
-\hline
-1 & 4.38409	&	2.90633	&	-3.84122	&	9.51148	&	-10.9\\
-2 & 5.34182	&	3.06776	&	-3.93253	&	9.24562	&	-11\\
-3 & 5.17142	&	3.58455	&	-4.57759	&	11.1096	&	-12.6\\
-4 & 5.91608	&	3.64871	&	-4.92576	&	11.6396	&	-12.3\\
-5 & 6.66132	&	4.23084	&	-5.01142	&	11.8543	&	-15.3\\
-\bottomrule
-\end{tabular}
-\end{center}
-
-
-The graph below shows a plot of the points along with each of the parabolas defined by the weights in table above. 
+One way that we can try to linearly separate these points is by performing first performing a non-linear transformation on these points. We will use the following non-linear transformation.
+$$\Phi(x,y,n) = (\sum\limits_{i=0}^n \sum\limits_{j=0}^nx^iy^j) - 1 = x^0y^1 + x^0y^2 \cdots x^1y^0 + x^1y^1 + x^1y^2 \cdots x^ny^{n-1} + x^ny^n = a_0 + a_1 \cdots a_n$$
+Where $n$ is the degree of polynomial and $a_i$ denotes the $i$th term in the polynomial. After performing this transformation, the terms $a_i$ can be used as features in an \emph{arff} file, and the perceptron can be used to learn the weights $w_i$ in the polynomial
+$$f(x,y) = w_ia_i + w_na_n + w_{n+1}$$
+where $w_{n+1}$ is the bias weight. In this experiment, I try to answer the following question: Which values of $n$ result in polynomials that fit the data above? From this, I hope to infer whether or not there is a point of ``diminishing returns" where any further explosion of the data fails to give better results. 
 
 \end{document}

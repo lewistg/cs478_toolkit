@@ -72,21 +72,27 @@ void Perceptron::train(Matrix& features, Matrix& labels)
 				_labelIndexToNodes[j][k].train(features, labels);
 			}
 		}
-
+		
 		_epochsToTrain += 1;
 
+		if(DEBUG)
+		{
+			std::cout << "After epoch:" << std::endl;
+			outputCurrModel();
+		}
+
 		// decide if we should stop training or not
-		/*if(accuracyNotChanging(_epochsToTrain, features, labels))
+		if(accuracyNotChanging(_epochsToTrain, features, labels) && _epochsToTrain >= 100)
 		{
 			outputCurrModel();
 			break;
-		}*/
-		if(bestModelNotImproved(_epochsToTrain, features, labels, bestModel))
+		}
+		/*if(bestModelNotImproved(_epochsToTrain, features, labels, bestModel))
 		{
 			_labelIndexToNodes = bestModel;
 			outputCurrModel();
 			break;
-		}
+		}*/
 	}
 }
 

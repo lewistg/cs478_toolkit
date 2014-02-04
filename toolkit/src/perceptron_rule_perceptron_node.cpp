@@ -4,7 +4,7 @@
 
 namespace
 {
-	bool DEBUG = true; 
+	bool DEBUG = false; 
 }
 
 PerceptronRulePerceptronNode::PerceptronRulePerceptronNode(size_t nFeatures, 

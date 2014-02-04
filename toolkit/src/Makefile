@@ -37,6 +37,9 @@ CPP_FILES =\
 	perceptron_node.cpp\
 	perceptron_rule_perceptron_node.cpp\
 	data_utils.cpp\
+	BackProp.cpp\
+	BackPropLayer.cpp\
+	BackPropUnit.cpp\
 
 ################
 # Lists

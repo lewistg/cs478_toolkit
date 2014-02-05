@@ -21,6 +21,16 @@ BackPropLayer::~BackPropLayer()
 
 }
 
+void BackPropLayer::setNextLayer(BackPropLayer* nextLayer)
+{
+	_nextLayer = nextLayer;
+}
+	
+void BackPropLayer::setPrevLayer(BackPropLayer* prevLayer)
+{
+	_prevLayer = prevLayer;
+}
+
 std::vector<double> BackPropLayer::trainOnExample(const std::vector<double>& input, const std::vector<double>& target)
 {
 	// calculate net outputs
@@ -62,8 +72,30 @@ std::vector<double> BackPropLayer::trainOnExample(const std::vector<double>& inp
     return layerError;
 }
 
+void BackPropLayer::predict(const std::vector<double>& input, std::vector<double>& labels) const
+{
+	std::vector<double> layerOutputs;
+	for(size_t i  = 0; i < _units.size(); i++)
+	{
+		layerOutputs.push_back(_units[i].getOutput(input));
+	}
+
+	bool isOutputLayer = (_nextLayer == NULL);
+	if(isOutputLayer)
+	{
+		assert(layerOutputs.size() == labels.size());
+		for(size_t j = 0; j < layerOutputs.size(); j++)
+			labels[j] = layerOutputs[j];
+	}
+}
+
 const BackPropUnit& BackPropLayer::operator[](size_t i)
 {
 	assert(i < _units.size());
 	return _units[i];
+}
+
+size_t BackPropLayer::getNumUnits() const
+{
+	return _units.size();
 }

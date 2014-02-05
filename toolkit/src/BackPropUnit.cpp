@@ -25,7 +25,7 @@ BackPropUnit::~BackPropUnit()
 
 }
 
-double BackPropUnit::getOutput(const std::vector<double>& features)
+double BackPropUnit::getOutput(const std::vector<double>& features) const
 {
 	double sum = 0.0;
 	assert(features.size() == _weights.size() - 1);

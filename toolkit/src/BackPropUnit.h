@@ -29,7 +29,7 @@ public:
 	 * Trains using the given example
 	 * @return The net value
 	 */
-	double getOutput(const std::vector<double>& features);
+	double getOutput(const std::vector<double>& features) const;
 
 	/**
 	 * Gets a weight

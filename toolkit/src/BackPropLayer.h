@@ -44,9 +44,19 @@ public:
 	std::vector<double> trainOnExample(const std::vector<double>& input, const std::vector<double>& target);
 
 	/**
+	 * Predicts 
+     */
+	void predict(const std::vector<double>& input, std::vector<double>& labels) const;
+
+	/**
 	 * Getter for unit
 	 */
 	const BackPropUnit& operator[](size_t i);
+
+    /**
+     * Gets the number of units
+     */
+    size_t getNumUnits() const;
 
 private:
 	/**The units in the layer*/

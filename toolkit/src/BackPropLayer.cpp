@@ -34,6 +34,10 @@ void BackPropLayer::setNextLayer(BackPropLayer* nextLayer)
 void BackPropLayer::setPrevLayer(BackPropLayer* prevLayer)
 {
 	_prevLayer = prevLayer;
+
+	size_t nInputs = _prevLayer->getNumUnits();
+	for(size_t i = 0; i < _units.size(); i++)
+		_units[i].setNumInputs(nInputs);
 }
 
 std::vector<double> BackPropLayer::trainOnExample(const std::vector<double>& input, const std::vector<double>& target)
@@ -116,6 +120,12 @@ const BackPropUnit& BackPropLayer::operator[](size_t i)
 size_t BackPropLayer::getNumUnits() const
 {
 	return _units.size();
+}
+
+void BackPropLayer::setNumInputs(size_t nInputs) 
+{
+	for(size_t i = 0; i < _units.size(); i++)
+		_units[i].setNumInputs(nInputs);
 }
 
 std::string BackPropLayer::toString()

@@ -66,6 +66,12 @@ public:
     size_t getNumUnits() const;
 
 	/**
+	 * Sets the number of inputs 
+     * @return 
+     */
+	void setNumInputs(size_t nInputs);
+
+	/**
 	 * Creates string version of this class
 	 */
 	std::string toString();

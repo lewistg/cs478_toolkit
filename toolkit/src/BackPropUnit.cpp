@@ -1,29 +1,32 @@
 #include <cmath>
 #include <cassert>
+#include "rand.h"
 #include "BackPropUnit.h"
 #include "rand.h"
 
-BackPropUnit::BackPropUnit()
-{
-
-}
-
-BackPropUnit::BackPropUnit(Rand r, size_t nWeights):
+BackPropUnit::BackPropUnit():
 	_trainState(true),
-	_weights(nWeights + 1), // add one for the bias weight
 	_learningRate(0.1)
 {
-	assert(nWeights > 0);
-	int nBiasWeights = 1;
-	// set the weights to random values in the range [-0.05, 0.05]
-	for(size_t i = 0; i < nWeights + nBiasWeights; i++)
-		_weights[i] = (r.normal() * 0.1) - 0.05;
+
 }
 
 BackPropUnit::~BackPropUnit()
 {
 
 }
+
+void BackPropUnit::setNumInputs(size_t nInputs)
+{
+	if(!_weights.empty())
+		_weights.clear();
+
+	int nBiasWeights = 1;
+	assert(nInputs > 0);
+	Rand r(56);
+	for(size_t i = 0; i < nInputs + nBiasWeights; i++)
+		_weights.push_back((r.normal() * 0.1) - 0.05);
+}	
 
 double BackPropUnit::getOutput(const std::vector<double>& features) const
 {

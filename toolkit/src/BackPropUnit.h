@@ -18,14 +18,16 @@ public:
 	BackPropUnit();
 
 	/**
-	 * Constructor
-	 */
-	BackPropUnit(Rand r, size_t nWeights);
-
-	/**
 	 * Deconstructor
 	 */
 	~BackPropUnit();
+
+	/**
+	 * Sets the number of inputs that are used 
+     * @param features
+     * @return 
+     */
+	void setNumInputs(size_t nInputs);
 
 	/**
 	 * Trains using the given example

@@ -15,7 +15,7 @@ public:
 	/**
 	 * Constructor
 	 */
-	BackProp(Rand& rand, const std::vector<size_t>& layerConfig);
+	BackProp(Rand& rand, bool loggingOn = false);
 
 	/**
 	 * Override 
@@ -30,6 +30,13 @@ public:
 private:
 	/**Layers of the MLP. The last layer is the output layer.*/
 	std::vector<BackPropLayer> _layers; 
+	/**Turns on logging or not*/
+	bool _loggingOn;
+
+    /**
+     * Creates the layers 
+     */
+    void createLayers(const std::vector<size_t>& layerConfig);
 };
 
 #endif

@@ -3,6 +3,8 @@
 
 #include <vector>
 #include <cassert>
+#include <string>
+#include <sstream>
 #include "BackPropUnit.h"
 
 class BackPropUnit;
@@ -13,13 +15,13 @@ public:
 	/**
 	 * Default constructor
      */
-	BackPropLayer();
+	BackPropLayer(bool loggingOn);
 
 	/**
 	 * Constructor for creating hidden and output layers
 	 * @param nextLayer
      */
-	BackPropLayer(size_t nUnits);
+	BackPropLayer(size_t nUnits, bool loggingOn);
 
 	/**
 	 * Sets the prey layer
@@ -49,6 +51,11 @@ public:
 	void predict(const std::vector<double>& input, std::vector<double>& labels) const;
 
 	/**
+	 * Sets the layer's number
+     */
+	void setLayerId(size_t layerId);
+
+	/**
 	 * Getter for unit
 	 */
 	const BackPropUnit& operator[](size_t i);
@@ -58,6 +65,11 @@ public:
      */
     size_t getNumUnits() const;
 
+	/**
+	 * Creates string version of this class
+	 */
+	std::string toString();
+
 private:
 	/**The units in the layer*/
 	std::vector<BackPropUnit> _units;
@@ -65,6 +77,20 @@ private:
 	BackPropLayer* _prevLayer;
 	/**Pointer to the next layer*/
 	BackPropLayer* _nextLayer;
+	/**The layer's id*/
+	size_t _layerId;
+	/**Logging flag*/
+	bool _loggingOn;
+
+	/**
+	 * Logging function for layer error during training
+	 */
+	void logLayerError(const std::vector<double>& layerError);
+
+	/**
+	 * Logging for unit weights
+	 */
+	void logUnitWeights();
 };
 
 #endif

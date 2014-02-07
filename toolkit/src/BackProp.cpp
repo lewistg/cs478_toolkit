@@ -1,9 +1,42 @@
 #include <vector>
 #include "BackProp.h"
 
-BackProp::BackProp(Rand& rand, const std::vector<size_t>& layerConfig)
+BackProp::BackProp(Rand& rand, bool loggingOn):_loggingOn(loggingOn)
 {
-	// construct the network
+}
+
+void BackProp::train(Matrix& features, Matrix& labels)
+{
+	// create the layers
+    std::vector<size_t> layerConfig;
+    layerConfig.push_back(features.cols());
+    layerConfig.push_back(features.cols() * 2);
+
+	size_t outputUnits = 0;
+	for(size_t i = 0; i < labels.cols(); i++)
+		outputUnits += labels.valueCount(i);
+	layerConfig.push_back(outputUnits);
+
+	createLayers(layerConfig);
+
+	assert(_layers.size() > 0);
+	assert(features.cols() == _layers[0].getNumUnits());
+
+	for(size_t i = 0; i < features.rows(); i++)
+		_layers[0].trainOnExample(features.row(i), labels.row(i));
+}
+
+void BackProp::predict(const std::vector<double>& features, std::vector<double>& labels)
+{
+	assert(_layers.size() > 0);
+	assert(features.size() == _layers[0].getNumUnits());
+	std::vector<double> finalLayerOutput;
+	_layers[0].predict(features, finalLayerOutput);
+}
+
+void BackProp::createLayers(const std::vector<size_t>& layerConfig)
+{
+    _layers.clear();
 	for(size_t i = 0; i < layerConfig.size(); i++)
 	{
 		assert(layerConfig[i] > 0);
@@ -14,18 +47,4 @@ BackProp::BackProp(Rand& rand, const std::vector<size_t>& layerConfig)
 			_layers[i - 1].setNextLayer(&_layers[i]);
 		}
 	}
-}
-
-void BackProp::train(Matrix& features, Matrix& labels)
-{
-	assert(_layers.size() > 0);
-	assert(features.cols() == _layers[0].getNumUnits());
-
-	for(size_t i = 0; i < features.rows(); i++)
-		_layers[0].trainOnExample(features.row(i), labels.row(i));
-}
-
-void BackProp::predict(const std::vector<double>& features, std::vector<double>& labels)
-{
-
 }

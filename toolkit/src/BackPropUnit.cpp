@@ -47,3 +47,19 @@ void BackPropUnit::updateWeights(double error)
 {
 
 }
+
+std::string BackPropUnit::toString()
+{
+	std::stringstream ss;
+	ss << "(Weights = [";
+	for(size_t i = 0; i < _weights.size(); i++)
+	{
+		ss << _weights[i];
+		if(i < _weights.size() - 1)
+			ss << ", ";
+		else
+			ss << "]";
+	}
+
+	return ss.str();
+}

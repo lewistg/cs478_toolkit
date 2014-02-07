@@ -3,6 +3,8 @@
 
 #include <cassert>
 #include <vector>
+#include <string>
+#include <sstream>
 #include "perceptron_node.h"
 
 class BackPropLayer;
@@ -44,6 +46,11 @@ public:
      * @pre These are the same weights passed into the train on example
 	 */
 	void updateWeights(double error);
+
+	/**
+	 * Gets string containing unit info
+	 */
+	std::string toString();
 
 private:
 	/**Keeps track of whether or not we are training or updating weights*/

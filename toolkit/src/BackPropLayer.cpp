@@ -57,8 +57,6 @@ std::vector<double> BackPropLayer::trainOnExample(const std::vector<double>& inp
 	{
 		std::cout << "Training layer: " << std::endl; 
 		std::cout << toString() << std::endl;
-		if(_nextLayer != NULL)
-			std::cout << "Next layer: " << _nextLayer->toString() << std::endl;
 		std::cout << "Layer input: " << vectorToString(input) << std::endl;
 	}
 
@@ -87,7 +85,7 @@ std::vector<double> BackPropLayer::trainOnExample(const std::vector<double>& inp
 			double errorCausedByUnit = 0.0;
 			for(size_t j = 0; j < nextLayerError.size(); j++)
 			{
-				errorCausedByUnit += nextLayerError[i] * _nextLayer->getUnit(j).getWeight(i);
+				errorCausedByUnit += nextLayerError[j] * _nextLayer->getUnit(j).getWeight(i);
 			}	
 			double error = layerOutputs[i] * (1 - layerOutputs[i]) * errorCausedByUnit;
 			layerError.push_back(error);
@@ -104,17 +102,19 @@ std::vector<double> BackPropLayer::trainOnExample(const std::vector<double>& inp
 	else
 	{
 		if(_loggingOn)
-		{
 			std::cout << "Prediction: " << vectorToString(layerOutputs) << std::endl;
-		}
 
 		for(size_t i  = 0; i < _units.size(); i++)
 		{
-			double error = layerOutputs[i] * (1 - layerOutputs[i]) * (input[i] - target[i]);
+			double error = layerOutputs[i] * (1 - layerOutputs[i]) * (target[i] - layerOutputs[i]);
 			layerError.push_back(error);
 			_units[i].updateWeights(error, input);
 		}
+
 	}
+
+	if(_loggingOn)
+		std::cout << "Error: " << vectorToString(layerError) << std::endl;
 
     return layerError;
 }

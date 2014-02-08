@@ -58,7 +58,14 @@ public:
 	/**
 	 * Getter for unit
 	 */
-	const BackPropUnit& operator[](size_t i);
+	const BackPropUnit& operator[](size_t i) const;
+
+	/**
+	 * Getter for the unit
+     * @param unitIndex
+     * @return 
+     */
+	const BackPropUnit& getUnit(size_t unitIndex) const;
 
     /**
      * Gets the number of units

@@ -40,14 +40,14 @@ public:
      * @param i
      * @return 
      */
-	double getWeight(size_t i );
+	double getWeight(size_t i ) const;
 
 	/**
 	 * Updates weights given the error term associated with the given
 	 * features
      * @pre These are the same weights passed into the train on example
 	 */
-	void updateWeights(double error);
+	void updateWeights(double error, const std::vector<double>& inputs);
 
 	/**
 	 * Gets string containing unit info

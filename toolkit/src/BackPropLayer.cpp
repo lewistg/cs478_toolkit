@@ -62,12 +62,12 @@ std::vector<double> BackPropLayer::trainOnExample(const std::vector<double>& inp
 			double errorCausedByUnit = 0.0;
 			for(size_t j = 0; j < nextLayerError.size(); j++)
 			{
-				errorCausedByUnit += nextLayerError[i] * _units[i].getWeight(i);
+				errorCausedByUnit += nextLayerError[i] * _nextLayer->getUnit(j).getWeight(i);
 			}	
 			double error = layerOutputs[i] * (1 - layerOutputs[i]) * errorCausedByUnit;
 			layerError.push_back(error);
 
-			_units[i].updateWeights(error);
+			_units[i].updateWeights(error, input);
 		}
 
 		if(_loggingOn)
@@ -82,7 +82,7 @@ std::vector<double> BackPropLayer::trainOnExample(const std::vector<double>& inp
 		{
 			double error = layerOutputs[i] * (1 - layerOutputs[i]) * (input[i] - target[i]);
 			layerError.push_back(error);
-			_units[i].updateWeights(error);
+			_units[i].updateWeights(error, input);
 		}
 	}
 
@@ -111,10 +111,16 @@ void BackPropLayer::setLayerId(size_t layerId)
 	_layerId = layerId;
 }
 
-const BackPropUnit& BackPropLayer::operator[](size_t i)
+const BackPropUnit& BackPropLayer::operator[](size_t i) const
 {
 	assert(i < _units.size());
 	return _units[i];
+}
+
+const BackPropUnit& BackPropLayer::getUnit(size_t unitIndex) const
+{
+	assert(unitIndex < _units.size());
+	return _units[unitIndex];
 }
 
 size_t BackPropLayer::getNumUnits() const

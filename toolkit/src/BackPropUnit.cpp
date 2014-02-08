@@ -41,14 +41,22 @@ double BackPropUnit::getOutput(const std::vector<double>& features) const
 	return output; 
 }
 
-double BackPropUnit::getWeight(size_t i )
+double BackPropUnit::getWeight(size_t i ) const
 {
 	return _weights[i];
 }
 
-void BackPropUnit::updateWeights(double error)
+void BackPropUnit::updateWeights(double error, const std::vector<double>& inputs)
 {
+	assert(inputs.size() == _weights.size() - 1);
+	for(size_t i = 0; i < inputs.size(); i++)
+	{
+		double weightDelta = _learningRate * error * inputs[i];
+		_weights[i] += weightDelta;
+	}
 
+	double threshHoldWeightDelta = _learningRate * error;
+	_weights[_weights.size() - 1] += threshHoldWeightDelta;
 }
 
 std::string BackPropUnit::toString()

@@ -67,6 +67,12 @@ public:
      */
 	const BackPropUnit& getUnit(size_t unitIndex) const;
 
+	/**
+	 * Non-const getter for a unit
+     * @return 
+     */
+	BackPropUnit& getUnit(size_t unitIndex);
+
     /**
      * Gets the number of units
      */

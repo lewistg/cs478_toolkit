@@ -1,6 +1,7 @@
 #include <unistd.h>
 #include <iostream>
 #include "BackPropLayer.h"
+#include "data_utils.h"
 
 BackPropLayer::BackPropLayer(bool loggingOn = false):
 	_units(), 
@@ -78,6 +79,11 @@ std::vector<double> BackPropLayer::trainOnExample(const std::vector<double>& inp
 	}
 	else
 	{
+		if(_loggingOn)
+		{
+			std::cout << "Prediction: " << vectorToString(layerOutputs) << std::endl;
+		}
+
 		for(size_t i  = 0; i < _units.size(); i++)
 		{
 			double error = layerOutputs[i] * (1 - layerOutputs[i]) * (input[i] - target[i]);
@@ -118,6 +124,12 @@ const BackPropUnit& BackPropLayer::operator[](size_t i) const
 }
 
 const BackPropUnit& BackPropLayer::getUnit(size_t unitIndex) const
+{
+	assert(unitIndex < _units.size());
+	return _units[unitIndex];
+}
+
+BackPropUnit& BackPropLayer::getUnit(size_t unitIndex)
 {
 	assert(unitIndex < _units.size());
 	return _units[unitIndex];

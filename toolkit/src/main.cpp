@@ -133,7 +133,7 @@ SupervisedLearner* getLearner(string model, Rand& r)
 	else if(model.compare("perceptron") == 0)
 		return new Perceptron(r);
 	else if(model.compare("backprop") == 0)
-		return new BackProp(r);
+		return new BackProp(r, true);
 	else if (model.compare("neuralnet") == 0)
 		ThrowError("Sorry, ", model, " is not yet implemented");
 	else if (model.compare("decisiontree") == 0)
@@ -171,7 +171,8 @@ void doit(ArgParser& parser)
 	string fileName = parser.getARFF();
 	Matrix dataset;
 	dataset.loadARFF ( fileName );
-	size_t labelDims = 1;
+	//size_t labelDims = 1;
+	size_t labelDims = 2;
 
 	// Display some values
 	cout << "Dataset name: " << fileName << endl;

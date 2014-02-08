@@ -50,6 +50,13 @@ public:
 	void updateWeights(double error, const std::vector<double>& inputs);
 
 	/**
+	 * Sets the weights
+	 * @pre The number of weights matches the number of weighs already created
+     * @return 
+     */
+	void setWeights(const std::vector<double>& weights);
+
+	/**
 	 * Gets string containing unit info
 	 */
 	std::string toString();

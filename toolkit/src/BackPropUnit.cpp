@@ -59,6 +59,12 @@ void BackPropUnit::updateWeights(double error, const std::vector<double>& inputs
 	_weights[_weights.size() - 1] += threshHoldWeightDelta;
 }
 
+void BackPropUnit::setWeights(const std::vector<double>& weights)
+{
+	assert(weights.size() == _weights.size());
+	_weights = weights;
+}
+
 std::string BackPropUnit::toString()
 {
 	std::stringstream ss;

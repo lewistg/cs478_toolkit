@@ -3,7 +3,7 @@
 #include "BackPropLayer.h"
 #include "data_utils.h"
 
-/*BackPropLayer::BackPropLayer(bool loggingOn = false):
+BackPropLayer::BackPropLayer(bool loggingOn):
 	_units(), 
 	_prevLayer(NULL),
 	_nextLayer(NULL),
@@ -11,7 +11,7 @@
 	_loggingOn(loggingOn)
 {
 
-}*/
+}
 
 BackPropLayer::BackPropLayer(size_t nUnits, size_t layerId, bool loggingOn):
 	_units(nUnits, BackPropUnit(loggingOn)),
@@ -31,6 +31,11 @@ void BackPropLayer::setNextLayer(BackPropLayer* nextLayer)
 {
 	_nextLayer = nextLayer;
 }
+
+BackPropLayer* BackPropLayer::getNextLayer() const
+{
+	return _nextLayer;
+}
 	
 void BackPropLayer::setPrevLayer(BackPropLayer* prevLayer)
 {
@@ -41,14 +46,20 @@ void BackPropLayer::setPrevLayer(BackPropLayer* prevLayer)
 		_units[i].setNumInputs(nInputs);
 }
 
+BackPropLayer* BackPropLayer::getPrevLayer() const
+{
+	return _prevLayer;
+}
+
 std::vector<double> BackPropLayer::trainOnExample(const std::vector<double>& input, const std::vector<double>& target)
 {
 	if(_loggingOn)
 	{
-		std::cout << "Training layer " << _layerId << "..." << std::endl;
+		std::cout << "Training layer: " << std::endl; 
+		std::cout << toString() << std::endl;
+		if(_nextLayer != NULL)
+			std::cout << "Next layer: " << _nextLayer->toString() << std::endl;
 		std::cout << "Layer input: " << vectorToString(input) << std::endl;
-		if(_nextLayer == NULL)
-			std::cout << "This layer is the output layer" << std::endl;
 	}
 
 	// calculate net outputs
@@ -128,6 +139,11 @@ void BackPropLayer::predict(const std::vector<double>& input, std::vector<double
 void BackPropLayer::setLayerId(size_t layerId)
 {
 	_layerId = layerId;
+}
+
+size_t BackPropLayer::getLayerId() const
+{
+	return _layerId;
 }
 
 const BackPropUnit& BackPropLayer::operator[](size_t i) const

@@ -18,6 +18,11 @@ public:
 	BackProp(Rand& rand, bool loggingOn = false);
 
 	/**
+	 * Destructor
+     */
+	~BackProp();
+
+	/**
 	 * Override 
      */
 	virtual void train(Matrix& features, Matrix& labels);
@@ -31,7 +36,9 @@ public:
 
 private:
 	/**Layers of the MLP. The last layer is the output layer.*/
-	std::vector<BackPropLayer> _layers; 
+	BackPropLayer* _layers; 
+	/**The number of layers*/
+	size_t _nLayers;
 	/**Turns on logging or not*/
 	bool _loggingOn;
 

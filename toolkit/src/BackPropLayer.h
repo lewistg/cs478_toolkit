@@ -15,7 +15,7 @@ public:
 	/**
 	 * Default constructor
      */
-	//BackPropLayer(bool loggingOn);
+	BackPropLayer(bool loggingOn = false);
 
 	/**
 	 * Constructor for creating hidden and output layers
@@ -33,6 +33,16 @@ public:
 	 * Sets the next layer
      */
 	void setNextLayer(BackPropLayer* nextLayer);
+
+	/**
+	 * Gets the next layer
+     */
+	BackPropLayer* getNextLayer() const;
+    
+    /**
+     * Gets the previous layer
+     */
+	BackPropLayer* getPrevLayer() const;
 
 	/**
 	 * Destructor
@@ -54,6 +64,13 @@ public:
 	 * Sets the layer's number
      */
 	void setLayerId(size_t layerId);
+
+	/**
+	 * Gets the layer's id
+     * @param i
+     * @return 
+     */
+	size_t getLayerId() const;
 
 	/**
 	 * Getter for unit

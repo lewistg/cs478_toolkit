@@ -44,15 +44,29 @@ void BackProp::train(Matrix& features, Matrix& labels)
 	assert(_nLayers > 0);
 	assert(features.cols() == _layers[0].getNumUnits());
 
-	for(size_t i = 0; i < features.rows(); i++)
+	for(size_t epochs = 0; epochs < 3; epochs++)
 	{
-		if(_loggingOn)
+		for(size_t i = 0; i < features.rows(); i++)
 		{
-			std::cout << "Training example input vector: " << vectorToString(features.row(i)) << std::endl;
-			std::cout << "Target label: " << vectorToString(labels.row(i)) << std::endl;
+			if(_loggingOn)
+			{
+				std::cout << "Training example input vector: " << vectorToString(features.row(i)) << std::endl;
+				std::cout << "Target label: " << vectorToString(labels.row(i)) << std::endl;
+			}
+
+			_layers[0].trainOnExample(features.row(i), labels.row(i));
 		}
 
-		_layers[0].trainOnExample(features.row(i), labels.row(i));
+		if(_loggingOn)
+		{
+			std::cout << "Network after epoch: " << std::endl;
+			BackPropLayer* itr = &_layers[0];
+			while(itr != NULL)
+			{
+				std::cout << itr->toString() << std::endl;
+				itr = itr->getNextLayer();
+			}
+		}
 	}
 }
 

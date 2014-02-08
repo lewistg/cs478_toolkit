@@ -45,7 +45,7 @@ std::vector<double> BackPropLayer::trainOnExample(const std::vector<double>& inp
 {
 	if(_loggingOn)
 	{
-		std::cout << "Training layer id " << _layerId << "..." << std::endl;
+		std::cout << "Training layer " << _layerId << "..." << std::endl;
 		std::cout << "Layer input: " << vectorToString(input) << std::endl;
 		if(_nextLayer == NULL)
 			std::cout << "This layer is the output layer" << std::endl;
@@ -165,6 +165,8 @@ std::string BackPropLayer::toString()
 	ss << "(layer id =  " << _layerId << ", " << std::endl;
 	for(size_t i = 0; i < _units.size(); i++)
 		ss << "\t" << _units[i].toString() << std::endl;
+	ss << ", input layer = " << (_prevLayer == NULL ? "true" : "false");
+	ss << ", output layer = " << (_nextLayer == NULL ? "true" : "false");
 	ss << ")";
 
 	return ss.str();

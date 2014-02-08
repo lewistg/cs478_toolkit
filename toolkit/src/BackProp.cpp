@@ -27,7 +27,9 @@ void BackProp::train(Matrix& features, Matrix& labels)
 	{
 		std::cout << "Network created..." << std::endl;
 		for(size_t i = 0; i < _layers.size(); i++)
+		{
 			std::cout << _layers[i].toString() << std::endl;
+		}
 	}
 
 	assert(_layers.size() > 0);

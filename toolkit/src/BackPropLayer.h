@@ -15,13 +15,13 @@ public:
 	/**
 	 * Default constructor
      */
-	BackPropLayer(bool loggingOn);
+	//BackPropLayer(bool loggingOn);
 
 	/**
 	 * Constructor for creating hidden and output layers
 	 * @param nextLayer
      */
-	BackPropLayer(size_t nUnits, bool loggingOn);
+	BackPropLayer(size_t nUnits, size_t layerId, bool loggingOn = false);
 
 	/**
 	 * Sets the prey layer

@@ -1,12 +1,15 @@
 #include <cmath>
 #include <cassert>
+#include <iostream>
 #include "rand.h"
 #include "BackPropUnit.h"
+#include "data_utils.h"
 #include "rand.h"
 
-BackPropUnit::BackPropUnit():
+BackPropUnit::BackPropUnit(bool loggingOn):
 	_trainState(true),
-	_learningRate(0.1)
+	_learningRate(0.1),
+	_loggingOn(loggingOn)
 {
 
 }
@@ -30,9 +33,14 @@ void BackPropUnit::setNumInputs(size_t nInputs)
 
 double BackPropUnit::getOutput(const std::vector<double>& features) const
 {
+	if(_loggingOn)
+	{
+		std::cout << "Unit weights: " << vectorToString(_weights) << std::endl;
+	}
+
 	double sum = 0.0;
 	assert(features.size() == _weights.size() - 1);
-	for(size_t i = 0; i < features.size() - 1; i++)	
+	for(size_t i = 0; i < features.size(); i++)	
 		sum += _weights[i] * features[i];
 
 	sum += _weights[_weights.size() - 1];

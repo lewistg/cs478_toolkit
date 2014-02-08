@@ -23,6 +23,13 @@ void BackProp::train(Matrix& features, Matrix& labels)
 
 	setupTest(*this);
 
+	if(_loggingOn)
+	{
+		std::cout << "Network created..." << std::endl;
+		for(size_t i = 0; i < _layers.size(); i++)
+			std::cout << _layers[i].toString() << std::endl;
+	}
+
 	assert(_layers.size() > 0);
 	assert(features.cols() == _layers[0].getNumUnits());
 
@@ -52,11 +59,11 @@ void BackProp::createLayers(const std::vector<size_t>& layerConfig)
 	for(size_t i = 1; i < layerConfig.size(); i++)
 	{
 		assert(layerConfig[i] > 0);
-        _layers.push_back(BackPropLayer(layerConfig[i], _loggingOn));
 		size_t layerIndex = i - 1;
-		size_t inputLayerConfig = 0;
+        _layers.push_back(BackPropLayer(layerConfig[i], layerIndex, _loggingOn));
 		if(layerIndex == 0)
 		{
+			size_t inputLayerConfig = 0;
 			_layers[layerIndex].setNumInputs(layerConfig[inputLayerConfig]);
 		}
 		else
@@ -81,36 +88,30 @@ void setupTest(BackProp& backProp)
 	w.push_back(-0.1);
 	w.push_back(0.1);
 
-	BackPropUnit u = backProp._layers[0].getUnit(0);
-	u.setWeights(w);
+	backProp._layers[0].getUnit(0).setWeights(w);
 
 	w[0] = 0.3;
 	w[1] = -0.3;
 	w[2] = -0.2;
-	u = backProp._layers[0].getUnit(1);
-	u.setWeights(w);
+	backProp._layers[0].getUnit(1).setWeights(w);
 
 	w[0] = -0.2;
 	w[1] = -0.3;
 	w[2] = 0.1;
-	u = backProp._layers[1].getUnit(0);
-	u.setWeights(w);
+	backProp._layers[1].getUnit(0).setWeights(w);
 
 	w[0] = -0.1;
 	w[1] = 0.3;
 	w[2] = 0.2;
-	u = backProp._layers[1].getUnit(1);
-	u.setWeights(w);
+	backProp._layers[1].getUnit(1).setWeights(w);
 
 	w[0] = -0.1;
 	w[1] = 0.3;
 	w[2] = 0.2;
-	u = backProp._layers[2].getUnit(0);
-	u.setWeights(w);
+	backProp._layers[2].getUnit(0).setWeights(w);
 
 	w[0] = -0.2;
 	w[1] = -0.3;
 	w[2] = 0.1;
-	u = backProp._layers[2].getUnit(0);
-	u.setWeights(w);
+	backProp._layers[2].getUnit(1).setWeights(w);
 }

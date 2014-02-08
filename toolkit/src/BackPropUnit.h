@@ -15,7 +15,7 @@ public:
 	/**
 	 * Default constructor
      */
-	BackPropUnit();
+	BackPropUnit(bool loggingOn = false);
 
 	/**
 	 * Deconstructor
@@ -68,6 +68,8 @@ private:
 	std::vector<double> _weights;
 	/**Learning rate*/
 	double _learningRate;
+	/**Logging on or off*/
+	bool _loggingOn;
 };
 
 #endif

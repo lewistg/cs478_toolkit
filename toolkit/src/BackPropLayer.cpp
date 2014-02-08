@@ -3,7 +3,7 @@
 #include "BackPropLayer.h"
 #include "data_utils.h"
 
-BackPropLayer::BackPropLayer(bool loggingOn = false):
+/*BackPropLayer::BackPropLayer(bool loggingOn = false):
 	_units(), 
 	_prevLayer(NULL),
 	_nextLayer(NULL),
@@ -11,13 +11,13 @@ BackPropLayer::BackPropLayer(bool loggingOn = false):
 	_loggingOn(loggingOn)
 {
 
-}
+}*/
 
-BackPropLayer::BackPropLayer(size_t nUnits, bool loggingOn = false):
-	_units(nUnits),
+BackPropLayer::BackPropLayer(size_t nUnits, size_t layerId, bool loggingOn):
+	_units(nUnits, BackPropUnit(loggingOn)),
 	_prevLayer(NULL),
 	_nextLayer(NULL),
-	_layerId(0),
+	_layerId(layerId),
 	_loggingOn(loggingOn)
 {
 }
@@ -43,11 +43,24 @@ void BackPropLayer::setPrevLayer(BackPropLayer* prevLayer)
 
 std::vector<double> BackPropLayer::trainOnExample(const std::vector<double>& input, const std::vector<double>& target)
 {
+	if(_loggingOn)
+	{
+		std::cout << "Training layer id " << _layerId << "..." << std::endl;
+		std::cout << "Layer input: " << vectorToString(input) << std::endl;
+		if(_nextLayer == NULL)
+			std::cout << "This layer is the output layer" << std::endl;
+	}
+
 	// calculate net outputs
 	std::vector<double> layerOutputs;
 	for(size_t i  = 0; i < _units.size(); i++)
 	{
 		layerOutputs.push_back(_units[i].getOutput(input));
+	}
+
+	if(_loggingOn)
+	{
+		std::cout << "Layer outputs: " << vectorToString(layerOutputs) << std::endl;
 	}
 
 	std::vector<double> layerError;

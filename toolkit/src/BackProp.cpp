@@ -9,7 +9,7 @@ BackProp::BackProp(Rand& rand, bool loggingOn):_layers(NULL), _nLayers(0), _logg
 BackProp::~BackProp()
 {
 	if(_layers != NULL)
-		delete _layers;
+		delete [] _layers;
 	_layers = NULL;
 }
 
@@ -90,7 +90,30 @@ void BackProp::createLayers(const std::vector<size_t>& layerConfig)
 		{
 
 			_layers[layerIndex].setPrevLayer(&_layers[layerIndex - 1]);
+			if(_loggingOn)
+			{
+				std::cout << "Layer " << _layers[layerIndex].getLayerId() << 
+						"'s prev is now " << _layers[layerIndex].getPrevLayer()->toString() << std::endl;
+			}
+
 			_layers[layerIndex - 1].setNextLayer(&_layers[layerIndex]);
+			if(_loggingOn)
+			{
+				std::cout << layerIndex - 1 << std::endl;
+				std::cout << "Layer " << _layers[layerIndex-1].getLayerId() << "'s next layer is now " <<
+						_layers[layerIndex - 1].getNextLayer()->toString() << std::endl;	
+			}
+
+			if(_loggingOn)
+			{
+				std::cout << "Network so far..." << std::endl;
+				BackPropLayer* itr = &_layers[0];
+				while(itr != NULL)
+				{
+					std::cout << itr->toString() << std::endl;
+					itr = itr->getNextLayer();
+				}
+			}
 		}
 	}
 	assert(_layers[1].getNextLayer() != NULL);

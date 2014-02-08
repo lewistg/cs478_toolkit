@@ -3,6 +3,7 @@
 
 #include <cassert>
 #include <vector>
+#include <auto_ptr.h>
 #include "learner.h"
 #include "BackPropLayer.h"
 

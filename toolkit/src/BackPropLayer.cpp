@@ -28,6 +28,11 @@ BackPropLayer::~BackPropLayer()
 
 }
 
+void BackPropLayer::copyLayerUnits(const BackPropLayer& layerToCopy)
+{
+	_units = layerToCopy._units;
+}
+
 void BackPropLayer::setNextLayer(BackPropLayer* nextLayer)
 {
 	_nextLayer = nextLayer;

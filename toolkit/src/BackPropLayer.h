@@ -24,6 +24,12 @@ public:
 	BackPropLayer(Rand& rand, size_t nUnits, size_t layerId, bool loggingOn);
 
 	/**
+	 * Copies everything except the pointers
+     * @param prevLayer
+     */
+	void copyLayerUnits(const BackPropLayer& layerToCopy);
+
+	/**
 	 * Sets the prey layer
      * @param nextLayer
      */

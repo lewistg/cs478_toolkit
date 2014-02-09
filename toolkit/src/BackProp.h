@@ -49,7 +49,26 @@ private:
     /**
      * Creates the layers 
      */
-    void createLayers(const std::vector<size_t>& layerConfig);
+	void createLayers(const Matrix& features, Matrix& labels);
+
+    /**
+     * Calculates the accuracy of the given validation set
+     * with the current model.
+     * @param backProp
+     */
+    double measureAccuracy(Matrix& validationSet, Matrix& validationSetLabels);
+
+	/**
+	 * Copies the network layers
+     * @param backProp
+     */
+	void copyLayers(BackPropLayer*& layerCopy);
+
+	/**
+	 * Connects up the layers in a network
+     * @param backProp
+     */
+	void connectLayers(BackPropLayer layers[], size_t nLayers);
 };
 
 /**

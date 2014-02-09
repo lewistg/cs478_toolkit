@@ -1,4 +1,5 @@
 #include <vector>
+#include <cmath>
 #include "BackProp.h"
 #include "data_utils.h"
 
@@ -15,26 +16,7 @@ BackProp::~BackProp()
 
 void BackProp::train(Matrix& features, Matrix& labels)
 {
-	assert(labels.cols() == 1);
-	// create the layers
-    std::vector<size_t> layerConfig;
-	size_t nInputs = features.cols();
-    layerConfig.push_back(nInputs);
-
-	size_t firstLayer = nInputs;
-    layerConfig.push_back(firstLayer);
-
-	size_t hiddenLayer = firstLayer * 4;
-    layerConfig.push_back(hiddenLayer);
-
-	size_t outputUnits = 0;
-	for(size_t i = 0; i < labels.cols(); i++)
-		outputUnits += (labels.valueCount(i) > 0 ? labels.valueCount(i) : 1); 
-	layerConfig.push_back(outputUnits);
-
-	createLayers(layerConfig);
-
-	//setupTest(*this);
+	createLayers(features, labels);
 
 	if(_loggingOn)
 	{
@@ -47,15 +29,33 @@ void BackProp::train(Matrix& features, Matrix& labels)
 		}
 	}
 
-	assert(_nLayers > 0);
-	assert(features.cols() == _layers[0].getNumUnits());
+	/*double percentValidation = 0.25;
+	size_t validationSetSize = static_cast<size_t>(std::max(percentValidation * features.rows(), 1.0));
+	size_t testSetSize = features.rows() - validationSetSize;
+	assert(validationSetSize > 0 && validationSetSize < features.rows());*/
+
+	/*Matrix testSet;
+	Matrix testSetLabels;
+
+	//copyPart(Matrix& that, size_t rowBegin, size_t colBegin, size_t rowCount, size_t colCount)
+	features.copyPart(testSet, 0, 0, testSetSize, features.cols());
+	labels.copyPart(testSetLabels, 0, 0, testSetSize, labels.cols());
+
+	Matrix validationSet;
+	Matrix validationSetLabels;
+	features.copyPart(validationSet, testSetSize, 0, validationSetSize, features.cols());
+	labels.copyPart(validationSetLabels, testSetSize, 0, validationSetSize, labels.cols());*/
+
+	//double bestValidationAccuracy = 0.0;
+	//BackProp* bestLayers = NULL;
+	
 
 	for(size_t epochs = 0; epochs < 1000; epochs++)
 	{
 		features.shuffleRows(_rand, &labels);
 		for(size_t i = 0; i < features.rows(); i++)
 		{
-			std::vector<double> targetOutput(outputUnits, 0);
+			std::vector<double> targetOutput(labels.valueCount(0), 0);
 			size_t positiveLabelIndex = labels.row(i)[0];
 			targetOutput[positiveLabelIndex] = 1.0;
 
@@ -69,6 +69,12 @@ void BackProp::train(Matrix& features, Matrix& labels)
 			_layers[0].trainOnExample(features.row(i), targetOutput);
 		}
 
+		/*double validationAccuracy = measureAccuracy(validationSet, validationSetLabels);
+		if(validationAccuracy < bestValidationAccuracy)
+		{
+			
+		}*/
+
 		if(_loggingOn)
 		{
 			std::cout << "Network after epoch: " << std::endl;
@@ -80,6 +86,45 @@ void BackProp::train(Matrix& features, Matrix& labels)
 			}
 		}
 	}
+}
+
+void BackProp::copyLayers(BackPropLayer*& layerCopy)
+{
+	if(layerCopy != NULL)
+		delete [] layerCopy;
+	layerCopy = NULL;
+
+	assert(_nLayers > 0);
+	layerCopy = new BackPropLayer[_nLayers];
+	for(size_t i = 0; i < _nLayers; i++)
+		layerCopy[i].copyLayerUnits(_layers[i]);
+}
+
+void BackProp::connectLayers(BackPropLayer layers[], size_t nLayers)
+{
+	for(size_t i = 1; i < nLayers; i++)	
+	{
+		layers[i].setPrevLayer(&_layers[i - 1]);
+		layers[i - 1].setNextLayer(&_layers[i]);
+	}
+}
+
+double BackProp::measureAccuracy(Matrix& validationSet, Matrix& validationSetLabels)
+{
+	double nRight = 0;
+	double total = validationSet.rows();
+	std::vector<double> prediction;
+	for(size_t i = 0; i < validationSet.rows(); i++)
+	{
+		double actualLabel = validationSetLabels.row(i)[0];
+		predict(validationSet.row(i), prediction);
+
+		if(actualLabel == prediction[0])
+			nRight += 1;
+	}
+
+	double percentRight = nRight / total;
+	return percentRight;
 }
 
 void BackProp::predict(const std::vector<double>& features, std::vector<double>& labels)
@@ -115,8 +160,25 @@ void BackProp::predict(const std::vector<double>& features, std::vector<double>&
 	labels[0] = maxLabel;
 }
 
-void BackProp::createLayers(const std::vector<size_t>& layerConfig)
+void BackProp::createLayers(const Matrix& features, Matrix& labels)
 {
+	assert(labels.cols() == 1);
+	// create the layers
+    std::vector<size_t> layerConfig;
+	size_t nInputs = features.cols();
+    layerConfig.push_back(nInputs);
+
+	size_t firstLayer = nInputs;
+    layerConfig.push_back(firstLayer);
+
+	size_t hiddenLayer = firstLayer * 4;
+    layerConfig.push_back(hiddenLayer);
+
+	size_t outputUnits = 0;
+	for(size_t i = 0; i < labels.cols(); i++)
+		outputUnits += (labels.valueCount(i) > 0 ? labels.valueCount(i) : 1); 
+	layerConfig.push_back(outputUnits);
+
 	if(_loggingOn)
 		std::cout << "Creating network of layers..." << std::endl;
 
@@ -137,37 +199,12 @@ void BackProp::createLayers(const std::vector<size_t>& layerConfig)
 			size_t inputLayerConfig = 0;
 			_layers[layerIndex].setNumInputs(layerConfig[inputLayerConfig]);
 		}
-		else
-		{
-
-			_layers[layerIndex].setPrevLayer(&_layers[layerIndex - 1]);
-			/*if(_loggingOn)
-			{
-				std::cout << "Layer " << _layers[layerIndex].getLayerId() << 
-						"'s prev is now " << _layers[layerIndex].getPrevLayer()->toString() << std::endl;
-			}*/
-
-			_layers[layerIndex - 1].setNextLayer(&_layers[layerIndex]);
-			/*if(_loggingOn)
-			{
-				std::cout << layerIndex - 1 << std::endl;
-				std::cout << "Layer " << _layers[layerIndex-1].getLayerId() << "'s next layer is now " <<
-						_layers[layerIndex - 1].getNextLayer()->toString() << std::endl;	
-			}*/
-
-			/*if(_loggingOn)
-			{
-				std::cout << "Network so far..." << std::endl;
-				BackPropLayer* itr = &_layers[0];
-				while(itr != NULL)
-				{
-					std::cout << itr->toString() << std::endl;
-					itr = itr->getNextLayer();
-				}
-			}*/
-		}
 	}
-	assert(_layers[1].getNextLayer() != NULL);
+
+	connectLayers(_layers, _nLayers);
+
+	assert(_nLayers > 0);
+	assert(features.cols() == _layers[0].getNumUnits());
 
 }
 

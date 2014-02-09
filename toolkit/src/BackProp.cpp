@@ -29,22 +29,22 @@ void BackProp::train(Matrix& features, Matrix& labels)
 		}
 	}
 
-	/*double percentValidation = 0.25;
+	double percentValidation = 0.25;
 	size_t validationSetSize = static_cast<size_t>(std::max(percentValidation * features.rows(), 1.0));
 	size_t testSetSize = features.rows() - validationSetSize;
-	assert(validationSetSize > 0 && validationSetSize < features.rows());*/
+	assert(validationSetSize > 0 && validationSetSize < features.rows());
 
-	/*Matrix testSet;
+	Matrix testSet;
+	testSet.copyPart(features, 0, 0, testSetSize, features.cols());
+
 	Matrix testSetLabels;
-
-	//copyPart(Matrix& that, size_t rowBegin, size_t colBegin, size_t rowCount, size_t colCount)
-	features.copyPart(testSet, 0, 0, testSetSize, features.cols());
-	labels.copyPart(testSetLabels, 0, 0, testSetSize, labels.cols());
+	testSetLabels.copyPart(labels, 0, 0, testSetSize, labels.cols());
 
 	Matrix validationSet;
+	validationSet.copyPart(features, testSetSize, 0, validationSetSize, features.cols());
+
 	Matrix validationSetLabels;
-	features.copyPart(validationSet, testSetSize, 0, validationSetSize, features.cols());
-	labels.copyPart(validationSetLabels, testSetSize, 0, validationSetSize, labels.cols());*/
+	validationSetLabels.copyPart(labels, testSetSize, 0, validationSetSize, labels.cols());
 
 	//double bestValidationAccuracy = 0.0;
 	//BackProp* bestLayers = NULL;

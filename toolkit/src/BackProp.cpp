@@ -2,7 +2,7 @@
 #include "BackProp.h"
 #include "data_utils.h"
 
-BackProp::BackProp(Rand& rand, bool loggingOn):_layers(NULL), _nLayers(0), _loggingOn(loggingOn)
+BackProp::BackProp(Rand& rand, bool loggingOn):_layers(NULL), _nLayers(0), _loggingOn(loggingOn), _rand(rand)
 {
 }
 
@@ -15,11 +15,17 @@ BackProp::~BackProp()
 
 void BackProp::train(Matrix& features, Matrix& labels)
 {
+	assert(labels.cols() == 1);
 	// create the layers
     std::vector<size_t> layerConfig;
-    layerConfig.push_back(features.cols());
-    layerConfig.push_back(features.cols());
-    layerConfig.push_back(features.cols());
+	size_t nInputs = features.cols();
+    layerConfig.push_back(nInputs);
+
+	size_t firstLayer = nInputs;
+    layerConfig.push_back(firstLayer);
+
+	size_t hiddenLayer = firstLayer * 4;
+    layerConfig.push_back(hiddenLayer);
 
 	size_t outputUnits = 0;
 	for(size_t i = 0; i < labels.cols(); i++)
@@ -28,7 +34,7 @@ void BackProp::train(Matrix& features, Matrix& labels)
 
 	createLayers(layerConfig);
 
-	setupTest(*this);
+	//setupTest(*this);
 
 	if(_loggingOn)
 	{
@@ -44,17 +50,23 @@ void BackProp::train(Matrix& features, Matrix& labels)
 	assert(_nLayers > 0);
 	assert(features.cols() == _layers[0].getNumUnits());
 
-	for(size_t epochs = 0; epochs < 3; epochs++)
+	for(size_t epochs = 0; epochs < 1000; epochs++)
 	{
+		features.shuffleRows(_rand, &labels);
 		for(size_t i = 0; i < features.rows(); i++)
 		{
+			std::vector<double> targetOutput(outputUnits, 0);
+			size_t positiveLabelIndex = labels.row(i)[0];
+			targetOutput[positiveLabelIndex] = 1.0;
+
 			if(_loggingOn)
 			{
 				std::cout << "Training example input vector: " << vectorToString(features.row(i)) << std::endl;
 				std::cout << "Target label: " << vectorToString(labels.row(i)) << std::endl;
+				std::cout << "Target output: " << vectorToString(targetOutput) << std::endl;
 			}
 
-			_layers[0].trainOnExample(features.row(i), labels.row(i));
+			_layers[0].trainOnExample(features.row(i), targetOutput);
 		}
 
 		if(_loggingOn)
@@ -72,10 +84,35 @@ void BackProp::train(Matrix& features, Matrix& labels)
 
 void BackProp::predict(const std::vector<double>& features, std::vector<double>& labels)
 {
+	assert(labels.size() == 1);
 	assert(_nLayers > 0);
 	assert(features.size() == _layers[0].getNumUnits());
+
+	if(_loggingOn)
+	{
+		std::cout << "Input features: " << vectorToString(features) << std::endl;
+	}
+
 	std::vector<double> finalLayerOutput;
-	//_layers[0].predict(features, finalLayerOutput);
+	_layers[0].predict(features, finalLayerOutput);
+
+	if(_loggingOn)
+	{
+		std::cout << "Prediction: " << vectorToString(finalLayerOutput) << std::endl;
+	}
+
+	size_t maxLabel = 0;
+	double maxLabelOuput = -5.0;
+	for(size_t labelIndex = 0; labelIndex < finalLayerOutput.size(); labelIndex++)
+	{
+		if(finalLayerOutput[labelIndex] > maxLabelOuput)
+		{
+			maxLabel = labelIndex;
+			maxLabelOuput = finalLayerOutput[labelIndex];
+		}
+	}
+
+	labels[0] = maxLabel;
 }
 
 void BackProp::createLayers(const std::vector<size_t>& layerConfig)
@@ -94,7 +131,7 @@ void BackProp::createLayers(const std::vector<size_t>& layerConfig)
 	{
 		assert(layerConfig[i] > 0);
 		size_t layerIndex = i - 1;
-        _layers[layerIndex] = BackPropLayer(layerConfig[i], layerIndex, _loggingOn);
+        _layers[layerIndex] = BackPropLayer(_rand, layerConfig[i], layerIndex, _loggingOn);
 		if(layerIndex == 0)
 		{
 			size_t inputLayerConfig = 0;
@@ -104,21 +141,21 @@ void BackProp::createLayers(const std::vector<size_t>& layerConfig)
 		{
 
 			_layers[layerIndex].setPrevLayer(&_layers[layerIndex - 1]);
-			if(_loggingOn)
+			/*if(_loggingOn)
 			{
 				std::cout << "Layer " << _layers[layerIndex].getLayerId() << 
 						"'s prev is now " << _layers[layerIndex].getPrevLayer()->toString() << std::endl;
-			}
+			}*/
 
 			_layers[layerIndex - 1].setNextLayer(&_layers[layerIndex]);
-			if(_loggingOn)
+			/*if(_loggingOn)
 			{
 				std::cout << layerIndex - 1 << std::endl;
 				std::cout << "Layer " << _layers[layerIndex-1].getLayerId() << "'s next layer is now " <<
 						_layers[layerIndex - 1].getNextLayer()->toString() << std::endl;	
-			}
+			}*/
 
-			if(_loggingOn)
+			/*if(_loggingOn)
 			{
 				std::cout << "Network so far..." << std::endl;
 				BackPropLayer* itr = &_layers[0];
@@ -127,7 +164,7 @@ void BackProp::createLayers(const std::vector<size_t>& layerConfig)
 					std::cout << itr->toString() << std::endl;
 					itr = itr->getNextLayer();
 				}
-			}
+			}*/
 		}
 	}
 	assert(_layers[1].getNextLayer() != NULL);

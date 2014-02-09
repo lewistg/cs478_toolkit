@@ -21,7 +21,7 @@ public:
 	 * Constructor for creating hidden and output layers
 	 * @param nextLayer
      */
-	BackPropLayer(size_t nUnits, size_t layerId, bool loggingOn = false);
+	BackPropLayer(Rand& rand, size_t nUnits, size_t layerId, bool loggingOn);
 
 	/**
 	 * Sets the prey layer

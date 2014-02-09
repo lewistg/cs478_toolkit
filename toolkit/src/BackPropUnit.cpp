@@ -1,15 +1,15 @@
 #include <cmath>
 #include <cassert>
 #include <iostream>
-#include "rand.h"
+#include <ctime>
 #include "BackPropUnit.h"
 #include "data_utils.h"
-#include "rand.h"
 
-BackPropUnit::BackPropUnit(bool loggingOn):
+BackPropUnit::BackPropUnit(Rand& rand, bool loggingOn):
 	_trainState(true),
 	_learningRate(0.1),
-	_loggingOn(loggingOn)
+	_loggingOn(loggingOn),
+	_rand(&rand)
 {
 
 }
@@ -26,9 +26,8 @@ void BackPropUnit::setNumInputs(size_t nInputs)
 
 	int nBiasWeights = 1;
 	assert(nInputs > 0);
-	Rand r(56);
 	for(size_t i = 0; i < nInputs + nBiasWeights; i++)
-		_weights.push_back((r.normal() * 0.1) - 0.05);
+		_weights.push_back((_rand->normal() * 0.1) - 0.05);
 }	
 
 double BackPropUnit::getOutput(const std::vector<double>& features) const

@@ -6,6 +6,7 @@
 #include <string>
 #include <sstream>
 #include "perceptron_node.h"
+#include "rand.h"
 
 class BackPropLayer;
 
@@ -15,7 +16,7 @@ public:
 	/**
 	 * Default constructor
      */
-	BackPropUnit(bool loggingOn = false);
+	BackPropUnit(Rand& rand, bool loggingOn = false);
 
 	/**
 	 * Deconstructor
@@ -70,6 +71,8 @@ private:
 	double _learningRate;
 	/**Logging on or off*/
 	bool _loggingOn;
+	/**Random number generator*/
+	Rand* _rand;
 };
 
 #endif

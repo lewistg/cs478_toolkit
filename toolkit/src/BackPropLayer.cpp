@@ -2,6 +2,7 @@
 #include <iostream>
 #include "BackPropLayer.h"
 #include "data_utils.h"
+#include "rand.h"
 
 BackPropLayer::BackPropLayer(bool loggingOn):
 	_units(), 
@@ -13,8 +14,8 @@ BackPropLayer::BackPropLayer(bool loggingOn):
 
 }
 
-BackPropLayer::BackPropLayer(size_t nUnits, size_t layerId, bool loggingOn):
-	_units(nUnits, BackPropUnit(loggingOn)),
+BackPropLayer::BackPropLayer(Rand& rand, size_t nUnits, size_t layerId, bool loggingOn):
+	_units(nUnits, BackPropUnit(rand, loggingOn)),
 	_prevLayer(NULL),
 	_nextLayer(NULL),
 	_layerId(layerId),
@@ -133,6 +134,10 @@ void BackPropLayer::predict(const std::vector<double>& input, std::vector<double
 		labels.clear();
 		for(size_t j = 0; j < layerOutputs.size(); j++)
 			labels.push_back(layerOutputs[j]);
+	}
+	else
+	{
+		_nextLayer->predict(layerOutputs, labels);
 	}
 }
 

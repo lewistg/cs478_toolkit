@@ -59,6 +59,15 @@ private:
     double measureAccuracy(Matrix& validationSet, Matrix& validationSetLabels, bool showNetwork = false);
 
 	/**
+	 * Measures the mean squared error of validation set 
+     * @param src
+     * @param srcLen
+     * @param dest
+     * @param destLen
+     */
+    double measureMse(Matrix& validationSet, Matrix& validationSetLabels);
+
+	/**
 	 * Copies the network layers
      * @param backProp
      */
@@ -69,6 +78,12 @@ private:
      * @param backProp
      */
 	void connectLayers(BackPropLayer layers[], size_t nLayers);
+
+	/**
+	 * Gets the target network output based on the label
+     * @param backProp
+     */
+	std::vector<double> targetNetworkOutput(const std::vector<double>& label, size_t valueCount);
 };
 
 /**

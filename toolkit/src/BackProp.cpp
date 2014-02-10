@@ -31,7 +31,7 @@ void BackProp::train(Matrix& features, Matrix& labels)
 
 	features.shuffleRows(_rand, &labels);
 
-	double percentValidation = 0.5;
+	double percentValidation = 0.25;
 	size_t validationSetSize = static_cast<size_t>(std::max(percentValidation * features.rows(), 1.0));
 	size_t testSetSize = features.rows() - validationSetSize;
 	assert(validationSetSize > 0 && validationSetSize < features.rows());
@@ -54,15 +54,15 @@ void BackProp::train(Matrix& features, Matrix& labels)
 	size_t epochsWithSameBssf = 0;
 	
 
-	//for(size_t epochs = 0; epochs < 1000; epochs++)
 	while(true)
 	{
 		testSet.shuffleRows(_rand, &testSetLabels);
 		for(size_t i = 0; i < features.rows(); i++)
 		{
-			std::vector<double> targetOutput(labels.valueCount(0), 0);
+			std::vector<double> targetOutput = targetNetworkOutput(labels.row(i), labels.valueCount(0));
+			/*std::vector<double> targetOutput(labels.valueCount(0), 0);
 			size_t positiveLabelIndex = labels.row(i)[0];
-			targetOutput[positiveLabelIndex] = 1.0;
+			targetOutput[positiveLabelIndex] = 1.0;*/
 
 			if(_loggingOn)
 			{
@@ -74,66 +74,24 @@ void BackProp::train(Matrix& features, Matrix& labels)
 			_layers[0].trainOnExample(features.row(i), targetOutput);
 		}
 
-		double validationAccuracy = measureAccuracy(features, labels);
-		//double validationAccuracy = measureAccuracy(validationSet, validationSetLabels);
-		std::cout << "Validation set accuracy: " << validationAccuracy << std::endl;
-		std::cout << "Epochs without change: " << epochsWithSameBssf << std::endl;
+		double validationAccuracy = measureAccuracy(validationSet, validationSetLabels);
 		if(validationAccuracy > bestValidationAccuracy)
 		{
 			epochsWithSameBssf = 0;
-			//copyLayers(_layers, _nLayers, bestSolutionSoFar, bssfLen);
+			copyLayers(_layers, _nLayers, &bestSolutionSoFar, bssfLen);
 			bestValidationAccuracy = validationAccuracy; 
-			//assert(bestSolutionSoFar != NULL);
 		}
 		else
 		{
 			epochsWithSameBssf += 1;
 			if(epochsWithSameBssf > 100)
 			{
-				copyLayers(_layers, _nLayers, &bestSolutionSoFar, bssfLen);
-				//copyLayers(bestSolutionSoFar, bssfLen, &_layers, _nLayers);
-
-				std::cout << "Final network..." << std::endl;
-				BackPropLayer* itr = &_layers[0];
-				while(itr != NULL)
-				{
-					std::cout << itr->toString() << std::endl;
-					itr = itr->getNextLayer();
-				}
-
-				itr = &bestSolutionSoFar[0];
-				while(itr != NULL)
-				{
-					std::cout << itr->toString() << std::endl;
-					itr = itr->getNextLayer();
-				}
-
 				copyLayers(bestSolutionSoFar, bssfLen, &_layers, _nLayers);
-
-				std::cout << "After copying back network..." << std::endl;
-				itr = &_layers[0];
-				while(itr != NULL)
-				{
-					std::cout << itr->toString() << std::endl;
-					itr = itr->getNextLayer();
-				}
-
-				itr = &bestSolutionSoFar[0];
-				while(itr != NULL)
-				{
-					std::cout << itr->toString() << std::endl;
-					itr = itr->getNextLayer();
-				}
-
-
-				validationAccuracy = measureAccuracy(features, labels, true);
-				std::cout << "Final accuracy: " << validationAccuracy << std::endl;
-
 				break;
 			}
 		}
 
-		if(_loggingOn)
+		/*if(_loggingOn)
 		{
 			std::cout << "Network after epoch: " << std::endl;
 			BackPropLayer* itr = &_layers[0];
@@ -142,7 +100,7 @@ void BackProp::train(Matrix& features, Matrix& labels)
 				std::cout << itr->toString() << std::endl;
 				itr = itr->getNextLayer();
 			}
-		}
+		}*/
 	}
 }
 
@@ -168,23 +126,6 @@ void BackProp::copyLayers(const BackPropLayer src[], size_t srcLen, BackPropLaye
 
 	for(size_t i = 0; i < srcLen; i++)
 		(*dest)[i].copyLayerUnits(src[i]);
-
-	/*std::cout << "Source network... " << std::endl;
-	BackPropLayer* itr = &src[0];
-	while(itr != NULL)
-	{
-		std::cout << itr->toString() << std::endl;
-		itr = itr->getNextLayer();
-	}
-
-
-	std::cout << "Destination network..." << std::endl;
-	itr = &dest[0];
-	while(itr != NULL)
-	{
-		std::cout << itr->toString() << std::endl;
-		itr = itr->getNextLayer();
-	}*/
 }
 
 void BackProp::connectLayers(BackPropLayer layers[], size_t nLayers)
@@ -195,6 +136,17 @@ void BackProp::connectLayers(BackPropLayer layers[], size_t nLayers)
 		layers[i].matchInputsToPrevLayer();
 		layers[i - 1].setNextLayer(&_layers[i]);
 	}
+}
+
+std::vector<double> BackProp::targetNetworkOutput(const std::vector<double>& label, size_t valueCount)
+{
+	assert(label.size() == 1);
+
+	std::vector<double> targetOutput(valueCount, 0);
+	size_t positiveLabelIndex = label[0];
+	targetOutput[positiveLabelIndex] = 1.0;
+
+	return targetOutput;
 }
 
 double BackProp::measureAccuracy(Matrix& validationSet, Matrix& validationSetLabels, bool showNetwork)
@@ -226,20 +178,21 @@ double BackProp::measureAccuracy(Matrix& validationSet, Matrix& validationSetLab
 	return percentRight;
 }
 
+/*double BackProp::measureAccuracy(Matrix& validationSet, Matrix& validationSetLabels)
+{
+	for(size_t i = 0; i < validationSet.rows(); i++)
+    {
+		std::vector<double> finalLayerOutput;
+		_layers[0].predict(features, finalLayerOutput);
+    }
+}*/
+
 void BackProp::predict(const std::vector<double>& features, std::vector<double>& labels)
 {
 	assert(labels.size() == 1);
 	assert(_nLayers > 0);
 	assert(features.size() == _layers[0].getNumUnits());
 
-	/*std::cout << "Network for prediction... " << std::endl;
-	BackPropLayer* itr = &_layers[0];
-	while(itr != NULL)
-	{
-		std::cout << itr->toString() << std::endl;
-		itr = itr->getNextLayer();
-	}*/
-	  
 	if(_loggingOn)
 	{
 		std::cout << "Input features: " << vectorToString(features) << std::endl;
@@ -278,7 +231,7 @@ void BackProp::createLayers(const Matrix& features, Matrix& labels)
 	size_t firstLayer = nInputs;
     layerConfig.push_back(firstLayer);
 
-	size_t hiddenLayer = firstLayer * 4;
+	size_t hiddenLayer = firstLayer * 2;
     layerConfig.push_back(hiddenLayer);
 
 	size_t outputUnits = 0;

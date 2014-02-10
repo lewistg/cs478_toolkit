@@ -75,6 +75,8 @@ void BackProp::train(Matrix& features, Matrix& labels)
 		}
 
 		double validationAccuracy = measureAccuracy(validationSet, validationSetLabels);
+		double mse = measureMse(validationSet, validationSetLabels);
+		std::cout << "Mean squared error: " << mse << std::endl;
 		if(validationAccuracy > bestValidationAccuracy)
 		{
 			epochsWithSameBssf = 0;
@@ -178,14 +180,31 @@ double BackProp::measureAccuracy(Matrix& validationSet, Matrix& validationSetLab
 	return percentRight;
 }
 
-/*double BackProp::measureAccuracy(Matrix& validationSet, Matrix& validationSetLabels)
+double BackProp::measureMse(Matrix& validationSet, Matrix& validationSetLabels)
 {
+	assert(validationSetLabels.cols() == 1);
+
+	size_t valueCount = validationSetLabels.valueCount(0);
+	double sumSquaredError = 0.0;
+	double nErrors = 0.0;
 	for(size_t i = 0; i < validationSet.rows(); i++)
-    {
-		std::vector<double> finalLayerOutput;
-		_layers[0].predict(features, finalLayerOutput);
-    }
-}*/
+	{
+		std::vector<double> targetOutput = targetNetworkOutput(validationSetLabels.row(i), valueCount);
+		std::vector<double> actualOutput;
+		_layers[0].predict(validationSet.row(i), actualOutput);
+
+		assert(targetOutput.size() == actualOutput.size());
+		for(size_t j = 0; j < targetOutput.size(); j++)
+		{
+			double error = targetOutput[j] - actualOutput[j];
+			nErrors += 1;
+			sumSquaredError += error * error;
+		}
+	}
+
+	double meanSquaredError = sumSquaredError / nErrors;
+	return meanSquaredError;
+}
 
 void BackProp::predict(const std::vector<double>& features, std::vector<double>& labels)
 {

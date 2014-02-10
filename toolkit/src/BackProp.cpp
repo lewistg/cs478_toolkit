@@ -93,7 +93,7 @@ void BackProp::train(Matrix& features, Matrix& labels)
 				copyLayers(_layers, _nLayers, &bestSolutionSoFar, bssfLen);
 				//copyLayers(bestSolutionSoFar, bssfLen, &_layers, _nLayers);
 
-				/*std::cout << "Final network..." << std::endl;
+				std::cout << "Final network..." << std::endl;
 				BackPropLayer* itr = &_layers[0];
 				while(itr != NULL)
 				{
@@ -106,11 +106,11 @@ void BackProp::train(Matrix& features, Matrix& labels)
 				{
 					std::cout << itr->toString() << std::endl;
 					itr = itr->getNextLayer();
-				}*/
+				}
 
-				//copyLayers(bestSolutionSoFar, bssfLen, _layers, _nLayers);
+				copyLayers(bestSolutionSoFar, bssfLen, &_layers, _nLayers);
 
-				/*std::cout << "After copying back network..." << std::endl;
+				std::cout << "After copying back network..." << std::endl;
 				itr = &_layers[0];
 				while(itr != NULL)
 				{
@@ -123,7 +123,7 @@ void BackProp::train(Matrix& features, Matrix& labels)
 				{
 					std::cout << itr->toString() << std::endl;
 					itr = itr->getNextLayer();
-				}*/
+				}
 
 
 				validationAccuracy = measureAccuracy(features, labels, true);
@@ -160,11 +160,14 @@ void BackProp::copyLayers(const BackPropLayer src[], size_t srcLen, BackPropLaye
 	destLen = srcLen;
 	for(size_t i = 0; i < srcLen; i++)
 	{
-		(*dest)[i].copyLayerUnits(src[i]);
+		(*dest)[i].setNumUnits(src[i].getNumUnits());
 		(*dest)[i].setLayerId(i);
 	}
 
 	connectLayers(*dest, destLen);
+
+	for(size_t i = 0; i < srcLen; i++)
+		(*dest)[i].copyLayerUnits(src[i]);
 
 	/*std::cout << "Source network... " << std::endl;
 	BackPropLayer* itr = &src[0];
@@ -297,7 +300,7 @@ void BackProp::createLayers(const Matrix& features, Matrix& labels)
 	{
 		assert(layerConfig[i] > 0);
 		size_t layerIndex = i - 1;
-        _layers[layerIndex] = BackPropLayer(_rand, layerConfig[i], layerIndex, _loggingOn);
+        _layers[layerIndex] = BackPropLayer(&_rand, layerConfig[i], layerIndex, _loggingOn);
 		if(layerIndex == 0)
 		{
 			size_t inputLayerConfig = 0;

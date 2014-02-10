@@ -21,7 +21,7 @@ public:
 	 * Constructor for creating hidden and output layers
 	 * @param nextLayer
      */
-	BackPropLayer(Rand& rand, size_t nUnits, size_t layerId, bool loggingOn);
+	BackPropLayer(Rand* rand, size_t nUnits, size_t layerId, bool loggingOn);
 
 	/**
 	 * Copies everything except the pointers
@@ -112,6 +112,12 @@ public:
      */
     size_t getNumUnits() const;
 
+    /**
+     * Sets the number of unts in the layer
+     * @param nInputs
+     */
+    void setNumUnits(size_t nUnits);
+
 	/**
 	 * Sets the number of inputs 
      * @return 
@@ -134,6 +140,8 @@ private:
 	size_t _layerId;
 	/**Logging flag*/
 	bool _loggingOn;
+	/**Random number generator*/
+	Rand* _rand;
 
 	/**
 	 * Logging function for layer error during training

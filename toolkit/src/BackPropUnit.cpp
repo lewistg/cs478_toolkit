@@ -5,11 +5,11 @@
 #include "BackPropUnit.h"
 #include "data_utils.h"
 
-BackPropUnit::BackPropUnit(Rand& rand, bool loggingOn):
+BackPropUnit::BackPropUnit(Rand* rand, bool loggingOn):
 	_trainState(true),
 	_learningRate(0.1),
 	_loggingOn(loggingOn),
-	_rand(&rand)
+	_rand(rand)
 {
 
 }
@@ -74,6 +74,7 @@ void BackPropUnit::setWeights(const std::vector<double>& weights)
 
 void BackPropUnit::setRandomWeights()
 {
+	assert(_rand != NULL);
 	for(size_t i = 0; i < _weights.size(); i++)
 		_weights[i] = (_rand->normal() * 0.1) - 0.05;
 }

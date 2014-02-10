@@ -46,10 +46,20 @@ BackPropLayer* BackPropLayer::getNextLayer() const
 void BackPropLayer::setPrevLayer(BackPropLayer* prevLayer)
 {
 	_prevLayer = prevLayer;
+}
 
+void BackPropLayer::matchInputsToPrevLayer()
+{
+	assert(_prevLayer != NULL);
 	size_t nInputs = _prevLayer->getNumUnits();
 	for(size_t i = 0; i < _units.size(); i++)
 		_units[i].setNumInputs(nInputs);
+}
+
+void BackPropLayer::setRandomWeights()
+{
+	for(size_t i = 0; i < _units.size(); i++)
+		_units[i].setRandomWeights();
 }
 
 BackPropLayer* BackPropLayer::getPrevLayer() const

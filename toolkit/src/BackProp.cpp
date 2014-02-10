@@ -29,7 +29,9 @@ void BackProp::train(Matrix& features, Matrix& labels)
 		}
 	}
 
-	double percentValidation = 0.25;
+	features.shuffleRows(_rand, &labels);
+
+	double percentValidation = 0.5;
 	size_t validationSetSize = static_cast<size_t>(std::max(percentValidation * features.rows(), 1.0));
 	size_t testSetSize = features.rows() - validationSetSize;
 	assert(validationSetSize > 0 && validationSetSize < features.rows());
@@ -46,13 +48,16 @@ void BackProp::train(Matrix& features, Matrix& labels)
 	Matrix validationSetLabels;
 	validationSetLabels.copyPart(labels, testSetSize, 0, validationSetSize, labels.cols());
 
-	//double bestValidationAccuracy = 0.0;
-	//BackProp* bestLayers = NULL;
+	double bestValidationAccuracy = 0.0;
+	BackPropLayer* bestSolutionSoFar = NULL;
+	size_t bssfLen = 0;
+	size_t epochsWithSameBssf = 0;
 	
 
-	for(size_t epochs = 0; epochs < 1000; epochs++)
+	//for(size_t epochs = 0; epochs < 1000; epochs++)
+	while(true)
 	{
-		features.shuffleRows(_rand, &labels);
+		testSet.shuffleRows(_rand, &testSetLabels);
 		for(size_t i = 0; i < features.rows(); i++)
 		{
 			std::vector<double> targetOutput(labels.valueCount(0), 0);
@@ -69,11 +74,64 @@ void BackProp::train(Matrix& features, Matrix& labels)
 			_layers[0].trainOnExample(features.row(i), targetOutput);
 		}
 
-		/*double validationAccuracy = measureAccuracy(validationSet, validationSetLabels);
-		if(validationAccuracy < bestValidationAccuracy)
+		double validationAccuracy = measureAccuracy(features, labels);
+		//double validationAccuracy = measureAccuracy(validationSet, validationSetLabels);
+		std::cout << "Validation set accuracy: " << validationAccuracy << std::endl;
+		std::cout << "Epochs without change: " << epochsWithSameBssf << std::endl;
+		if(validationAccuracy > bestValidationAccuracy)
 		{
-			
-		}*/
+			epochsWithSameBssf = 0;
+			//copyLayers(_layers, _nLayers, bestSolutionSoFar, bssfLen);
+			bestValidationAccuracy = validationAccuracy; 
+			//assert(bestSolutionSoFar != NULL);
+		}
+		else
+		{
+			epochsWithSameBssf += 1;
+			if(epochsWithSameBssf > 100)
+			{
+				copyLayers(_layers, _nLayers, &bestSolutionSoFar, bssfLen);
+				//copyLayers(bestSolutionSoFar, bssfLen, &_layers, _nLayers);
+
+				/*std::cout << "Final network..." << std::endl;
+				BackPropLayer* itr = &_layers[0];
+				while(itr != NULL)
+				{
+					std::cout << itr->toString() << std::endl;
+					itr = itr->getNextLayer();
+				}
+
+				itr = &bestSolutionSoFar[0];
+				while(itr != NULL)
+				{
+					std::cout << itr->toString() << std::endl;
+					itr = itr->getNextLayer();
+				}*/
+
+				//copyLayers(bestSolutionSoFar, bssfLen, _layers, _nLayers);
+
+				/*std::cout << "After copying back network..." << std::endl;
+				itr = &_layers[0];
+				while(itr != NULL)
+				{
+					std::cout << itr->toString() << std::endl;
+					itr = itr->getNextLayer();
+				}
+
+				itr = &bestSolutionSoFar[0];
+				while(itr != NULL)
+				{
+					std::cout << itr->toString() << std::endl;
+					itr = itr->getNextLayer();
+				}*/
+
+
+				validationAccuracy = measureAccuracy(features, labels, true);
+				std::cout << "Final accuracy: " << validationAccuracy << std::endl;
+
+				break;
+			}
+		}
 
 		if(_loggingOn)
 		{
@@ -88,16 +146,42 @@ void BackProp::train(Matrix& features, Matrix& labels)
 	}
 }
 
-void BackProp::copyLayers(BackPropLayer*& layerCopy)
+void BackProp::copyLayers(const BackPropLayer src[], size_t srcLen, BackPropLayer** dest, size_t& destLen)
 {
-	if(layerCopy != NULL)
-		delete [] layerCopy;
-	layerCopy = NULL;
+	assert(src != NULL);
+	assert(srcLen > 0);
 
-	assert(_nLayers > 0);
-	layerCopy = new BackPropLayer[_nLayers];
-	for(size_t i = 0; i < _nLayers; i++)
-		layerCopy[i].copyLayerUnits(_layers[i]);
+	if(*dest != NULL)
+		delete [] *dest;
+	*dest = NULL;
+
+	assert(srcLen > 0);
+	*dest = new BackPropLayer[srcLen];
+	destLen = srcLen;
+	for(size_t i = 0; i < srcLen; i++)
+	{
+		(*dest)[i].copyLayerUnits(src[i]);
+		(*dest)[i].setLayerId(i);
+	}
+
+	connectLayers(*dest, destLen);
+
+	/*std::cout << "Source network... " << std::endl;
+	BackPropLayer* itr = &src[0];
+	while(itr != NULL)
+	{
+		std::cout << itr->toString() << std::endl;
+		itr = itr->getNextLayer();
+	}
+
+
+	std::cout << "Destination network..." << std::endl;
+	itr = &dest[0];
+	while(itr != NULL)
+	{
+		std::cout << itr->toString() << std::endl;
+		itr = itr->getNextLayer();
+	}*/
 }
 
 void BackProp::connectLayers(BackPropLayer layers[], size_t nLayers)
@@ -105,15 +189,27 @@ void BackProp::connectLayers(BackPropLayer layers[], size_t nLayers)
 	for(size_t i = 1; i < nLayers; i++)	
 	{
 		layers[i].setPrevLayer(&_layers[i - 1]);
+		layers[i].matchInputsToPrevLayer();
 		layers[i - 1].setNextLayer(&_layers[i]);
 	}
 }
 
-double BackProp::measureAccuracy(Matrix& validationSet, Matrix& validationSetLabels)
+double BackProp::measureAccuracy(Matrix& validationSet, Matrix& validationSetLabels, bool showNetwork)
 {
+	if(showNetwork)
+	{
+		std::cout << "Network... " << std::endl;
+		BackPropLayer* itr = &_layers[0];
+		while(itr != NULL)
+		{
+			std::cout << itr->toString() << std::endl;
+			itr = itr->getNextLayer();
+		}
+	}
+
 	double nRight = 0;
 	double total = validationSet.rows();
-	std::vector<double> prediction;
+	std::vector<double> prediction(1);
 	for(size_t i = 0; i < validationSet.rows(); i++)
 	{
 		double actualLabel = validationSetLabels.row(i)[0];
@@ -133,6 +229,14 @@ void BackProp::predict(const std::vector<double>& features, std::vector<double>&
 	assert(_nLayers > 0);
 	assert(features.size() == _layers[0].getNumUnits());
 
+	/*std::cout << "Network for prediction... " << std::endl;
+	BackPropLayer* itr = &_layers[0];
+	while(itr != NULL)
+	{
+		std::cout << itr->toString() << std::endl;
+		itr = itr->getNextLayer();
+	}*/
+	  
 	if(_loggingOn)
 	{
 		std::cout << "Input features: " << vectorToString(features) << std::endl;
@@ -202,6 +306,9 @@ void BackProp::createLayers(const Matrix& features, Matrix& labels)
 	}
 
 	connectLayers(_layers, _nLayers);
+
+	for(size_t i = 0; i < _nLayers; i++)
+		_layers[i].setRandomWeights();
 
 	assert(_nLayers > 0);
 	assert(features.cols() == _layers[0].getNumUnits());

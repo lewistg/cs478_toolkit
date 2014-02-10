@@ -36,6 +36,17 @@ public:
 	void setPrevLayer(BackPropLayer* prevLayer);
 
 	/**
+	 * Match inputs with outputs of previous layer
+     */
+	void matchInputsToPrevLayer();
+
+	/**
+	 * Sets the random weights
+     * @return 
+     */
+	void setRandomWeights();
+
+	/**
 	 * Sets the next layer
      */
 	void setNextLayer(BackPropLayer* nextLayer);

@@ -56,13 +56,13 @@ private:
      * with the current model.
      * @param backProp
      */
-    double measureAccuracy(Matrix& validationSet, Matrix& validationSetLabels);
+    double measureAccuracy(Matrix& validationSet, Matrix& validationSetLabels, bool showNetwork = false);
 
 	/**
 	 * Copies the network layers
      * @param backProp
      */
-	void copyLayers(BackPropLayer*& layerCopy);
+	void copyLayers(const BackPropLayer src[], size_t srcLen, BackPropLayer** dest, size_t& destLen);
 
 	/**
 	 * Connects up the layers in a network

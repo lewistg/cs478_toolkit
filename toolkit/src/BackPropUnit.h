@@ -58,6 +58,12 @@ public:
 	void setWeights(const std::vector<double>& weights);
 
 	/**
+	 * Sets the weights randomly
+     * @return 
+     */
+	void setRandomWeights();
+
+	/**
 	 * Gets string containing unit info
 	 */
 	std::string toString();

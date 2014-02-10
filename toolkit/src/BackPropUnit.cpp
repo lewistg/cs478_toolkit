@@ -27,7 +27,7 @@ void BackPropUnit::setNumInputs(size_t nInputs)
 	int nBiasWeights = 1;
 	assert(nInputs > 0);
 	for(size_t i = 0; i < nInputs + nBiasWeights; i++)
-		_weights.push_back((_rand->normal() * 0.1) - 0.05);
+		_weights.push_back(0.0);
 }	
 
 double BackPropUnit::getOutput(const std::vector<double>& features) const
@@ -70,6 +70,12 @@ void BackPropUnit::setWeights(const std::vector<double>& weights)
 {
 	assert(weights.size() == _weights.size());
 	_weights = weights;
+}
+
+void BackPropUnit::setRandomWeights()
+{
+	for(size_t i = 0; i < _weights.size(); i++)
+		_weights[i] = (_rand->normal() * 0.1) - 0.05;
 }
 
 std::string BackPropUnit::toString()

@@ -9,17 +9,22 @@ def plotAccAndMse():
 	assert(len(acc) == len(mse))
 	fig, accPlot = plt.subplots()
 	epochs = range(1, len(acc) + 1)
-	accPlot.plot(epochs, acc, "b-")
+	accPlot.plot(epochs, acc, "b-", label = "TS accuracy")
+	#accPlot.plot(epochs, acc, "g-")
 	accPlot.set_xlabel("epochs")
 	accPlot.set_ylabel("accuracy", color="b")
 	for tick in accPlot.get_yticklabels():
 		tick.set_color("b")
+	plt.legend(loc=0)
 
 	msePlot = accPlot.twinx()
-	msePlot.plot(epochs, mse, "r.")
+	msePlot.plot(epochs, mse, "r.", label = "MSE for TS")
 	msePlot.set_ylabel("mean squared error", color="r")
 	for tick in msePlot.get_yticklabels():
 		tick.set_color("r")
+
+	plt.legend(loc=0)
+
 	plt.show()
 	
 

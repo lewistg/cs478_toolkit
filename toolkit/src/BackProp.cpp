@@ -77,7 +77,7 @@ void BackProp::train(Matrix& features, Matrix& labels)
 		double validationAccuracy = measureAccuracy(validationSet, validationSetLabels);
 		double mse = measureMse(validationSet, validationSetLabels);
 		std::cout << "Validation set accuracy: " << validationAccuracy << std::endl;
-		std::cout << "Mean squared error: " << mse << std::endl;
+		std::cout << "Validation set mean squared error: " << mse << std::endl;
 		if(validationAccuracy > bestValidationAccuracy)
 		{
 			epochsWithSameBssf = 0;

@@ -40,6 +40,7 @@ CPP_FILES =\
 	BackProp.cpp\
 	BackPropLayer.cpp\
 	BackPropUnit.cpp\
+	BackPropLogger.cpp\
 
 ################
 # Lists

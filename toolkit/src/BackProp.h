@@ -7,6 +7,7 @@
 #include "learner.h"
 #include "BackPropLayer.h"
 #include "rand.h"
+#include "BackPropLogger.h"
 
 /**
  * Implements the Back Propogation algorithm
@@ -45,6 +46,8 @@ private:
 	bool _loggingOn;
 	/**Random num gnerator*/
 	Rand _rand;
+	/**Logger for experimental data*/
+	BackPropLogger _logger;
 
     /**
      * Creates the layers 

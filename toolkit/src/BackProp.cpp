@@ -74,15 +74,20 @@ void BackProp::train(Matrix& features, Matrix& labels)
 			_layers[0].trainOnExample(features.row(i), targetOutput);
 		}
 
-		double validationAccuracy = measureAccuracy(validationSet, validationSetLabels);
-		double mse = measureMse(validationSet, validationSetLabels);
-		std::cout << "Validation set accuracy: " << validationAccuracy << std::endl;
-		std::cout << "Validation set mean squared error: " << mse << std::endl;
-		if(validationAccuracy > bestValidationAccuracy)
+		double tsAcc = measureAccuracy(testSet, testSetLabels);
+		double tsMse = measureMse(testSet, testSetLabels);
+		double vsAcc = measureAccuracy(validationSet, validationSetLabels);
+		double vsMse = measureMse(validationSet, validationSetLabels);
+		EpochStats epochStats(tsAcc, tsMse, vsAcc, vsMse);
+		_logger.logStats(epochStats);
+
+		//std::cout << "Validation set accuracy: " << validationAccuracy << std::endl;
+		//std::cout << "Validation set mean squared error: " << mse << std::endl;
+		if(vsAcc > bestValidationAccuracy)
 		{
 			epochsWithSameBssf = 0;
 			copyLayers(_layers, _nLayers, &bestSolutionSoFar, bssfLen);
-			bestValidationAccuracy = validationAccuracy; 
+			bestValidationAccuracy = vsAcc; 
 		}
 		else
 		{

@@ -7,7 +7,7 @@
 
 BackPropUnit::BackPropUnit(Rand* rand, bool loggingOn):
 	_trainState(true),
-	_learningRate(0.1),
+	_learningRate(0.07),
 	_loggingOn(loggingOn),
 	_rand(rand)
 {

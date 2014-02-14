@@ -256,7 +256,8 @@ void BackProp::createLayers(const Matrix& features, Matrix& labels)
 	size_t firstLayer = nInputs;
     layerConfig.push_back(firstLayer);
 
-	size_t hiddenLayer = firstLayer * 2;
+	//size_t hiddenLayer = firstLayer * 2;
+	size_t hiddenLayer = 65536; 
     layerConfig.push_back(hiddenLayer);
 
 	size_t outputUnits = 0;

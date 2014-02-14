@@ -69,7 +69,7 @@ def plotAccAndMse(csvFileName):
 	plt.show()
 
 def calcData():
-	print "LR, TS ACC, TS MSE, VS ACC, VS MSE, EPOCHS"
+	print "Hidden Nodes #, TS ACC, TS MSE, VS ACC, VS MSE, EPOCHS"
 	minVsMse = 1000
 	minVsMseLr = 0
 	for powOfTwo in range(1,14): 
@@ -100,8 +100,8 @@ def calcData():
 	#print "Lr: " + str(minVsMseLr)
 
 def main():
-	#calcData()
-	plotAccAndMse("hidden.csv")
+	calcData()
+	#plotAccAndMse("hidden.csv")
 
 
 if __name__ == "__main__":

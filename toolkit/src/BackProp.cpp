@@ -250,6 +250,7 @@ void BackProp::predict(const std::vector<double>& features, std::vector<double>&
 double BackProp::measureTestSetAcc(Matrix& features, Matrix& labels, Matrix* pOutStats)
 {
 	double acc = measureAccuracy(features, labels, pOutStats);
+	double mse = measureMse(features, labels);
 	EpochStats stats(0.0, 0.0, 0.0, 0.0, acc);
 	_logger.logStats(stats);
 	return acc;

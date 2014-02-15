@@ -8,12 +8,13 @@
  */
 struct EpochStats
 {
-	EpochStats(double tsAcc, double tsMse, double vsAcc, double vsMse, double testSetAcc = 0):
+	EpochStats(double tsAcc, double tsMse, double vsAcc, double vsMse, double testSetAcc = 0, double testSetMse = 0):
 		_tsAcc(tsAcc),
 		_tsMse(tsMse),
 		_vsAcc(vsAcc),
 		_vsMse(vsMse),
-		_testSetAcc(testSetAcc)
+		_testSetAcc(testSetAcc),
+        _testSetMse(testSetMse)
 	{
 
 	}
@@ -23,6 +24,7 @@ struct EpochStats
 	double _vsAcc;
 	double _vsMse;
 	double _testSetAcc;
+    double _testSetMse;
 };
 
 class BackPropLogger

@@ -24,11 +24,14 @@ def plotAccAndMse(csvFileName):
 	vsAcc = vsAcc[1:]
 	vsMse = [row[4] for row in data]
 	vsMse = vsMse[1:]
+	testSetAcc = [row[5] for row in data]
+	testSetAcc = testSetAcc[1:]
 
 	assert(len(tsAcc) == len(tsMse))
 	fig, tsAccPlot = plt.subplots()
 	tsAccPlot.plot(learningRate, tsAcc, "b-", label = "Accuracy for TS")
 	tsAccPlot.plot(learningRate, vsAcc, "g-", label = "Accuracy for VS")
+	tsAccPlot.plot(learningRate, testSetAcc, "m-", label = "Accuracy for Test Set")
 	tsAccPlot.set_xlabel("Learning Rate", fontsize=18)
 	tsAccPlot.set_ylabel("Accuracy", fontsize=18, color="b")
 	for tick in tsAccPlot.get_yticklabels():
@@ -62,6 +65,7 @@ def calcData():
 		tsMse = 0.0
 		vsAcc = 0.0
 		vsMse = 0.0
+		testSetAcc = 0.0
 		for i in range(5):
 			data = parseCsvData(str(lr) + "_trial%d.txt" % i)
 
@@ -72,19 +76,20 @@ def calcData():
 			tsMse += data[bestRecord][1]
 			vsAcc += data[bestRecord][2]
 			vsMse += data[bestRecord][3]
+			testSetAcc += data[-1][4]
 
 		if minVsMse > (vsMse / 5.0):
 			minVsMse = (vsMse / 5.0)
 			minVsMseLr = lr
 
-		print str(lr) + ", " + str(tsAcc / 5.0) + ", " + str(tsMse / 5.0) + ", " + str(vsAcc / 5.0) + ", " + str(vsMse / 5.0)
+		print str(lr) + ", " + str(tsAcc / 5.0) + ", " + str(tsMse / 5.0) + ", " + str(vsAcc / 5.0) + ", " + str(vsMse / 5.0) + ", " + str(testSetAcc / 5.0)
 
 	print "Min vs mse: " + str(minVsMse)
 	print "Lr: " + str(minVsMseLr)
 
 def main():
-	calcData()
-	#plotAccAndMse("part_three.csv")
+	#calcData()
+	plotAccAndMse("part_three.csv")
 
 
 if __name__ == "__main__":

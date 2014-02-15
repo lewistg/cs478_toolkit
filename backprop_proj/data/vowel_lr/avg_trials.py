@@ -26,6 +26,8 @@ def plotAccAndMse(csvFileName):
 	vsMse = vsMse[1:]
 	testSetAcc = [row[5] for row in data]
 	testSetAcc = testSetAcc[1:]
+	testSetMse = [row[6] for row in data]
+	testSetMse = testSetMse[1:]
 
 	assert(len(tsAcc) == len(tsMse))
 	fig, tsAccPlot = plt.subplots()
@@ -44,6 +46,7 @@ def plotAccAndMse(csvFileName):
 	tsMsePlot = tsAccPlot.twinx()
 	tsMsePlot.plot(learningRate, tsMse, "r", linestyle="--", label = "MSE for TS")
 	tsMsePlot.plot(learningRate, vsMse, "m", linestyle="--", label = "MSE for VS")
+	tsMsePlot.plot(learningRate, testSetMse, color="#663300", linestyle="--", label = "MSE for Test Set")
 	yin, yax = plt.ylim()
 	plt.ylim(ymax = yax + .1)
 	tsMsePlot.set_ylabel("Mean Squared Error (MSE)", color="r", fontsize=18)
@@ -55,10 +58,10 @@ def plotAccAndMse(csvFileName):
 	plt.show()
 
 def calcData():
-	print "LR, TS ACC, TS MSE, VS ACC, VS MSE, Test Set Acc"
+	print "LR, TS ACC, TS MSE, VS ACC, VS MSE, Test Set Acc, Test Set Mse"
 	minVsMse = 1000
 	minVsMseLr = 0
-	for lr in range(2, 41):
+	for lr in range(2, 69):
 		if lr % 2 == 1:
 			continue
 		tsAcc = 0.0
@@ -66,6 +69,7 @@ def calcData():
 		vsAcc = 0.0
 		vsMse = 0.0
 		testSetAcc = 0.0
+		testSetMse = 0.0
 		for i in range(5):
 			data = parseCsvData(str(lr) + "_trial%d.txt" % i)
 
@@ -77,12 +81,14 @@ def calcData():
 			vsAcc += data[bestRecord][2]
 			vsMse += data[bestRecord][3]
 			testSetAcc += data[-1][4]
+			testSetMse += data[-1][5]
 
 		if minVsMse > (vsMse / 5.0):
 			minVsMse = (vsMse / 5.0)
 			minVsMseLr = lr
 
-		print str(lr) + ", " + str(tsAcc / 5.0) + ", " + str(tsMse / 5.0) + ", " + str(vsAcc / 5.0) + ", " + str(vsMse / 5.0) + ", " + str(testSetAcc / 5.0)
+		print str(lr) + ", " + str(tsAcc / 5.0) + ", " + str(tsMse / 5.0) + ", " + str(vsAcc / 5.0) + ", " + str(vsMse / 5.0) + ", " + str(testSetAcc / 5.0) + ", " + \
+			str(testSetMse / 5.0)
 
 	print "Min vs mse: " + str(minVsMse)
 	print "Lr: " + str(minVsMseLr)

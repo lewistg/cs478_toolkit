@@ -7,10 +7,10 @@
 
 BackPropUnit::BackPropUnit(Rand* rand, bool loggingOn):
 	_trainState(true),
-	_learningRate(0.40),
+	_learningRate(0.1),
 	_loggingOn(loggingOn),
 	_rand(rand),
-	_momentum(0.0)
+	_momentum(0.5)
 {
 
 }
@@ -91,7 +91,7 @@ void BackPropUnit::setRandomWeights()
 {
 	assert(_rand != NULL);
 	for(size_t i = 0; i < _weights.size(); i++)
-		_weights[i] = (_rand->normal() * 0.1) - 0.05;
+		_weights[i] = (_rand->normal() * 0.1);
 }
 
 std::string BackPropUnit::toString()

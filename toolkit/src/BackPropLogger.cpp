@@ -20,5 +20,7 @@ void BackPropLogger::logStats(const EpochStats& stats)
 	_logFile << stats._tsMse << ", ";
 	_logFile << stats._vsAcc << ", ";
 	_logFile << stats._vsMse << ", ";
-	_logFile << stats._testSetAcc << std::endl;
+	_logFile << stats._testSetAcc << ", " ;
+	_logFile << stats._testSetMse << std::endl;
+
 }

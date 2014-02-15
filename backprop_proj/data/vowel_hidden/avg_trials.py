@@ -27,12 +27,17 @@ def plotAccAndMse(csvFileName):
 	vsMse = vsMse[1:]
 	epochs = [row[5] for row in data]
 	epochs = epochs[1:]
+	testSetAcc = [row[6] for row in data]
+	testSetAcc = testSetAcc[1:]
+	testSetMse = [row[7] for row in data]
+	testSetMse = testSetMse[1:]
 
 	assert(len(tsAcc) == len(tsMse))
 	fig, tsAccPlot = plt.subplots()
 	fig.subplots_adjust(right=0.75)
 	tsAccPlot.plot(learningRate, tsAcc, "b-", linewidth = 2, label = "Accuracy for TS")
 	tsAccPlot.plot(learningRate, vsAcc, "g-", linewidth = 2, label = "Accuracy for VS")
+	tsAccPlot.plot(learningRate, testSetAcc, "m-", linewidth = 2, label = "Accuracy for Test Set")
 	tsAccPlot.set_xlabel("Number of Hidden Nodes", fontsize=18)
 	tsAccPlot.set_xscale("log", basex=2)
 	tsAccPlot.set_ylabel("Accuracy", fontsize=18, color="b")
@@ -40,11 +45,12 @@ def plotAccAndMse(csvFileName):
 		tick.set_color("b")
 	yin, yax = plt.ylim()
 	plt.ylim(ymax = yax + .2)
-	plt.title("Accuracy, MSE, and Training Time vs. Learning Rate", fontsize=18)
+	plt.title("Accuracy, MSE, and Training Time vs. Number Of Hidden Nodes", fontsize=18)
 
 	tsMsePlot = tsAccPlot.twinx()
-	tsMsePlot.plot(learningRate, tsMse, "r", linestyle="--", linewidth = 2, label = "MSE for TS")
-	tsMsePlot.plot(learningRate, vsMse, "m", linestyle="--", linewidth = 2, label = "MSE for VS")
+	tsMsePlot.plot(learningRate, tsMse, "b", linestyle="--", linewidth = 2, label = "MSE for TS")
+	tsMsePlot.plot(learningRate, vsMse, "g", linestyle="--", linewidth = 2, label = "MSE for VS")
+	tsMsePlot.plot(learningRate, testSetMse, "m", linestyle="--", linewidth = 2, label = "MSE for Test Set")
 	yin, yax = plt.ylim()
 	plt.ylim(ymax = yax + .1)
 	tsMsePlot.set_ylabel("Mean Squared Error (MSE)", color="r", fontsize=18)
@@ -62,46 +68,51 @@ def plotAccAndMse(csvFileName):
 	#plt.legend(loc=3)
 	print epochs
 
-	fig.legend((epochsPlot.lines[0], tsAccPlot.lines[0], tsAccPlot.lines[1], tsMsePlot.lines[0], tsMsePlot.lines[1]), 
-	(epochsPlot.lines[0].get_label(), tsAccPlot.lines[0].get_label(), tsAccPlot.lines[1].get_label(), tsMsePlot.lines[0].get_label(), tsMsePlot.lines[1].get_label()), 
+	fig.legend((epochsPlot.lines[0], tsAccPlot.lines[0], tsAccPlot.lines[1], tsAccPlot.lines[2], tsMsePlot.lines[0], tsMsePlot.lines[1], tsMsePlot.lines[2]), 
+	(epochsPlot.lines[0].get_label(), tsAccPlot.lines[0].get_label(), tsAccPlot.lines[1].get_label(), tsAccPlot.lines[2].get_label(), tsMsePlot.lines[0].get_label(), tsMsePlot.lines[1].get_label(), tsMsePlot.lines[2].get_label()), 
 	bbox_to_anchor=(-0.25, -0.1, 1, 1))
 
 	plt.show()
 
 def calcData():
-	print "Hidden Nodes #, TS ACC, TS MSE, VS ACC, VS MSE, EPOCHS"
+	print "Hidden Nodes #, TS ACC, TS MSE, VS ACC, VS MSE, EPOCHS, Test Set Acc, Test Set Mse"
 	minVsMse = 1000
 	minVsMseLr = 0
-	for powOfTwo in range(1,14): 
+	for powOfTwo in range(1,13): 
 		tsAcc = 0.0
 		tsMse = 0.0
 		vsAcc = 0.0
 		vsMse = 0.0
 		epochs = 0.0
+		testSetAcc = 0.0
+		testSetMse = 0.0
 		for i in range(5):
 			data = parseCsvData(str(2**powOfTwo) + "_trial%d.txt" % i)
 
 			# find the record for 100 before the end
 			data = np.array(data[1:], dtype=float)
-			bestRecord = len(data) - 102
+			bestRecord = len(data) - 103
 			tsAcc += data[bestRecord][0]
 			tsMse += data[bestRecord][1]
 			vsAcc += data[bestRecord][2]
 			vsMse += data[bestRecord][3]
-			epochs += len(data)
+			testSetAcc += data[-1][4]
+			testSetMse += data[-1][5]
+			epochs += len(data) - 1
 
 		#if minVsMse > (vsMse / 5.0):
 			#minVsMse = (vsMse / 5.0)
 			#minVsMseLr = lr
 
-		print str(2**powOfTwo) + ", " + str(tsAcc / 5.0) + ", " + str(tsMse / 5.0) + ", " + str(vsAcc / 5.0) + ", " + str(vsMse / 5.0) + ", " + str(epochs / 5.0)
+		print str(2**powOfTwo) + ", " + str(tsAcc / 5.0) + ", " + str(tsMse / 5.0) + ", " + str(vsAcc / 5.0) + ", " + str(vsMse / 5.0) + ", " + str(epochs / 5.0) + ", " + str(testSetAcc / 5.0) + ", " + \
+			str(testSetMse / 5.0)
 
 	#print "Min vs mse: " + str(minVsMse)
 	#print "Lr: " + str(minVsMseLr)
 
 def main():
-	calcData()
-	#plotAccAndMse("hidden.csv")
+	#calcData()
+	plotAccAndMse("hidden.csv")
 
 
 if __name__ == "__main__":

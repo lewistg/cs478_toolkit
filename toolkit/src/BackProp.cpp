@@ -251,7 +251,7 @@ double BackProp::measureTestSetAcc(Matrix& features, Matrix& labels, Matrix* pOu
 {
 	double acc = measureAccuracy(features, labels, pOutStats);
 	double mse = measureMse(features, labels);
-	EpochStats stats(0.0, 0.0, 0.0, 0.0, acc);
+	EpochStats stats(0.0, 0.0, 0.0, 0.0, acc, mse);
 	_logger.logStats(stats);
 	return acc;
 }
@@ -267,8 +267,9 @@ void BackProp::createLayers(const Matrix& features, Matrix& labels)
 	size_t firstLayer = nInputs;
     layerConfig.push_back(firstLayer);
 
-	size_t hiddenLayer = firstLayer * 2;
-	//size_t hiddenLayer = 16; 
+	//size_t hiddenLayer = firstLayer * 2;
+	//size_t hiddenLayer = 16384;
+	size_t hiddenLayer = 32;
     layerConfig.push_back(hiddenLayer);
 
 	size_t outputUnits = 0;

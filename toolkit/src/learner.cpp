@@ -85,6 +85,11 @@ double SupervisedLearner::measureAccuracy(Matrix& features, Matrix& labels, Matr
 	}
 }
 
+double SupervisedLearner::measureTestSetAcc(Matrix& features, Matrix& labels, Matrix* pOutStats)
+{
+	return measureAccuracy(features, labels, pOutStats);
+}
+
 double SupervisedLearner::crossValidate(size_t reps, size_t folds, Matrix& features, Matrix& labels, Rand& r, bool verbose)
 {
 	if(features.rows() != labels.rows())

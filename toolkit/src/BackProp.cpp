@@ -247,6 +247,14 @@ void BackProp::predict(const std::vector<double>& features, std::vector<double>&
 	labels[0] = maxLabel;
 }
 
+double BackProp::measureTestSetAcc(Matrix& features, Matrix& labels, Matrix* pOutStats)
+{
+	double acc = measureAccuracy(features, labels, pOutStats);
+	EpochStats stats(0.0, 0.0, 0.0, 0.0, acc);
+	_logger.logStats(stats);
+	return acc;
+}
+
 void BackProp::createLayers(const Matrix& features, Matrix& labels)
 {
 	assert(labels.cols() == 1);

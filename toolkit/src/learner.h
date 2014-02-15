@@ -34,6 +34,8 @@ public:
 	// Performs cross-validation. If verbose is true, it prints the accuracy to
 	// cout after each fold.
 	double crossValidate(size_t reps, size_t folds, Matrix& features, Matrix& labels, Rand& r, bool verbose = false);
+
+	virtual double measureTestSetAcc(Matrix& features, Matrix& labels, Matrix* pOutStats = NULL);
 };
 
 

@@ -193,7 +193,8 @@ void doit(ArgParser& parser)
 		// Test on the same dataset
 		Matrix stats;
 		double timeBeforeTesting = getTime();
-		double accuracy = learner->measureAccuracy(trainFeatures, trainLabels, &stats);
+		//double accuracy = learner->measureAccuracy(trainFeatures, trainLabels, &stats);
+		double accuracy = learner->measureTestSetAcc(trainFeatures, trainLabels, &stats);
 		double timeAfterTesting = getTime();
 
 		// Print results
@@ -243,7 +244,8 @@ void doit(ArgParser& parser)
 		testFeatures.copyPart(testSet, 0, 0, testSet.rows(), testSet.cols() - labelDims);
 		testLabels.copyPart(testSet, 0, testSet.cols() - labelDims, testSet.rows(), labelDims);
 		double timeBeforeTesting = getTime();
-		accuracy = learner->measureAccuracy(testFeatures, testLabels, &stats);
+		//accuracy = learner->measureAccuracy(testFeatures, testLabels, &stats);
+		accuracy = learner->measureTestSetAcc(testFeatures, testLabels, &stats);
 		double timeAfterTesting = getTime();
 
 		// Print results
@@ -293,7 +295,8 @@ void doit(ArgParser& parser)
 		testFeatures.copyPart(testSet, 0, 0, testSet.rows(), testSet.cols() - labelDims);
 		testLabels.copyPart(testSet, 0, testSet.cols() - labelDims, testSet.rows(), labelDims);
 		double timeBeforeTesting = getTime();
-		accuracy = learner->measureAccuracy(testFeatures, testLabels, &stats);
+		//accuracy = learner->measureAccuracy(testFeatures, testLabels, &stats);
+		accuracy = learner->measureTestSetAcc(testFeatures, testLabels, &stats);
 		double timeAfterTesting = getTime();
 
 		// Print results

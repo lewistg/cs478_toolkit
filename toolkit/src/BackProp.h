@@ -35,6 +35,11 @@ public:
 	 */
 	virtual void predict(const std::vector<double>& features, std::vector<double>& labels);
 
+	/**
+	 * Override
+	 */
+	virtual double measureTestSetAcc(Matrix& features, Matrix& labels, Matrix* pOutStats = NULL);
+
 	friend void setupTest(BackProp& backProp);
 
 private:

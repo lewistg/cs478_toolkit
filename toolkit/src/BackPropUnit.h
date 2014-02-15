@@ -48,7 +48,7 @@ public:
 	 * features
      * @pre These are the same weights passed into the train on example
 	 */
-	void updateWeights(double error, const std::vector<double>& inputs);
+	void updateWeights(double error, const std::vector<double>& inputs, long long iteration);
 
 	/**
 	 * Sets the weights
@@ -79,6 +79,10 @@ private:
 	bool _loggingOn;
 	/**Random number generator*/
 	Rand* _rand;
+    /**The previous weight deltas*/
+    std::vector<double> _prevWeightDelta;
+	/**Momentum coeff*/
+	double _momentum;
 };
 
 #endif

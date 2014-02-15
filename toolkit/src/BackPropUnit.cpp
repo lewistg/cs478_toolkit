@@ -7,9 +7,10 @@
 
 BackPropUnit::BackPropUnit(Rand* rand, bool loggingOn):
 	_trainState(true),
-	_learningRate(0.07),
+	_learningRate(0.15),
 	_loggingOn(loggingOn),
-	_rand(rand)
+	_rand(rand),
+	_momentum(0.1)
 {
 
 }
@@ -27,7 +28,10 @@ void BackPropUnit::setNumInputs(size_t nInputs)
 	int nBiasWeights = 1;
 	assert(nInputs > 0);
 	for(size_t i = 0; i < nInputs + nBiasWeights; i++)
+    {
 		_weights.push_back(0.0);
+        _prevWeightDelta.push_back(0.0);
+    }
 }	
 
 double BackPropUnit::getOutput(const std::vector<double>& features) const
@@ -53,17 +57,28 @@ double BackPropUnit::getWeight(size_t i ) const
 	return _weights[i];
 }
 
-void BackPropUnit::updateWeights(double error, const std::vector<double>& inputs)
+void BackPropUnit::updateWeights(double error, const std::vector<double>& inputs, long long iteration)
 {
+	assert(iteration >= 0);
 	assert(inputs.size() == _weights.size() - 1);
+	assert(inputs.size() == _prevWeightDelta.size() - 1);
+
 	for(size_t i = 0; i < inputs.size(); i++)
 	{
 		double weightDelta = _learningRate * error * inputs[i];
+		if(iteration > 0)
+			weightDelta += (_prevWeightDelta[i] * _momentum);
+
+		_prevWeightDelta[i] = weightDelta;
 		_weights[i] += weightDelta;
 	}
 
 	double threshHoldWeightDelta = _learningRate * error;
+	if(iteration > 0)
+		threshHoldWeightDelta += _prevWeightDelta[_weights.size() - 1] 	* _momentum;
+
 	_weights[_weights.size() - 1] += threshHoldWeightDelta;
+	_prevWeightDelta[_weights.size() - 1]  = threshHoldWeightDelta;	
 }
 
 void BackPropUnit::setWeights(const std::vector<double>& weights)

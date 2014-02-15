@@ -70,7 +70,7 @@ public:
 	 * Trains on an example
 	 * @return The error for each unit
      */
-	std::vector<double> trainOnExample(const std::vector<double>& input, const std::vector<double>& target);
+	std::vector<double> trainOnExample(const std::vector<double>& input, const std::vector<double>& target, long long iteration);
 
 	/**
 	 * Predicts 

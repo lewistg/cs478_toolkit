@@ -54,6 +54,7 @@ void BackProp::train(Matrix& features, Matrix& labels)
 	size_t epochsWithSameBssf = 0;
 	
 
+	long long iteration = 0;
 	while(true)
 	{
 		testSet.shuffleRows(_rand, &testSetLabels);
@@ -71,8 +72,9 @@ void BackProp::train(Matrix& features, Matrix& labels)
 				std::cout << "Target output: " << vectorToString(targetOutput) << std::endl;
 			}
 
-			_layers[0].trainOnExample(features.row(i), targetOutput);
+			_layers[0].trainOnExample(features.row(i), targetOutput, iteration);
 		}
+		iteration++;
 
 		double tsAcc = measureAccuracy(testSet, testSetLabels);
 		double tsMse = measureMse(testSet, testSetLabels);
@@ -257,7 +259,7 @@ void BackProp::createLayers(const Matrix& features, Matrix& labels)
     layerConfig.push_back(firstLayer);
 
 	//size_t hiddenLayer = firstLayer * 2;
-	size_t hiddenLayer = 65536; 
+	size_t hiddenLayer = 16; 
     layerConfig.push_back(hiddenLayer);
 
 	size_t outputUnits = 0;

@@ -69,7 +69,7 @@ BackPropLayer* BackPropLayer::getPrevLayer() const
 	return _prevLayer;
 }
 
-std::vector<double> BackPropLayer::trainOnExample(const std::vector<double>& input, const std::vector<double>& target)
+std::vector<double> BackPropLayer::trainOnExample(const std::vector<double>& input, const std::vector<double>& target, long long iteration)
 {
 	if(_loggingOn)
 	{
@@ -95,7 +95,7 @@ std::vector<double> BackPropLayer::trainOnExample(const std::vector<double>& inp
 	if(isInternalLayer)
 	{
 		// pass it onto the next layer
-		std::vector<double> nextLayerError = _nextLayer->trainOnExample(layerOutputs, target);
+		std::vector<double> nextLayerError = _nextLayer->trainOnExample(layerOutputs, target, iteration);
 
 		// calculate this layer's error
 		for(size_t i  = 0; i < _units.size(); i++)
@@ -108,7 +108,7 @@ std::vector<double> BackPropLayer::trainOnExample(const std::vector<double>& inp
 			double error = layerOutputs[i] * (1 - layerOutputs[i]) * errorCausedByUnit;
 			layerError.push_back(error);
 
-			_units[i].updateWeights(error, input);
+			_units[i].updateWeights(error, input, iteration);
 		}
 
 		if(_loggingOn)
@@ -126,7 +126,7 @@ std::vector<double> BackPropLayer::trainOnExample(const std::vector<double>& inp
 		{
 			double error = layerOutputs[i] * (1 - layerOutputs[i]) * (target[i] - layerOutputs[i]);
 			layerError.push_back(error);
-			_units[i].updateWeights(error, input);
+			_units[i].updateWeights(error, input, iteration);
 		}
 
 	}

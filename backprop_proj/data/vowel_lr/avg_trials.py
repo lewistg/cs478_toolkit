@@ -52,21 +52,22 @@ def plotAccAndMse(csvFileName):
 	plt.show()
 
 def calcData():
-	print "LR, TS ACC, TS MSE, VS ACC, VS MSE"
+	print "LR, TS ACC, TS MSE, VS ACC, VS MSE, Test Set Acc"
 	minVsMse = 1000
 	minVsMseLr = 0
-	for lr in ["0.01", "0.02", "0.03", "0.04", "0.05", "0.06", "0.07", "0.08", "0.09", "0.1", "0.11", "0.12", "0.13", "0.14", "0.15", "0.16", "0.17", "0.18", "0.19", "0.2",\
-		"0.21", "0.22", "0.23", "0.24", "0.25", "0.26", "0.27", "0.28", "0.29", "0.3", "0.35", "0.4", "0.45", "0.5", "0.55", "0.6", "0.65", "0.7"]:
+	for lr in range(2, 41):
+		if lr % 2 == 1:
+			continue
 		tsAcc = 0.0
 		tsMse = 0.0
 		vsAcc = 0.0
 		vsMse = 0.0
 		for i in range(5):
-			data = parseCsvData(lr + "_trial%d.txt" % i)
+			data = parseCsvData(str(lr) + "_trial%d.txt" % i)
 
 			# find the record for 100 before the end
 			data = np.array(data[1:], dtype=float)
-			bestRecord = len(data) - 102
+			bestRecord = len(data) - 103 
 			tsAcc += data[bestRecord][0]
 			tsMse += data[bestRecord][1]
 			vsAcc += data[bestRecord][2]
@@ -76,7 +77,7 @@ def calcData():
 			minVsMse = (vsMse / 5.0)
 			minVsMseLr = lr
 
-		print lr + ", " + str(tsAcc / 5.0) + ", " + str(tsMse / 5.0) + ", " + str(vsAcc / 5.0) + ", " + str(vsMse / 5.0)
+		print str(lr) + ", " + str(tsAcc / 5.0) + ", " + str(tsMse / 5.0) + ", " + str(vsAcc / 5.0) + ", " + str(vsMse / 5.0)
 
 	print "Min vs mse: " + str(minVsMse)
 	print "Lr: " + str(minVsMseLr)

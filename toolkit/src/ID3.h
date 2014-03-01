@@ -1,7 +1,6 @@
 #ifndef _ID3_H_
 #define _ID3_H_
 
-#include <map>
 #include "learner.h"
 
 class ID3: public SupervisedLearner

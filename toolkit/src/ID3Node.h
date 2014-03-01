@@ -1,6 +1,10 @@
 #ifndef _ID3NODE_H_
 #define _ID3NODE_H_
 
+#include <map>
+#include <vector>
+#include "matrix.h"
+
 /**
  * A node in the decision tree 
  * @return 
@@ -33,7 +37,12 @@ private:
 	 * Calculates information gain by splitting on the given
 	 * attribute.
      */
-	double infoGain(size_t attrIndex);
+	double infoGain(Matrix& features, Matrix& labels, size_t attrIndex);
+
+	/**
+	 * Calculates the information in the current set of features
+	 */
+	double info(Matrix& labels);
 };
 
 #endif

@@ -41,6 +41,9 @@ class ArgParser
 	bool nominal_to_cat;
 	bool discretize;
 	unsigned int seed;
+	double learningRate;
+	long hiddenNodes;
+	double momentum;
 
 public:
 	//You may need to add more options for specific learning models
@@ -53,6 +56,9 @@ public:
 		normalize = false;
 		nominal_to_cat = false;
 		discretize = false;
+		learningRate = 0.1;
+		hiddenNodes = 2;
+		momentum = 0.0;
 		for ( int i = 1; i < argc; i++ )
 		{
 			if ( strcmp ( argv[i], "-A" ) == 0 )
@@ -84,6 +90,12 @@ public:
 				discretize = true;
 			else if ( strcmp ( argv[i], "-R" ) == 0 )
 				seed = atoi ( argv[++i] );
+			else if(strcmp(argv[i], "-LR") == 0)
+				learningRate = atof ( argv[++i] );
+			else if(strcmp(argv[i],"-HN") == 0)
+				hiddenNodes = atoi(argv[++i]);
+			else if(strcmp(argv[i],"-MO") == 0)
+				momentum = atof(argv[++i]);
 			else
 				ThrowError ( "Invalid paramater: ", argv[i] );
 		}
@@ -109,6 +121,9 @@ public:
 	bool getNominalToCat() { return nominal_to_cat; }
 	bool getDiscretize() { return discretize; }
 	unsigned int getSeed() { return seed; }
+	double getLearningRate(){return learningRate;}
+	long getHiddenNodes(){return hiddenNodes;}
+	double getMomentum(){return momentum;}
 };
 
 // Returns the number of seconds since some fixed point in the past, with at least millisecond precision
@@ -126,14 +141,14 @@ double getTime()
 #endif
 }
 
-SupervisedLearner* getLearner(string model, Rand& r)
+SupervisedLearner* getLearner(string model, Rand& r, ArgParser& parser)
 {
 	if (model.compare("baseline") == 0)
 		return new BaselineLearner(r);
 	else if(model.compare("perceptron") == 0)
 		return new Perceptron(r);
 	else if(model.compare("backprop") == 0)
-		return new BackProp(r, false);
+		return new BackProp(r, parser.getLearningRate(), parser.getMomentum(), parser.getHiddenNodes(), false);
 	else if (model.compare("neuralnet") == 0)
 		ThrowError("Sorry, ", model, " is not yet implemented");
 	else if (model.compare("decisiontree") == 0)
@@ -152,7 +167,7 @@ void doit(ArgParser& parser)
 	// Load the model
 	Rand r ( parser.getSeed() );
 	string model = parser.getLearner();
-	SupervisedLearner* learner = getLearner ( model, r );
+	SupervisedLearner* learner = getLearner ( model, r, parser);
 
 	// Wrap the learner with the specified filters
 	if ( parser.getNominalToCat() )

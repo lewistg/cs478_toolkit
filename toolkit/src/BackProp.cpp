@@ -3,7 +3,14 @@
 #include "BackProp.h"
 #include "data_utils.h"
 
-BackProp::BackProp(Rand& rand, bool loggingOn):_layers(NULL), _nLayers(0), _loggingOn(loggingOn), _rand(rand)
+BackProp::BackProp(Rand& rand, double learningRate, double momentum, long hidden, bool loggingOn):
+	_layers(NULL), 
+	_nLayers(0), 
+	_learningRate(learningRate),
+	_momentum(momentum),
+	_nHidden(hidden),
+	_rand(rand),
+	_loggingOn(loggingOn)
 {
 }
 
@@ -269,7 +276,7 @@ void BackProp::createLayers(const Matrix& features, Matrix& labels)
 
 	//size_t hiddenLayer = firstLayer * 2;
 	//size_t hiddenLayer = 16384;
-	size_t hiddenLayer = 32;
+	size_t hiddenLayer = _nHidden;
     layerConfig.push_back(hiddenLayer);
 
 	size_t outputUnits = 0;
@@ -291,7 +298,7 @@ void BackProp::createLayers(const Matrix& features, Matrix& labels)
 	{
 		assert(layerConfig[i] > 0);
 		size_t layerIndex = i - 1;
-        _layers[layerIndex] = BackPropLayer(&_rand, layerConfig[i], layerIndex, _loggingOn);
+        _layers[layerIndex] = BackPropLayer(&_rand, layerConfig[i], layerIndex, _learningRate, _momentum, _loggingOn);
 		if(layerIndex == 0)
 		{
 			size_t inputLayerConfig = 0;

@@ -10,17 +10,21 @@ BackPropLayer::BackPropLayer(bool loggingOn):
 	_nextLayer(NULL),
 	_layerId(0),
 	_loggingOn(loggingOn),
+	_learningRate(0.1),
+	_momentum(0.0),
 	_rand(NULL)
 {
 
 }
 
-BackPropLayer::BackPropLayer(Rand* rand, size_t nUnits, size_t layerId, bool loggingOn):
-	_units(nUnits, BackPropUnit(rand, loggingOn)),
+BackPropLayer::BackPropLayer(Rand* rand, size_t nUnits, size_t layerId, double learningRate, double momentum, bool loggingOn):
+	_units(nUnits, BackPropUnit(rand, learningRate, momentum, loggingOn)),
 	_prevLayer(NULL),
 	_nextLayer(NULL),
 	_layerId(layerId),
 	_loggingOn(loggingOn),
+	_learningRate(learningRate),
+	_momentum(momentum),
 	_rand(rand)
 {
 }
@@ -194,7 +198,7 @@ size_t BackPropLayer::getNumUnits() const
 void BackPropLayer::setNumUnits(size_t nUnits)
 {
     assert(nUnits > 0);
-    _units = std::vector<BackPropUnit>(nUnits, BackPropUnit(_rand, _loggingOn));
+    _units = std::vector<BackPropUnit>(nUnits, BackPropUnit(_rand, _learningRate, _momentum, _loggingOn));
 }
 
 void BackPropLayer::setNumInputs(size_t nInputs) 

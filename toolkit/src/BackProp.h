@@ -18,7 +18,7 @@ public:
 	/**
 	 * Constructor
 	 */
-	BackProp(Rand& rand, bool loggingOn = false);
+	BackProp(Rand& rand, double learningRate, double momentum, long hidden, bool loggingOn = false);
 
 	/**
 	 * Destructor
@@ -47,10 +47,16 @@ private:
 	BackPropLayer* _layers; 
 	/**The number of layers*/
 	size_t _nLayers;
-	/**Turns on logging or not*/
-	bool _loggingOn;
+	/**Learning rate*/
+	double _learningRate;
+	/**The momentum*/
+	double _momentum;
+	/**The number of hidden nodes*/
+	long _nHidden;
 	/**Random num gnerator*/
 	Rand _rand;
+	/**Turns on logging or not*/
+	bool _loggingOn;
 	/**Logger for experimental data*/
 	BackPropLogger _logger;
 

@@ -5,12 +5,12 @@
 #include "BackPropUnit.h"
 #include "data_utils.h"
 
-BackPropUnit::BackPropUnit(Rand* rand, bool loggingOn):
+BackPropUnit::BackPropUnit(Rand* rand, double learningRate, double momentum, bool loggingOn):
 	_trainState(true),
-	_learningRate(0.1),
+	_learningRate(learningRate),
 	_loggingOn(loggingOn),
 	_rand(rand),
-	_momentum(0.5)
+	_momentum(momentum)
 {
 
 }
@@ -63,6 +63,8 @@ void BackPropUnit::updateWeights(double error, const std::vector<double>& inputs
 	assert(inputs.size() == _weights.size() - 1);
 	assert(inputs.size() == _prevWeightDelta.size() - 1);
 
+    //std::cout << "Unit learning rate: " << _learningRate << std::endl;
+    //std::cout << "Momentum: " << _momentum << std::endl;
 	for(size_t i = 0; i < inputs.size(); i++)
 	{
 		double weightDelta = _learningRate * error * inputs[i];

@@ -40,6 +40,7 @@ def plotAccAndMse(csvFileName):
 	tsAccPlot.plot(learningRate, testSetAcc, "m-", linewidth = 2, label = "Accuracy for Test Set")
 	tsAccPlot.set_xlabel("Number of Hidden Nodes", fontsize=18)
 	tsAccPlot.set_xscale("log", basex=2)
+	tsAccPlot.tick_params(axis="x", labelsize=18)
 	tsAccPlot.set_ylabel("Accuracy", fontsize=18, color="b")
 	for tick in tsAccPlot.get_yticklabels():
 		tick.set_color("b")

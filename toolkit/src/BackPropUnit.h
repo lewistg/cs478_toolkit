@@ -16,7 +16,7 @@ public:
 	/**
 	 * Default constructor
      */
-	BackPropUnit(Rand* rand, bool loggingOn = false);
+	BackPropUnit(Rand* rand, double learningRate, double momentum, bool loggingOn = false);
 
 	/**
 	 * Deconstructor

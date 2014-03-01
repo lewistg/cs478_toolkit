@@ -21,7 +21,8 @@ public:
 	 * Constructor for creating hidden and output layers
 	 * @param nextLayer
      */
-	BackPropLayer(Rand* rand, size_t nUnits, size_t layerId, bool loggingOn);
+
+	BackPropLayer(Rand* rand, size_t nUnits, size_t layerId, double learningRate, double momentum, bool loggingOn);
 
 	/**
 	 * Copies everything except the pointers
@@ -140,6 +141,10 @@ private:
 	size_t _layerId;
 	/**Logging flag*/
 	bool _loggingOn;
+	/**Learning rate*/
+	double _learningRate;
+	/**Momentum*/
+	double _momentum;
 	/**Random number generator*/
 	Rand* _rand;
 

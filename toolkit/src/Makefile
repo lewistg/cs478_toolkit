@@ -41,6 +41,8 @@ CPP_FILES =\
 	BackPropLayer.cpp\
 	BackPropUnit.cpp\
 	BackPropLogger.cpp\
+	ID3.cpp\
+	ID3Node.cpp
 
 ################
 # Lists

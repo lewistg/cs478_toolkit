@@ -14,7 +14,7 @@ void ID3Node::setLabelToAssign(double labelToAssign)
 	_labelToAssign = labelToAssign;
 }
 
-void ID3Node::induceTree(Matrix& features, Matrix& labels)
+void ID3Node::induceTree(Matrix& features, Matrix& labels, size_t level)
 {
 	assert(labels.cols() == 1);
 	assert(labels.rows() > 0);
@@ -36,20 +36,22 @@ void ID3Node::induceTree(Matrix& features, Matrix& labels)
 	}
 
 	double infoS = info(labels);
-	_log.logNodeEntropy(infoS);
+	_log.logNodeEntropy(infoS, level);
 
 	// find the feature that gives the greatest information gain
 	size_t bestAttr = 0;
 	double maxInfoGain = 0.0;
 	for(size_t i = 0; i < features.cols(); i++)
 	{
-		double gain = infoGain(features, labels, i, infoS);
+		double gain = infoGain(features, labels, i, infoS, level);
 		if(gain > maxInfoGain)
 		{
 			maxInfoGain = gain;
 			bestAttr = i;
 		}
 	}
+
+	_targetAttr = bestAttr;
 
 	// split and induce the child trees
 	std::vector<Matrix> featureMatBucket;
@@ -62,7 +64,7 @@ void ID3Node::induceTree(Matrix& features, Matrix& labels)
 		if(featureMatBucket.size() == 0)
 			_attrToNode[i].setLabelToAssign(labels.mostCommonValue(0));
 		else
-			_attrToNode[i].induceTree(featureMatBucket[i], labelMatBucket[i]);
+			_attrToNode[i].induceTree(featureMatBucket[i], labelMatBucket[i], level + 1);
 	}
 }
 
@@ -74,7 +76,7 @@ double ID3Node::classify(const std::vector<double>& features)
 		return _attrToNode[features[_targetAttr]].classify(features);
 }
 
-double ID3Node::infoGain(Matrix& features, Matrix& labels, size_t attrIndex, double infoS)
+double ID3Node::infoGain(Matrix& features, Matrix& labels, size_t attrIndex, double infoS, size_t level)
 {
 	assert(attrIndex < features.cols());
 	assert(labels.cols() == 1);
@@ -101,7 +103,7 @@ double ID3Node::infoGain(Matrix& features, Matrix& labels, size_t attrIndex, dou
 	}
 
 	double infoGain = infoS - infoAfterSplit;
-	_log.logSplitInfoGain(attrIndex, infoGain);
+	_log.logSplitInfoGain(attrIndex, infoGain, level);
 	return infoGain; 
 }
 

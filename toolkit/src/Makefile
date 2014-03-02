@@ -43,7 +43,8 @@ CPP_FILES =\
 	BackPropLogger.cpp\
 	ID3.cpp\
 	ID3Node.cpp\
-	ID3Logger.cpp
+	ID3Logger.cpp\
+	ID3TreePlotter.cpp\
 
 ################
 # Lists

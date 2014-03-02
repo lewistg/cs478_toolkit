@@ -19,12 +19,12 @@ public:
 	/**
 	 * Logs a node's entropy calculation
 	 */
-	void logNodeEntropy(double entropy);
+	void logNodeEntropy(double entropy, size_t level);
 
 	/**
 	 * Logs information gain of splitting on the given attribute
 	 */
-	void logSplitInfoGain(size_t attrSplitOn, double infoGain);
+	void logSplitInfoGain(size_t attrSplitOn, double infoGain, size_t level);
 
 private:
     /**The output log file*/

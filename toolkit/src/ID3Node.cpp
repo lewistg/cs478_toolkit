@@ -2,7 +2,7 @@
 #include <cmath>
 #include "ID3Node.h"
 
-ID3Node::ID3Node():_targetAttr(0), _labelToAssign(0.0)
+ID3Node::ID3Node():_targetAttr(-1), _labelToAssign(0.0)
 {
 
 }
@@ -29,7 +29,7 @@ void ID3Node::induceTree(Matrix& features, Matrix& labels)
 	}
 	if(allHomog)
 	{
-		_targetAttr = labels[0][0];
+		_labelToAssign = labels[0][0];
 		return;
 	}
 
@@ -63,7 +63,10 @@ void ID3Node::induceTree(Matrix& features, Matrix& labels)
 
 double ID3Node::classify(const std::vector<double>& features)
 {
-	return 0;
+	if(_targetAttr == -1)
+		return _labelToAssign;
+	else
+		return _attrToNode[features[_targetAttr]].classify(features);
 }
 
 double ID3Node::infoGain(Matrix& features, Matrix& labels, size_t attrIndex)

@@ -80,7 +80,7 @@ double ID3Node::infoGain(Matrix& features, Matrix& labels, size_t attrIndex)
 	for(size_t i = 0; i < features.rows(); i++)
 	{
 		double intPart = 0;
-		assert(modf(labels.row(i)[attrIndex], &intPart) == 0.0);
+		assert(modf(features.row(i)[attrIndex], &intPart) == 0.0);
 
 		long attrValue = static_cast<long>(features[i][attrIndex]);
 		attrValueBucket[attrValue].push_back(labels.row(i)[0]);

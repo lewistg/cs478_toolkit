@@ -5,6 +5,7 @@
 #include <vector>
 #include <utility>
 #include "matrix.h"
+#include "ID3Logger.h"
 
 /**
  * A node in the decision tree 
@@ -37,6 +38,9 @@ public:
 	void setLabelToAssign(double labelToAssign);
 
 private:
+	/**The log*/
+	static ID3Logger _log;
+
 	/**The index of the feature that this node splits on or if
 	 * this node is a leaf the label that it assigns to features that reach it*/
 	long _targetAttr;
@@ -51,7 +55,7 @@ private:
 	 * Calculates information gain by splitting on the given
 	 * attribute.
      */
-	double infoGain(Matrix& features, Matrix& labels, size_t attrIndex);
+	double infoGain(Matrix& features, Matrix& labels, size_t attrIndex, double infoS);
 
 	/**
 	 * Calculates the information in the current set of features

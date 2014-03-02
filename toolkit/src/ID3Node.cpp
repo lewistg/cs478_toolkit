@@ -2,6 +2,8 @@
 #include <cmath>
 #include "ID3Node.h"
 
+ID3Logger ID3Node::_log;
+
 ID3Node::ID3Node():_targetAttr(-1), _labelToAssign(0.0)
 {
 
@@ -33,12 +35,15 @@ void ID3Node::induceTree(Matrix& features, Matrix& labels)
 		return;
 	}
 
+	double infoS = info(labels);
+	_log.logNodeEntropy(infoS);
+
 	// find the feature that gives the greatest information gain
 	size_t bestAttr = 0;
 	double maxInfoGain = 0.0;
 	for(size_t i = 0; i < features.cols(); i++)
 	{
-		double gain = infoGain(features, labels, i);
+		double gain = infoGain(features, labels, i, infoS);
 		if(gain > maxInfoGain)
 		{
 			maxInfoGain = gain;
@@ -69,12 +74,10 @@ double ID3Node::classify(const std::vector<double>& features)
 		return _attrToNode[features[_targetAttr]].classify(features);
 }
 
-double ID3Node::infoGain(Matrix& features, Matrix& labels, size_t attrIndex)
+double ID3Node::infoGain(Matrix& features, Matrix& labels, size_t attrIndex, double infoS)
 {
 	assert(attrIndex < features.cols());
 	assert(labels.cols() == 1);
-
-	double infoS = info(labels);
 
 	std::map<long, std::vector<long> > attrValueBucket;
 	for(size_t i = 0; i < features.rows(); i++)
@@ -97,7 +100,9 @@ double ID3Node::infoGain(Matrix& features, Matrix& labels, size_t attrIndex)
 		infoAfterSplit += (nLabelsInBucket / total) * bucketEntropy;
 	}
 
-	return infoS - infoAfterSplit;
+	double infoGain = infoS - infoAfterSplit;
+	_log.logSplitInfoGain(attrIndex, infoGain);
+	return infoGain; 
 }
 
 double ID3Node::info(std::vector<long> labels)
@@ -116,7 +121,7 @@ double ID3Node::info(std::vector<long> labels)
 	double total = labels.size();
 	double entropy = 0.0;
 	for(std::map<long, double>::iterator itr = labelToCount.begin(); itr != labelToCount.end(); itr++)
-		entropy = (itr->second / total) * log2(itr->second / total);
+		entropy += (itr->second / total) * log2(itr->second / total);
 
 	return -entropy;
 }

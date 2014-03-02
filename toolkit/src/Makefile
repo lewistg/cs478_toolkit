@@ -42,7 +42,8 @@ CPP_FILES =\
 	BackPropUnit.cpp\
 	BackPropLogger.cpp\
 	ID3.cpp\
-	ID3Node.cpp
+	ID3Node.cpp\
+	ID3Logger.cpp
 
 ################
 # Lists

@@ -49,7 +49,7 @@ public:
 	Matrix() {}
 
 	// Copies the meta-data from that, but not the data
-	Matrix(Matrix& that);
+	Matrix(const Matrix& that);
 
 	// Destructor
 	~Matrix() {}

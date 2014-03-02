@@ -13,7 +13,7 @@ using std::ifstream;
 using std::map;
 using std::vector;
 
-Matrix::Matrix(Matrix& that)
+Matrix::Matrix(const Matrix& that)
 {
 	m_attr_name = that.m_attr_name;
 	m_str_to_enum = that.m_str_to_enum;

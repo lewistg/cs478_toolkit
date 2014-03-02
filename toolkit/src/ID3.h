@@ -2,6 +2,7 @@
 #define _ID3_H_
 
 #include "learner.h"
+#include "ID3Node.h"
 
 class ID3: public SupervisedLearner
 {
@@ -28,6 +29,7 @@ public:
 
 private:
 	/**The root node*/
+	ID3Node _root;
 };
 
 #endif

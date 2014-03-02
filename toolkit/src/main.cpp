@@ -10,6 +10,7 @@
 #include "filter.h"
 #include "perceptron.h"
 #include "BackProp.h"
+#include "ID3.h"
 #include <iostream>
 #include <fstream>
 #include <map>
@@ -149,6 +150,8 @@ SupervisedLearner* getLearner(string model, Rand& r, ArgParser& parser)
 		return new Perceptron(r);
 	else if(model.compare("backprop") == 0)
 		return new BackProp(r, parser.getLearningRate(), parser.getMomentum(), parser.getHiddenNodes(), false);
+	else if(model.compare("dtree") == 0)
+		return new ID3();
 	else if (model.compare("neuralnet") == 0)
 		ThrowError("Sorry, ", model, " is not yet implemented");
 	else if (model.compare("decisiontree") == 0)

@@ -12,12 +12,17 @@ void ID3TreePlot::plotTree(const ID3Node& root)
     treePlot << "labels = {}" << std::endl;
 
 	std::map<size_t, std::string> nodeAnnot;
-	explore(root, treePlot, nodeAnnot);
+    std::map<std::string, std::string> edgeAnnot;
+	explore(root, treePlot, nodeAnnot, edgeAnnot);
 
 	treePlot << "pos=nx.graphviz_layout(G,prog='dot')" << std::endl;
 	treePlot << "nx.draw(G, pos, arrows = False, with_labels=False)" << std::endl;
 	treePlot << "for key in pos:" << std::endl;
     treePlot << "\tpos[key] = (pos[key][0] + 10, pos[key][1] + 5)" << std::endl;
+
+    treePlot << "edgeLabels = {}" << std::endl;
+	for(std::map<std::string, std::string>::iterator itr = edgeAnnot.begin(); itr != edgeAnnot.end(); itr++)
+		treePlot << "edgeLabels[" << itr->first << "] = " << itr->second << std::endl;
 
 	for(std::map<size_t, std::string>::iterator itr = nodeAnnot.begin(); itr != nodeAnnot.end(); itr++)
 	{
@@ -27,6 +32,7 @@ void ID3TreePlot::plotTree(const ID3Node& root)
 	}
 
 	treePlot << "nx.draw_networkx_labels(G,pos,labels)" << std::endl;
+    treePlot << "nx.draw_networkx_edge_labels(G,pos=pos, edge_labels=edgeLabels)" << std::endl;
 	treePlot << "plt.show()" << std::endl;
 }
 
@@ -45,7 +51,10 @@ namespace
 	}	
 }
 
-void ID3TreePlot::explore(const ID3Node& node, std::ofstream& treePlot, std::map<size_t, std::string>& nodeAnnot)
+//void ID3TreePlot::explore(const ID3Node& node, std::ofstream& treePlot, std::map<size_t, std::string>& nodeAnnot)
+
+void ID3TreePlot::explore(const ID3Node& node, std::ofstream& treePlot, std::map<size_t, 
+		std::string>& nodeAnnot, std::map<std::string, std::string>& edgeAnnot)
 {
 	static size_t nodeCounter = 0;
 	nodeCounter += 1;
@@ -53,20 +62,15 @@ void ID3TreePlot::explore(const ID3Node& node, std::ofstream& treePlot, std::map
 	int nodeId = nodeCounter;
 	treePlot << "G.add_node(" << nodeId << ")" << std::endl;
 	nodeAnnot[nodeId] = getNodeLabel(node, nodeId);
-	/*if(node.getTargetAttr() != -1)
-	{
-		treePlot << "labels[" << nodeId << "] = \" splits on:" 
-				<< node.getTargetAttr() << "-" << node.getTargetAttrName() << "\"" << std::endl;
-	}
-	else
-	{
-		treePlot << "labels[" << nodeId << "] = \"" 
-				<< "assigns: " << node.getLabelToAssign() << "-" << node.getLabelToAssignName() << "\"" << std::endl;
-	}*/
-
+	
+    std::stringstream ss;
 	for(size_t i = 0; i < node.getNumChildNodes(); i++)	
 	{
+        ss << "(" << nodeId << ", " << nodeCounter + 1 << ")";
+        edgeAnnot[ss.str()] = "\"a\"";
+        ss.str("");
+
 		treePlot << "G.add_edge(" << nodeId << ", " << nodeCounter + 1 << ")" << std::endl;
-		explore(node.getChildNode(i), treePlot, nodeAnnot);
+		explore(node.getChildNode(i), treePlot, nodeAnnot, edgeAnnot);
 	}
 }

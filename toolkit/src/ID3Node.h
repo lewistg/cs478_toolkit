@@ -90,6 +90,9 @@ private:
 	/**The label to assign name*/
 	std::string _labelToAssignName;
 
+	/**The entropy during training*/
+	double _trainingEntropy;
+
 	/**
 	 * Calculates information gain by splitting on the given
 	 * attribute.

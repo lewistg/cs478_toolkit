@@ -87,6 +87,14 @@ void ID3Node::induceTree(Matrix& features, Matrix& labels, size_t level)
 		}
 	}
 
+	bool noInfoGain = maxInfoGain < 0.000001;
+	if(noInfoGain)
+	{
+		_labelToAssign = labels.mostCommonValue(0);
+		_labelToAssignName = labels.attrValue(0, _labelToAssign);
+		return;
+	}
+
 	_targetAttr = bestAttr;
 	_targetAttrName = features.attrName(_targetAttr);
 

@@ -14,6 +14,36 @@ void ID3Node::setLabelToAssign(double labelToAssign)
 	_labelToAssign = labelToAssign;
 }
 
+long ID3Node::getTargetAttr() const
+{
+	return _targetAttr; 
+}
+
+std::string ID3Node::getTargetAttrName() const
+{
+	return _targetAttrName;
+}
+
+long ID3Node::getLabelToAssign() const
+{
+	return _labelToAssign;
+}
+
+std::string ID3Node::getLabelToAssignName() const
+{
+	return _labelToAssignName;
+}
+
+size_t ID3Node::getNumChildNodes() const
+{
+	return _attrToNode.size();
+}
+
+const ID3Node& ID3Node::getChildNode(size_t i) const
+{
+	return _attrToNode[i];
+}
+
 void ID3Node::induceTree(Matrix& features, Matrix& labels, size_t level)
 {
 	assert(labels.cols() == 1);
@@ -32,6 +62,7 @@ void ID3Node::induceTree(Matrix& features, Matrix& labels, size_t level)
 	if(allHomog)
 	{
 		_labelToAssign = labels[0][0];
+		_labelToAssignName = labels.attrValue(0, labels[0][0]);
 		return;
 	}
 
@@ -52,6 +83,7 @@ void ID3Node::induceTree(Matrix& features, Matrix& labels, size_t level)
 	}
 
 	_targetAttr = bestAttr;
+	_targetAttrName = features.attrName(_targetAttr);
 
 	// split and induce the child trees
 	std::vector<Matrix> featureMatBucket;

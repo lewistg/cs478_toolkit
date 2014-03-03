@@ -50,6 +50,11 @@ public:
 	std::string getTargetAttrName() const;
 
 	/**
+	 * Target attribute value
+     */
+	std::string getTargetAttrValue(size_t i) const;
+
+	/**
 	 * Gets the label to assign (if there is one).
 	 * If this node does not assign a label, -1 is returned
 	 */
@@ -83,6 +88,9 @@ private:
 
 	/**Map from an attribute value to a child node*/
 	std::vector<ID3Node> _attrToNode; 
+
+	/**Map from an attribute value to an attribute value name*/
+	std::vector<std::string> _attrToValueName;
 
 	/**The label to assign if this a leaf node*/
 	double _labelToAssign;

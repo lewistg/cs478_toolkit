@@ -24,6 +24,11 @@ std::string ID3Node::getTargetAttrName() const
 	return _targetAttrName;
 }
 
+std::string ID3Node::getTargetAttrValue(size_t i) const
+{
+	return _attrToValueName[i];
+}
+
 long ID3Node::getLabelToAssign() const
 {
 	return _labelToAssign;
@@ -91,8 +96,11 @@ void ID3Node::induceTree(Matrix& features, Matrix& labels, size_t level)
 	split(features, labels, featureMatBucket, labelMatBucket, bestAttr);
 
 	_attrToNode.resize(featureMatBucket.size());
+	_attrToValueName.resize(featureMatBucket.size());
+
 	for(size_t i = 0; i < featureMatBucket.size(); i++)
 	{
+		_attrToValueName[i] = features.attrValue(_targetAttr, i);
 		if(featureMatBucket.size() == 0)
 			_attrToNode[i].setLabelToAssign(labels.mostCommonValue(0));
 		else

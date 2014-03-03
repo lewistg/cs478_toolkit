@@ -67,7 +67,10 @@ void ID3TreePlot::explore(const ID3Node& node, std::ofstream& treePlot, std::map
 	for(size_t i = 0; i < node.getNumChildNodes(); i++)	
 	{
         ss << "(" << nodeId << ", " << nodeCounter + 1 << ")";
-        edgeAnnot[ss.str()] = "\"a\"";
+        std::string edgeId = ss.str();
+        ss.str("");
+        ss << "\"" << i << "-" << node.getTargetAttrValue(i) << "\"";
+        edgeAnnot[edgeId] = ss.str(); 
         ss.str("");
 
 		treePlot << "G.add_edge(" << nodeId << ", " << nodeCounter + 1 << ")" << std::endl;

@@ -1,6 +1,8 @@
 #include <cassert>
 #include <cmath>
+#include <iostream>
 #include "ID3Node.h"
+#include "data_utils.h"
 
 ID3Logger ID3Node::_log;
 
@@ -109,10 +111,15 @@ void ID3Node::induceTree(Matrix& features, Matrix& labels, size_t level)
 	for(size_t i = 0; i < featureMatBucket.size(); i++)
 	{
 		_attrToValueName[i] = features.attrValue(_targetAttr, i);
-		if(featureMatBucket.size() == 0)
+		if(featureMatBucket[i].rows() == 0)
+		{
+			assert(labelMatBucket[i].rows() == 0);
 			_attrToNode[i].setLabelToAssign(labels.mostCommonValue(0));
+		}
 		else
+		{
 			_attrToNode[i].induceTree(featureMatBucket[i], labelMatBucket[i], level + 1);
+		}
 	}
 }
 

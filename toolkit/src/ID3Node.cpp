@@ -6,14 +6,14 @@
 
 ID3Logger ID3Node::_log;
 
-ID3Node::ID3Node():_targetAttr(-1), _labelToAssign(0.0), _collapsed(false)
+ID3Node::ID3Node():_targetAttr(-1), _labelToAssignAsLeaf(0.0), _collapsed(false)
 {
 
 }
 
 void ID3Node::setLabelToAssign(double labelToAssign) 
 {
-	_labelToAssign = labelToAssign;
+	_labelToAssignAsLeaf = labelToAssign;
 }
 
 long ID3Node::getTargetAttr() const
@@ -33,12 +33,12 @@ std::string ID3Node::getTargetAttrValue(size_t i) const
 
 long ID3Node::getLabelToAssign() const
 {
-	return _labelToAssign;
+	return _labelToAssignAsLeaf;
 }
 
 std::string ID3Node::getLabelToAssignName() const
 {
-	return _labelToAssignName;
+	return _labelToAssignAsLeafName;
 }
 
 size_t ID3Node::getNumChildNodes() const
@@ -77,13 +77,12 @@ void ID3Node::induceTree(Matrix& features, Matrix& labels, size_t level)
 		}
 	}
 
+	_labelToAssignAsLeaf = labels.mostCommonValue(0);
+	_labelToAssignAsLeafName = labels.attrValue(0, _labelToAssignAsLeaf);
+
 	bool noInfoGain = maxInfoGain < 0.000001;
 	if(noInfoGain)
-	{
-		_labelToAssign = labels.mostCommonValue(0);
-		_labelToAssignName = labels.attrValue(0, _labelToAssign);
 		return;
-	}
 
 	_targetAttr = bestAttr;
 	_targetAttrName = features.attrName(_targetAttr);
@@ -114,7 +113,7 @@ void ID3Node::induceTree(Matrix& features, Matrix& labels, size_t level)
 double ID3Node::classify(const std::vector<double>& features)
 {
 	if(_targetAttr == -1)
-		return _labelToAssign;
+		return _labelToAssignAsLeaf;
 	else
 		return _attrToNode[features[_targetAttr]].classify(features);
 }

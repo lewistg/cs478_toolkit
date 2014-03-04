@@ -98,10 +98,10 @@ private:
 	std::vector<std::string> _attrToValueName;
 
 	/**The label to assign if this a leaf node*/
-	double _labelToAssign;
+	double _labelToAssignAsLeaf;
 
 	/**The label to assign name*/
-	std::string _labelToAssignName;
+	std::string _labelToAssignAsLeafName;
 
 	/**The entropy during training*/
 	double _trainingEntropy;

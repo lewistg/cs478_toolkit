@@ -51,9 +51,9 @@ const ID3Node& ID3Node::getChildNode(size_t i) const
 	return _attrToNode[i];
 }
 
-void ID3Node::collapes()
+void ID3Node::setCollapsed(bool collapsed)
 {
-
+	_collapsed = collapsed;
 }
 
 void ID3Node::induceTree(Matrix& features, Matrix& labels, size_t level)
@@ -112,7 +112,7 @@ void ID3Node::induceTree(Matrix& features, Matrix& labels, size_t level)
 
 double ID3Node::classify(const std::vector<double>& features)
 {
-	if(_targetAttr == -1)
+	if(_targetAttr == -1 || _collapsed)
 		return _labelToAssignAsLeaf;
 	else
 		return _attrToNode[features[_targetAttr]].classify(features);

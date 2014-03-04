@@ -78,7 +78,7 @@ public:
 	/**
 	 * Collapses this node
 	 */
-	void collapes();
+	void setCollapsed(bool collapsed);
 
 private:
 	/**The log*/

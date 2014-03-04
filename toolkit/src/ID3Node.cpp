@@ -43,17 +43,28 @@ std::string ID3Node::getLabelToAssignName() const
 
 size_t ID3Node::getNumChildNodes() const
 {
-	return _attrToNode.size();
+	return _attrToChildNode.size();
 }
 
 const ID3Node& ID3Node::getChildNode(size_t i) const
 {
-	return _attrToNode[i];
+	return _attrToChildNode[i];
+}
+
+bool ID3Node::isLeaf()
+{
+	return (_targetAttr == -1 || _collapsed);
 }
 
 void ID3Node::setCollapsed(bool collapsed)
 {
 	_collapsed = collapsed;
+}
+
+void ID3Node::getChildrenNodes(std::vector<ID3Node*>& children)
+{
+	for(std::vector<ID3Node>::iterator itr = _attrToChildNode.begin(); itr != _attrToChildNode.end(); itr++)
+		children.push_back(&(*itr));
 }
 
 void ID3Node::induceTree(Matrix& features, Matrix& labels, size_t level)
@@ -92,7 +103,7 @@ void ID3Node::induceTree(Matrix& features, Matrix& labels, size_t level)
 	std::vector<Matrix> labelMatBucket;
 	split(features, labels, featureMatBucket, labelMatBucket, bestAttr);
 
-	_attrToNode.resize(featureMatBucket.size());
+	_attrToChildNode.resize(featureMatBucket.size());
 	_attrToValueName.resize(featureMatBucket.size());
 
 	for(size_t i = 0; i < featureMatBucket.size(); i++)
@@ -101,11 +112,11 @@ void ID3Node::induceTree(Matrix& features, Matrix& labels, size_t level)
 		if(featureMatBucket[i].rows() == 0)
 		{
 			assert(labelMatBucket[i].rows() == 0);
-			_attrToNode[i].setLabelToAssign(labels.mostCommonValue(0));
+			_attrToChildNode[i].setLabelToAssign(labels.mostCommonValue(0));
 		}
 		else
 		{
-			_attrToNode[i].induceTree(featureMatBucket[i], labelMatBucket[i], level + 1);
+			_attrToChildNode[i].induceTree(featureMatBucket[i], labelMatBucket[i], level + 1);
 		}
 	}
 }
@@ -115,7 +126,7 @@ double ID3Node::classify(const std::vector<double>& features)
 	if(_targetAttr == -1 || _collapsed)
 		return _labelToAssignAsLeaf;
 	else
-		return _attrToNode[features[_targetAttr]].classify(features);
+		return _attrToChildNode[features[_targetAttr]].classify(features);
 }
 
 double ID3Node::infoGain(Matrix& features, Matrix& labels, size_t attrIndex, double infoS, size_t level)

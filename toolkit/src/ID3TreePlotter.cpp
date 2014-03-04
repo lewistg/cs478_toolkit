@@ -3,9 +3,12 @@
 #include "ID3TreePlotter.h"
 #include "ID3Node.h"
 
-void ID3TreePlot::plotTree(const ID3Node& root)
+void ID3TreePlot::plotTree(const std::string& plotName, const ID3Node& root)
 {
-    std::ofstream treePlot("tree_plot.py", std::ios::trunc);
+    //std::ofstream treePlot("tree_plot.py", std::ios::trunc);
+	std::string fileName(plotName);
+	fileName.append(".py");
+    std::ofstream treePlot(fileName.c_str(), std::ios::trunc);
 	treePlot << "import networkx as nx" << std::endl;
     treePlot << "import matplotlib.pyplot as plt" << std::endl << std::endl;
 	treePlot << "G = nx.Graph()" << std::endl;

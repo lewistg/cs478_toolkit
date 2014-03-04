@@ -30,6 +30,16 @@ public:
 private:
 	/**The root node*/
 	ID3Node _root;
+
+	/**
+	 * Does reduced error pruning
+	 */
+	void pruneTree(Matrix& validationSet, Matrix& validationSetLabels);
+
+	/**
+	 * Calculates accuracy on the validation set
+	 */
+	double calcValSetAcc(Matrix& validationSet, Matrix& validationSetLabels);
 };
 
 #endif

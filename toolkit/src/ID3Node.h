@@ -76,9 +76,19 @@ public:
 	const ID3Node& getChildNode(size_t i) const;
 
 	/**
+	 * Indicates whether or not the node is a leaf 
+     */
+	bool isLeaf();
+
+	/**
 	 * Collapses this node
 	 */
 	void setCollapsed(bool collapsed);
+
+	/**
+	 * Appends the children nodes to end of this list
+	 */
+	void getChildrenNodes(std::vector<ID3Node*>& children);
 
 private:
 	/**The log*/
@@ -92,7 +102,7 @@ private:
     std::string _targetAttrName;
 
 	/**Map from an attribute value to a child node*/
-	std::vector<ID3Node> _attrToNode; 
+	std::vector<ID3Node> _attrToChildNode; 
 
 	/**Map from an attribute value to an attribute value name*/
 	std::vector<std::string> _attrToValueName;

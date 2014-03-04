@@ -75,6 +75,11 @@ public:
 	 */
 	const ID3Node& getChildNode(size_t i) const;
 
+	/**
+	 * Collapses this node
+	 */
+	void collapes();
+
 private:
 	/**The log*/
 	static ID3Logger _log;
@@ -100,6 +105,9 @@ private:
 
 	/**The entropy during training*/
 	double _trainingEntropy;
+
+	/**Indicates whether or not the node is collapsed*/
+	bool _collapsed;
 
 	/**
 	 * Calculates information gain by splitting on the given

@@ -6,7 +6,7 @@
 
 ID3Logger ID3Node::_log;
 
-ID3Node::ID3Node():_targetAttr(-1), _labelToAssign(0.0)
+ID3Node::ID3Node():_targetAttr(-1), _labelToAssign(0.0), _collapsed(false)
 {
 
 }
@@ -51,27 +51,15 @@ const ID3Node& ID3Node::getChildNode(size_t i) const
 	return _attrToNode[i];
 }
 
+void ID3Node::collapes()
+{
+
+}
+
 void ID3Node::induceTree(Matrix& features, Matrix& labels, size_t level)
 {
 	assert(labels.cols() == 1);
 	assert(labels.rows() > 0);
-
-	// if the labels are homogenous 
-	bool allHomog = true;
-	for(size_t i = 1; i < labels.rows(); i++)
-	{
-		if(labels[0][0] != labels[i][0])	
-		{
-			allHomog = false;
-			break;
-		}
-	}
-	if(allHomog)
-	{
-		_labelToAssign = labels[0][0];
-		_labelToAssignName = labels.attrValue(0, labels[0][0]);
-		return;
-	}
 
 	double infoS = info(labels);
 	_log.logNodeEntropy(infoS, level);

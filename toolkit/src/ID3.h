@@ -72,6 +72,10 @@ ID3<T>::~ID3()
 template <class T>
 void ID3<T>::train(Matrix& features, Matrix& labels)
 {
+	// clean up the data
+    T missingDataStrategy;
+    missingDataStrategy(features);
+
 	// create a validation set
 	Rand r(time(NULL));
 	features.shuffleRows(r, &labels);

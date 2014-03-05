@@ -42,7 +42,7 @@ void Matrix::setSize(size_t rows, size_t cols)
 
 size_t Matrix::addEnumValue(size_t attr, std::string& valueName)
 {
-	assert(attr <<m_str_to_enum.size());
+	assert(attr < m_str_to_enum.size());
 	assert(m_str_to_enum[attr].find(valueName) == m_str_to_enum[attr].end());
 
     size_t newEnumVal = m_str_to_enum[attr].size();

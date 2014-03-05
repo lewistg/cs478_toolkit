@@ -23,3 +23,8 @@ void ID3Logger::logSplitInfoGain(size_t attrSplitOn, double infoGain, size_t lev
 		_logFile << "\t";
 	_logFile << "Split on " << attrSplitOn << " for info gain of " << infoGain << std::endl;
 }
+
+void ID3Logger::logPrunedNodes(size_t nodesPruned)
+{
+	_logFile << "Number of nodes pruned: " << nodesPruned << std::endl;
+}

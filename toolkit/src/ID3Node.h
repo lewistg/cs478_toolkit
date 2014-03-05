@@ -26,7 +26,7 @@ public:
      * @param features
      * @param labels
      */
-	void induceTree(Matrix& features, Matrix& labels, size_t level);
+	void induceTree(Matrix& features, Matrix& labels, size_t level, std::vector<bool> excludedFeatures);
 
 	/**
 	 * Classifies the given instance.
@@ -91,9 +91,6 @@ public:
 	void getChildrenNodes(std::vector<ID3Node*>& children);
 
 private:
-	/**The log*/
-	static ID3Logger _log;
-
 	/**The index of the feature that this node splits on or if
 	 * this node is a leaf the label that it assigns to features that reach it*/
 	long _targetAttr;

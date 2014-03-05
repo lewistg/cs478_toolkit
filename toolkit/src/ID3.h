@@ -3,10 +3,14 @@
 
 #include "learner.h"
 #include "ID3Node.h"
+#include "ID3Logger.h"
 
 class ID3: public SupervisedLearner
 {
 public:
+	/**ID3 log*/
+	static ID3Logger id3Log;
+
     /**
      * Constructor
      */

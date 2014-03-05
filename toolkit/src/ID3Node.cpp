@@ -3,8 +3,7 @@
 #include <iostream>
 #include "ID3Node.h"
 #include "data_utils.h"
-
-ID3Logger ID3Node::_log;
+#include "ID3.h"
 
 ID3Node::ID3Node():_targetAttr(-1), _labelToAssignAsLeaf(0.0), _collapsed(false)
 {
@@ -64,22 +63,29 @@ void ID3Node::setCollapsed(bool collapsed)
 void ID3Node::getChildrenNodes(std::vector<ID3Node*>& children)
 {
 	for(std::vector<ID3Node>::iterator itr = _attrToChildNode.begin(); itr != _attrToChildNode.end(); itr++)
+	{
 		children.push_back(&(*itr));
+		itr->getChildrenNodes(children);
+	}
 }
 
-void ID3Node::induceTree(Matrix& features, Matrix& labels, size_t level)
+void ID3Node::induceTree(Matrix& features, Matrix& labels, size_t level, std::vector<bool> excludedFeatures)
 {
 	assert(labels.cols() == 1);
 	assert(labels.rows() > 0);
+	assert(excludedFeatures.size() == features.cols());
 
 	double infoS = info(labels);
-	_log.logNodeEntropy(infoS, level);
+	ID3::id3Log.logNodeEntropy(infoS, level);
 
 	// find the feature that gives the greatest information gain
 	size_t bestAttr = 0;
 	double maxInfoGain = 0.0;
 	for(size_t i = 0; i < features.cols(); i++)
 	{
+		if(excludedFeatures[i])
+			continue;
+
 		double gain = infoGain(features, labels, i, infoS, level);
 		if(gain > maxInfoGain)
 		{
@@ -97,6 +103,7 @@ void ID3Node::induceTree(Matrix& features, Matrix& labels, size_t level)
 
 	_targetAttr = bestAttr;
 	_targetAttrName = features.attrName(_targetAttr);
+	excludedFeatures[_targetAttr] = true;
 
 	// split and induce the child trees
 	std::vector<Matrix> featureMatBucket;
@@ -116,7 +123,7 @@ void ID3Node::induceTree(Matrix& features, Matrix& labels, size_t level)
 		}
 		else
 		{
-			_attrToChildNode[i].induceTree(featureMatBucket[i], labelMatBucket[i], level + 1);
+			_attrToChildNode[i].induceTree(featureMatBucket[i], labelMatBucket[i], level + 1, excludedFeatures);
 		}
 	}
 }
@@ -156,7 +163,7 @@ double ID3Node::infoGain(Matrix& features, Matrix& labels, size_t attrIndex, dou
 	}
 
 	double infoGain = infoS - infoAfterSplit;
-	_log.logSplitInfoGain(attrIndex, infoGain, level);
+	ID3::id3Log.logSplitInfoGain(attrIndex, infoGain, level);
 	return infoGain; 
 }
 

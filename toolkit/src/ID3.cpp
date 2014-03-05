@@ -1,7 +1,10 @@
 #include <cassert>
 #include <ctime>
+#include <iostream>
 #include "ID3.h"
 #include "ID3TreePlotter.h"
+
+ID3Logger ID3::id3Log;
 
 ID3::ID3()
 {
@@ -36,7 +39,9 @@ void ID3::train(Matrix& features, Matrix& labels)
 	Matrix validationSetLabels;
 	validationSetLabels.copyPart(labels, trainingSetSize, 0, validationSetSize, labels.cols());
 
-	_root.induceTree(features, labels, 0);
+	//_root.induceTree(features, labels, 0);
+	std::vector<bool> excludedFeatures(trainingSet.cols(), false);
+	_root.induceTree(trainingSet, trainingSetLabels, 0, excludedFeatures);
 	ID3TreePlot::plotTree("before_prune", _root);
 
 	pruneTree(validationSet, validationSetLabels);
@@ -56,6 +61,9 @@ void ID3::pruneTree(Matrix& validationSet, Matrix& validationSetLabels)
 	_root.getChildrenNodes(treeNodes);
 	double prevAcc = calcValSetAcc(validationSet, validationSetLabels);
 	double bestAfterPruneAcc = 0.0;
+	size_t nPruned = 0;
+	//std::cout << "Number of nodes in tree: " << treeNodes.size() << std::endl;
+	//std::cout << "Prev acc: " << prevAcc << std::endl;
 	while(true)
 	{
 		bestAfterPruneAcc = 0.0;
@@ -79,12 +87,15 @@ void ID3::pruneTree(Matrix& validationSet, Matrix& validationSetLabels)
 		{
 			treeNodes[bestNodeToPrune]->setCollapsed(true);
 			prevAcc = bestAfterPruneAcc;
+			nPruned += 1;
 		}
 		else
 		{
 			break;
 		}
 	}
+	std::cout << "Number pruned: " << nPruned << std::endl;
+	ID3::id3Log.logPrunedNodes(nPruned);
 }
 
 double ID3::calcValSetAcc(Matrix& validationSet, Matrix& validationSetLabels)

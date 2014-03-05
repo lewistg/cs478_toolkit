@@ -26,6 +26,11 @@ public:
 	 */
 	void logSplitInfoGain(size_t attrSplitOn, double infoGain, size_t level);
 
+	/**
+	 * Logs the number of nodes that were pruned
+	 */
+	void logPrunedNodes(size_t nodesPruned);
+
 private:
     /**The output log file*/
     std::ofstream _logFile;

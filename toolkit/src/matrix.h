@@ -76,6 +76,9 @@ public:
 	// Returns the name of the specified value
 	std::string& attrValue(size_t attr, size_t val) { return m_enum_to_str[attr][val]; }
 
+	// Returns the value for the specified value
+	size_t attrValue(size_t attr, const std::string& valName) { return m_str_to_enum[attr][valName]; }
+
 	// Returns a pointer to the specified row
 	std::vector<double>& row(size_t index) { return m_data[index]; }
 

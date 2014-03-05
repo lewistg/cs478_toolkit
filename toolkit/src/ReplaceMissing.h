@@ -11,7 +11,12 @@
  */
 struct ReplaceWithAttribute
 {
-	void operator()(Matrix& features)
+	/**
+	 * Returns a matrix with how the data was replaced
+     * @param features
+     * @return 
+     */
+	Matrix operator()(Matrix& features)
     {
 		std::vector<size_t> attrsToUnknownEnums;
 		std::string unknownName = "unknown";
@@ -29,7 +34,41 @@ struct ReplaceWithAttribute
 					features[i][j] = attrsToUnknownEnums[j];
 			}
 		}
+
+		Matrix updatedMatrixEnums(features);
+		return updatedMatrixEnums;
     }
+
+	/**
+	 * Replaces the missing data in a vector
+	 */
+	void operator()(Matrix& updatedMatrixEnums, std::vector<double>& features)
+	{
+		for(size_t i = 0; i < features.size(); i++)
+		{
+			if(features[i] == UNKNOWN_VALUE)
+				features[i] = updatedMatrixEnums.attrValue(i, "unknown");
+		}
+	}
+};
+
+/**
+ * Replaces the missing data with the most common value
+ * @param features
+ */
+struct ReplaceWithMode
+{
+	void operator()(Matrix& features)
+	{
+		for(size_t i = 0; i < features.rows(); i++)
+		{
+			for(size_t j = 0; j < features.cols(); j++)
+			{
+				if(features[i][j] == UNKNOWN_VALUE)
+					features[i][j] = features.mostCommonValue(j);
+			}
+		}
+	}
 };
 
 /**

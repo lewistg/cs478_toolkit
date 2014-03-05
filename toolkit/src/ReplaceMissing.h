@@ -4,12 +4,26 @@
 #include <vector>
 #include "matrix.h"
 
+struct ReplacementStrat
+{
+	/**
+	 * Replaces the missing data in a vector
+	 */
+	virtual void operator()(std::vector<size_t>& attrToMissingReplacement, std::vector<double>& features)
+	{
+		for(size_t i = 0; i < features.size(); i++)
+		{
+			if(features[i] == UNKNOWN_VALUE)
+				features[i] = attrToMissingReplacement[i];
+		}
+	}
+};
 
 /**
  * Replaces the missing values with a new attribute
  * @param features
  */
-struct ReplaceWithAttribute
+struct ReplaceWithAttribute: public ReplacementStrat
 {
 	/**
 	 * Returns a matrix with how the data was replaced
@@ -38,16 +52,9 @@ struct ReplaceWithAttribute
 		return attrsToUnknownEnums;
     }
 
-	/**
-	 * Replaces the missing data in a vector
-	 */
-	void operator()(std::vector<size_t>& attrToMissingReplacement, std::vector<double>& features)
+	virtual void operator()(std::vector<size_t>& attrToMissingReplacement, std::vector<double>& features)
 	{
-		for(size_t i = 0; i < features.size(); i++)
-		{
-			if(features[i] == UNKNOWN_VALUE)
-				features[i] = attrToMissingReplacement[i];
-		}
+		ReplacementStrat::operator ()(attrToMissingReplacement, features);
 	}
 };
 
@@ -55,24 +62,30 @@ struct ReplaceWithAttribute
  * Replaces the missing data with the most common value
  * @param features
  */
-struct ReplaceWithMode
+struct ReplaceWithMode: public ReplacementStrat
 {
-	/*Matrix operator()(Matrix& features)
+	std::vector<size_t> operator()(Matrix& features)
 	{
+		std::vector<size_t> attrsToUnknownEnums;
+		for(size_t i = 0; i < features.cols(); i++)
+			attrsToUnknownEnums.push_back(features.mostCommonValue(i));
+
 		for(size_t i = 0; i < features.rows(); i++)
 		{
 			for(size_t j = 0; j < features.cols(); j++)
 			{
 				if(features[i][j] == UNKNOWN_VALUE)
-					features[i][j] = features.mostCommonValue(j);
+					features[i][j] = attrsToUnknownEnums[j];
 			}
 		}
+
+		return attrsToUnknownEnums;
 	}
 
-	void operator()(Matrix& updatedMatrixEnums, std::vector<double>& features)
+	virtual void operator()(std::vector<size_t>& attrToMissingReplacement, std::vector<double>& features)
 	{
-			
-	}*/
+		ReplacementStrat::operator ()(attrToMissingReplacement, features);
+	}
 };
 
 /**

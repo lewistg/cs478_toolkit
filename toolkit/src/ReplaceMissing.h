@@ -92,7 +92,6 @@ struct ReplaceWithMode: public ReplacementStrat
  * Replaces the missing values with the mode 
  * @param features
  */
-
 template <class T>
 void replaceMissing(Matrix& features)
 {

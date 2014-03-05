@@ -1,5 +1,12 @@
 #include "ID3Logger.h"
 
+ID3Logger ID3Logger::_loggerInstance;
+
+ID3Logger& ID3Logger::getInstance()
+{
+	return _loggerInstance;
+}
+
 ID3Logger::ID3Logger()
 {
 	_logFile.open("id3_log.txt", std::ios::trunc);

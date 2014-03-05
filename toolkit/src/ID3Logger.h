@@ -6,10 +6,11 @@
 class ID3Logger 
 {
 public:
-    /**
-     * Constructor
+	/**
+	 * Gets the singleton instance of the logger
+     * @return 
      */
-    ID3Logger();
+	static ID3Logger& getInstance();
 
     /**
      * Destructor
@@ -34,6 +35,14 @@ public:
 private:
     /**The output log file*/
     std::ofstream _logFile;
+
+	/** The singleton instance */
+	static ID3Logger _loggerInstance;
+
+    /**
+     * Constructor
+     */
+    ID3Logger();
 };
 
 #endif

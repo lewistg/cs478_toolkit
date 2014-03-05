@@ -76,7 +76,7 @@ void ID3Node::induceTree(Matrix& features, Matrix& labels, size_t level, std::ve
 	assert(excludedFeatures.size() == features.cols());
 
 	double infoS = info(labels);
-	ID3::id3Log.logNodeEntropy(infoS, level);
+	ID3Logger::getInstance().logNodeEntropy(infoS, level);
 
 	// find the feature that gives the greatest information gain
 	size_t bestAttr = 0;
@@ -163,7 +163,7 @@ double ID3Node::infoGain(Matrix& features, Matrix& labels, size_t attrIndex, dou
 	}
 
 	double infoGain = infoS - infoAfterSplit;
-	ID3::id3Log.logSplitInfoGain(attrIndex, infoGain, level);
+	ID3Logger::getInstance().logSplitInfoGain(attrIndex, infoGain, level);
 	return infoGain; 
 }
 

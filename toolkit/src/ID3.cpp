@@ -4,19 +4,20 @@
 #include "ID3.h"
 #include "ID3TreePlotter.h"
 
-ID3Logger ID3::id3Log;
-
-ID3::ID3()
+/*template <class T>
+ID3<T>::ID3()
 {
 
 }
 
-ID3::~ID3()
+template <class T>
+ID3<T>::~ID3()
 {
 
 }
 
-void ID3::train(Matrix& features, Matrix& labels)
+template <class T>
+void ID3<T>::train(Matrix& features, Matrix& labels)
 {
 	// create a validation set
 	Rand r(time(NULL));
@@ -48,12 +49,14 @@ void ID3::train(Matrix& features, Matrix& labels)
 	ID3TreePlot::plotTree("after_prune", _root);
 }
 
-void ID3::predict(const std::vector<double>& features, std::vector<double>& labels)
+template <class T>
+void ID3<T>::predict(const std::vector<double>& features, std::vector<double>& labels)
 {
 	labels[0] = _root.classify(features);
 } 
 
-void ID3::pruneTree(Matrix& validationSet, Matrix& validationSetLabels)
+template <class T>
+void ID3<T>::pruneTree(Matrix& validationSet, Matrix& validationSetLabels)
 {
 	// prune until accuracy stops improving
 	std::vector<ID3Node*> treeNodes;
@@ -98,7 +101,8 @@ void ID3::pruneTree(Matrix& validationSet, Matrix& validationSetLabels)
 	ID3::id3Log.logPrunedNodes(nPruned);
 }
 
-double ID3::calcValSetAcc(Matrix& validationSet, Matrix& validationSetLabels)
+template <class T>
+double ID3<T>::calcValSetAcc(Matrix& validationSet, Matrix& validationSetLabels)
 {
 	double nRight = 0;
 	double total = validationSet.rows();
@@ -114,4 +118,4 @@ double ID3::calcValSetAcc(Matrix& validationSet, Matrix& validationSetLabels)
 
 	double percentRight = nRight / total;
 	return percentRight;
-}
+}*/

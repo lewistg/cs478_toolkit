@@ -45,6 +45,7 @@ CPP_FILES =\
 	ID3Node.cpp\
 	ID3Logger.cpp\
 	ID3TreePlotter.cpp\
+	ReplaceMissing.cpp\
 
 ################
 # Lists

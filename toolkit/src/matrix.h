@@ -66,6 +66,10 @@ public:
 	// Returns the number of columns (or attributes) in the matrix
 	size_t cols() const { return m_attr_name.size(); }
 
+	// Adds an enumeration value to a particular column. Returns the
+	// new enumeration value.
+	size_t addEnumValue(size_t attr, std::string& valueName);
+
 	// Returns the name of the specified attribute
 	std::string& attrName(size_t col) { return m_attr_name[col]; }
 

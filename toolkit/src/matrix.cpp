@@ -7,6 +7,7 @@
 #include "rand.h"
 #include "error.h"
 #include <fstream>
+#include <cassert>
 
 using std::string;
 using std::ifstream;
@@ -37,6 +38,20 @@ void Matrix::setSize(size_t rows, size_t cols)
 		m_str_to_enum[i].clear();
 		m_enum_to_str[i].clear();
 	}
+}
+
+size_t Matrix::addEnumValue(size_t attr, std::string& valueName)
+{
+	assert(attr <<m_str_to_enum.size());
+	assert(m_str_to_enum[attr].find(valueName) == m_str_to_enum[attr].end());
+
+    size_t newEnumVal = m_str_to_enum[attr].size();
+	m_str_to_enum[attr][valueName] = newEnumVal;
+
+    assert(m_enum_to_str[attr].find(newEnumVal) == m_enum_to_str[attr].end());
+    m_enum_to_str[attr][newEnumVal] = valueName;
+
+    return newEnumVal;
 }
 
 void Matrix::shuffleRows(Rand& r, Matrix* pBuddy)

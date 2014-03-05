@@ -21,7 +21,7 @@ public:
     /**
      * Constructor
      */
-    ID3();
+    ID3(bool pruningOn);
 
 	/**
 	 * Destructor
@@ -45,6 +45,9 @@ private:
 	/**The information for the missing and replaced data*/
 	std::vector<size_t> _attrToMissingReplacement;
 
+	/**Indicates whether or not pruning is on*/
+	bool _pruningOn;
+
 	/**
 	 * Does reduced error pruning
 	 */
@@ -61,7 +64,7 @@ private:
  */
 
 template <class T>
-ID3<T>::ID3()
+ID3<T>::ID3(bool pruningOn): _pruningOn(pruningOn)
 {
 
 }
@@ -83,7 +86,10 @@ void ID3<T>::train(Matrix& features, Matrix& labels)
 	Rand r(time(NULL));
 	features.shuffleRows(r, &labels);
 
-	double percentValidation = 0.25;
+	double percentValidation = 0.0;
+	if(_pruningOn)
+		percentValidation = 0.25;
+
 	size_t validationSetSize = static_cast<size_t>(std::max(percentValidation * features.rows(), 1.0));
 	size_t trainingSetSize = features.rows() - validationSetSize;
 	assert(validationSetSize > 0 && validationSetSize < features.rows());
@@ -105,8 +111,11 @@ void ID3<T>::train(Matrix& features, Matrix& labels)
 	_root.induceTree(trainingSet, trainingSetLabels, 0, excludedFeatures);
 	ID3TreePlot::plotTree("before_prune", _root);
 
-	pruneTree(validationSet, validationSetLabels);
-	ID3TreePlot::plotTree("after_prune", _root);
+	if(_pruningOn)
+	{
+		pruneTree(validationSet, validationSetLabels);
+		ID3TreePlot::plotTree("after_prune", _root);
+	}
 }
 
 template <class T>

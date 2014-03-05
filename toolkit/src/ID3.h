@@ -43,7 +43,7 @@ private:
 	ID3Node _root;
 
 	/**The information for the missing and replaced data*/
-	Matrix _missingReplacementMetaData;
+	std::vector<size_t> _attrToMissingReplacement;
 
 	/**
 	 * Does reduced error pruning
@@ -77,7 +77,7 @@ void ID3<T>::train(Matrix& features, Matrix& labels)
 {
 	// clean up the data
     T missingDataStrategy;
-    _missingReplacementMetaData = missingDataStrategy(features);
+    _attrToMissingReplacement = missingDataStrategy(features);
 
 	// create a validation set
 	Rand r(time(NULL));
@@ -115,7 +115,7 @@ void ID3<T>::predict(const std::vector<double>& features, std::vector<double>& l
 	std::vector<double> missingReplaced = features;
 
     T missingDataStrategy;
-	missingDataStrategy(_missingReplacementMetaData, missingReplaced);
+	missingDataStrategy(_attrToMissingReplacement, missingReplaced);
 
 	labels[0] = _root.classify(missingReplaced);
 } 

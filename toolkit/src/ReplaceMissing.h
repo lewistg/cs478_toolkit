@@ -16,7 +16,7 @@ struct ReplaceWithAttribute
      * @param features
      * @return 
      */
-	Matrix operator()(Matrix& features)
+	std::vector<size_t> operator()(Matrix& features)
     {
 		std::vector<size_t> attrsToUnknownEnums;
 		std::string unknownName = "unknown";
@@ -35,19 +35,18 @@ struct ReplaceWithAttribute
 			}
 		}
 
-		Matrix updatedMatrixEnums(features);
-		return updatedMatrixEnums;
+		return attrsToUnknownEnums;
     }
 
 	/**
 	 * Replaces the missing data in a vector
 	 */
-	void operator()(Matrix& updatedMatrixEnums, std::vector<double>& features)
+	void operator()(std::vector<size_t>& attrToMissingReplacement, std::vector<double>& features)
 	{
 		for(size_t i = 0; i < features.size(); i++)
 		{
 			if(features[i] == UNKNOWN_VALUE)
-				features[i] = updatedMatrixEnums.attrValue(i, "unknown");
+				features[i] = attrToMissingReplacement[i];
 		}
 	}
 };
@@ -58,7 +57,7 @@ struct ReplaceWithAttribute
  */
 struct ReplaceWithMode
 {
-	void operator()(Matrix& features)
+	/*Matrix operator()(Matrix& features)
 	{
 		for(size_t i = 0; i < features.rows(); i++)
 		{
@@ -69,6 +68,11 @@ struct ReplaceWithMode
 			}
 		}
 	}
+
+	void operator()(Matrix& updatedMatrixEnums, std::vector<double>& features)
+	{
+			
+	}*/
 };
 
 /**

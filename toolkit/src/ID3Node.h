@@ -71,6 +71,19 @@ public:
 	size_t getNumChildNodes() const;
 
 	/**
+     * Gets the number of nodes rooted at this node
+     * @return 
+     */
+    size_t getNumDescendants();
+
+    /**
+     * Gets the maximum depth of tree rooted at this node. 
+     * @param i
+     * @return 
+     */
+    size_t getMaxDepth();
+
+	/**
 	 * Gets the indexed child node
 	 */
 	const ID3Node& getChildNode(size_t i) const;

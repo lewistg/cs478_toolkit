@@ -45,6 +45,31 @@ size_t ID3Node::getNumChildNodes() const
 	return _attrToChildNode.size();
 }
 
+size_t ID3Node::getNumDescendants()
+{
+    if(isLeaf())
+		return 0;
+
+    size_t numDescendants = _attrToChildNode.size();
+	for(size_t i = 0; i < _attrToChildNode.size(); i++)
+		numDescendants += _attrToChildNode[i].getNumDescendants();
+
+	return numDescendants;
+}
+
+size_t ID3Node::getMaxDepth()
+{
+	size_t maxDepth = 0;
+	for(size_t i = 0; i < _attrToChildNode.size(); i++)
+	{
+		size_t childTreeDepth = _attrToChildNode[i].getMaxDepth();
+		if(childTreeDepth > maxDepth)
+			maxDepth = childTreeDepth;
+	}
+
+	return maxDepth + 1;
+}
+
 const ID3Node& ID3Node::getChildNode(size_t i) const
 {
 	return _attrToChildNode[i];

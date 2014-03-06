@@ -78,6 +78,8 @@ ID3<T>::~ID3()
 template <class T>
 void ID3<T>::train(Matrix& features, Matrix& labels)
 {
+	_root = ID3Node();
+
 	// clean up the data
     T missingDataStrategy;
     _attrToMissingReplacement = missingDataStrategy(features);
@@ -111,11 +113,15 @@ void ID3<T>::train(Matrix& features, Matrix& labels)
 	_root.induceTree(trainingSet, trainingSetLabels, 0, excludedFeatures);
 	ID3TreePlot::plotTree("before_prune", _root);
 
+	std::cout << "Number of nodes: " << _root.getNumDescendants() + 1 << std::endl;
 	if(_pruningOn)
 	{
 		pruneTree(validationSet, validationSetLabels);
 		ID3TreePlot::plotTree("after_prune", _root);
 	}
+	std::cout << "Number after prune: " << _root.getNumDescendants() + 1 << std::endl;
+
+	std::cout << "Tree depth: " << _root.getMaxDepth() << std::endl;
 }
 
 template <class T>
@@ -139,7 +145,7 @@ void ID3<T>::pruneTree(Matrix& validationSet, Matrix& validationSetLabels)
 	double prevAcc = calcValSetAcc(validationSet, validationSetLabels);
 	double bestAfterPruneAcc = 0.0;
 	size_t nPruned = 0;
-	//std::cout << "Number of nodes in tree: " << treeNodes.size() << std::endl;
+	std::cout << "Number of nodes in tree: " << treeNodes.size() << std::endl;
 	//std::cout << "Prev acc: " << prevAcc << std::endl;
 	while(true)
 	{

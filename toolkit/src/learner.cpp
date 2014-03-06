@@ -124,7 +124,8 @@ double SupervisedLearner::crossValidate(size_t reps, size_t folds, Matrix& featu
 			if(verbose)
 			{
 				cout << "Rep: " << rep << ", Fold: " << fold << ", Training Accuracy: " 
-                        << trainAcc << ", Test Accuracy: " << accuracy << "\n";
+                        << trainAcc << ", Test Accuracy: " << accuracy << " or " 
+						<< trainAcc * 100 << "%, " << accuracy * 100 << "% \n";
 				cout.flush();
 			}
 		}

@@ -110,7 +110,9 @@ void ID3<T>::train(Matrix& features, Matrix& labels)
 
 	//_root.induceTree(features, labels, 0);
 	std::vector<bool> excludedFeatures(trainingSet.cols(), false);
-	_root.induceTree(trainingSet, trainingSetLabels, 0, excludedFeatures);
+	//_root.induceTree(trainingSet, trainingSetLabels, 0, excludedFeatures);
+	_root.induceTreeByLaplacian(trainingSet, trainingSetLabels, 0, excludedFeatures);
+
 	ID3TreePlot::plotTree("before_prune", _root);
 
 	std::cout << "Number of nodes: " << _root.getNumDescendants() + 1 << std::endl;

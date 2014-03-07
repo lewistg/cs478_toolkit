@@ -132,6 +132,38 @@ void ID3Node::induceTree(Matrix& features, Matrix& labels, size_t level, std::ve
 	splitAndInduce(bestAttr, features, labels, level, excludedFeatures);
 }
 
+void ID3Node::induceTreeByLaplacian(Matrix& features, Matrix& labels, size_t level, std::vector<bool> excludedFeatures)
+{
+	assert(labels.cols() == 1);
+	assert(labels.rows() > 0);
+	assert(excludedFeatures.size() == features.cols());
+
+	// find the attribute that provides the greatest Laplacian
+	size_t bestAttr = 0;
+	double maxLaplacian = 0.0;
+	for(size_t i = 0; i < features.cols(); i++)
+	{
+		if(excludedFeatures[i])
+			continue;
+
+		double laplacian = ID3Node::laplacian(features, labels, i);
+		if(maxLaplacian < laplacian)
+		{
+			maxLaplacian = laplacian;
+			bestAttr = i;
+		}
+	}
+
+	_labelToAssignAsLeaf = labels.mostCommonValue(0);
+	_labelToAssignAsLeafName = labels.attrValue(0, _labelToAssignAsLeaf);
+
+	bool noMax = maxLaplacian < 0.000001;
+	if(noMax)
+		return;
+
+	splitAndInduce(bestAttr, features, labels, level, excludedFeatures);
+}
+
 void ID3Node::splitAndInduce(size_t bestAttr, Matrix& features, Matrix& labels, 
 		size_t level, std::vector<bool> excludedFeatures)
 {

@@ -29,6 +29,11 @@ public:
 	void induceTree(Matrix& features, Matrix& labels, size_t level, std::vector<bool> excludedFeatures);
 
 	/**
+	 * Induces the tree using the Laplacian
+     */
+	void induceTreeByLaplacian(Matrix& features, Matrix& labels, size_t level, std::vector<bool> excludedFeatures);
+
+	/**
 	 * Classifies the given instance.
 	 * @return The label
 	 */

@@ -164,7 +164,7 @@ private:
 	/**
 	 * Utility function for getting the most common attribute value
      */
-	long getMajorityLabel(std::vector<long>& labels);
+	size_t getMajorityLabelCount(std::vector<long>& labels);
 
 	/**
 	 * Splits and induces the rest of the trees

@@ -146,10 +146,10 @@ void ID3Node::induceTreeByLaplacian(Matrix& features, Matrix& labels, size_t lev
 		if(excludedFeatures[i])
 			continue;
 
-		double laplacian = ID3Node::laplacian(features, labels, i, level);
-		if(maxLaplacian < laplacian)
+		double laplacianCalc = laplacian(features, labels, i, level);
+		if(maxLaplacian < laplacianCalc)
 		{
-			maxLaplacian = laplacian;
+			maxLaplacian = laplacianCalc;
 			bestAttr = i;
 		}
 	}
@@ -189,7 +189,8 @@ void ID3Node::splitAndInduce(size_t bestAttr, Matrix& features, Matrix& labels,
 		}
 		else
 		{
-			_attrToChildNode[i].induceTree(featureMatBucket[i], labelMatBucket[i], level + 1, excludedFeatures);
+			//_attrToChildNode[i].induceTree(featureMatBucket[i], labelMatBucket[i], level + 1, excludedFeatures);
+			_attrToChildNode[i].induceTreeByLaplacian(featureMatBucket[i], labelMatBucket[i], level + 1, excludedFeatures);
 		}
 	}
 }
@@ -215,24 +216,24 @@ void ID3Node::splitOnAttr(size_t attrIndex, Matrix& features, Matrix& labels,
 	}
 }
 
-long ID3Node::getMajorityLabel(std::vector<long>& labels)
+size_t ID3Node::getMajorityLabelCount(std::vector<long>& labels)
 {
 	std::map<long, size_t> labelToCount;
 	for(size_t i = 0; i < labels.size(); i++)
 		labelToCount[labels[i]] += 1;
 
-	long maxLabel = 0;
+	//long maxLabel = 0;
 	size_t maxCount = 0;
 	for(std::map<long, size_t>::iterator itr = labelToCount.begin(); itr != labelToCount.end(); itr++)
 	{
 		if(itr->second >= maxCount)
 		{
-			maxLabel = itr->first;
+			//maxLabel = itr->first;
 			maxCount = itr->second;
 		}
 	}
 
-	return maxLabel;
+	return maxCount;
 }
 
 double ID3Node::laplacian(Matrix& features, Matrix& labels, size_t attrIndex, size_t level)
@@ -251,7 +252,7 @@ double ID3Node::laplacian(Matrix& features, Matrix& labels, size_t attrIndex, si
 	for(std::map<long, std::vector<long> >::iterator itr = attrValueBucket.begin(); itr != attrValueBucket.end(); itr++)
 	{
 		double nLabelsInBucket = itr->second.size(); 	
-		double nMajorityClassInBucket = getMajorityLabel(itr->second);
+		double nMajorityClassInBucket = static_cast<double>(getMajorityLabelCount(itr->second));
 
 		laplacianSum += (nLabelsInBucket / total) * 
 				((nMajorityClassInBucket + 1) / (nLabelsInBucket + nClasses));

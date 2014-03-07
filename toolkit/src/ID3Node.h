@@ -129,6 +129,11 @@ private:
 	/**Indicates whether or not the node is collapsed*/
 	bool _collapsed;
 
+    /**
+     * Calculates the Laplacian for a particular attribute 
+     */
+    double laplacian(Matrix& features, Matrix& labels, size_t attrIndex);
+
 	/**
 	 * Calculates information gain by splitting on the given
 	 * attribute.
@@ -144,6 +149,17 @@ private:
 	 * Calculates the information in the current set of features
 	 */
 	double info(Matrix& labels);
+
+	/**
+	 * Utility function for splitting labels by a particular attribute value
+     */
+	void splitOnAttr(size_t attrIndex, Matrix& features, Matrix& labels, 
+			std::map<long, std::vector<long> >& attrValueBucket);
+
+	/**
+	 * Utility function for getting the most common attribute value
+     */
+	long getMajorityLabel(std::vector<long>& labels);
 
 	/**
 	 * Splits instances according to attribute value

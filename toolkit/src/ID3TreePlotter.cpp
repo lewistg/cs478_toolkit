@@ -31,7 +31,7 @@ void ID3TreePlot::plotTree(const std::string& plotName, const ID3Node& root)
 	{
 		//treePlot << "plt.text(pos[key][0], pos[key][1], 'hi there', family='serif', style='italic', ha='left')" << std::endl;
 		treePlot << "plt.text(pos[" << itr->first << "][0], pos[" << itr->first << "][1], " 
-				<< itr->second << ", family='serif', style='italic', ha='left')" << std::endl;
+				<< itr->second << ", family='serif', style='italic', fontsize=8, rotation=-45, ha='left')" << std::endl;
 	}
 
 	treePlot << "nx.draw_networkx_labels(G,pos,labels)" << std::endl;
@@ -48,7 +48,7 @@ namespace
 		if(node.getTargetAttr() != -1)
 			ss << "\"splits on:" << node.getTargetAttr() << "-" << node.getTargetAttrName() << "\"";
 		else
-			ss << "\"assigns label: " << node.getLabelToAssign() << "-" << node.getLabelToAssignName() << "\"";
+			ss << "\"labels: " << node.getLabelToAssign() << "-" << node.getLabelToAssignName() << "\"";
 
 		return ss.str();
 	}	
@@ -57,7 +57,7 @@ namespace
 //void ID3TreePlot::explore(const ID3Node& node, std::ofstream& treePlot, std::map<size_t, std::string>& nodeAnnot)
 
 void ID3TreePlot::explore(const ID3Node& node, std::ofstream& treePlot, std::map<size_t, 
-		std::string>& nodeAnnot, std::map<std::string, std::string>& edgeAnnot)
+		std::string>& nodeAnnot, std::map<std::string, std::string>& edgeAnnot, size_t depth)
 {
 	static size_t nodeCounter = 0;
 	nodeCounter += 1;
@@ -65,6 +65,9 @@ void ID3TreePlot::explore(const ID3Node& node, std::ofstream& treePlot, std::map
 	int nodeId = nodeCounter;
 	treePlot << "G.add_node(" << nodeId << ")" << std::endl;
 	nodeAnnot[nodeId] = getNodeLabel(node, nodeId);
+	
+	if(depth >= 3)
+		return;
 	
     std::stringstream ss;
 	for(size_t i = 0; i < node.getNumChildNodes(); i++)	
@@ -77,6 +80,6 @@ void ID3TreePlot::explore(const ID3Node& node, std::ofstream& treePlot, std::map
         ss.str("");
 
 		treePlot << "G.add_edge(" << nodeId << ", " << nodeCounter + 1 << ")" << std::endl;
-		explore(node.getChildNode(i), treePlot, nodeAnnot, edgeAnnot);
+		explore(node.getChildNode(i), treePlot, nodeAnnot, edgeAnnot, depth + 1);
 	}
 }

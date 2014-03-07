@@ -59,6 +59,9 @@ size_t ID3Node::getNumDescendants()
 
 size_t ID3Node::getMaxDepth()
 {
+	if(isLeaf())
+		return 0;
+
 	size_t maxDepth = 0;
 	for(size_t i = 0; i < _attrToChildNode.size(); i++)
 	{
@@ -161,12 +164,9 @@ double ID3Node::classify(const std::vector<double>& features)
 		return _attrToChildNode[features[_targetAttr]].classify(features);
 }
 
-double ID3Node::infoGain(Matrix& features, Matrix& labels, size_t attrIndex, double infoS, size_t level)
+void ID3Node::splitOnAttr(size_t attrIndex, Matrix& features, Matrix& labels, 
+		std::map<long, std::vector<long> >& attrValueBucket)
 {
-	assert(attrIndex < features.cols());
-	assert(labels.cols() == 1);
-
-	std::map<long, std::vector<long> > attrValueBucket;
 	for(size_t i = 0; i < features.rows(); i++)
 	{
 		double intPart = 0;
@@ -175,7 +175,60 @@ double ID3Node::infoGain(Matrix& features, Matrix& labels, size_t attrIndex, dou
 		long attrValue = static_cast<long>(features[i][attrIndex]);
 		attrValueBucket[attrValue].push_back(labels.row(i)[0]);
 	}
+}
 
+long ID3Node::getMajorityLabel(std::vector<long>& labels)
+{
+	std::map<long, size_t> labelToCount;
+	for(size_t i = 0; i < labels.size(); i++)
+		labelToCount[labels[i]] += 1;
+
+	long maxLabel = 0;
+	size_t maxCount = 0;
+	for(std::map<long, size_t>::iterator itr = labelToCount.begin(); itr != labelToCount.end(); itr++)
+	{
+		if(itr->second >= maxCount)
+		{
+			maxLabel = itr->first;
+			maxCount = itr->second;
+		}
+	}
+
+	return maxLabel;
+}
+
+double ID3Node::laplacian(Matrix& features, Matrix& labels, size_t attrIndex)
+{
+	assert(attrIndex < features.cols());
+	assert(labels.cols() == 1);
+
+	std::map<long, std::vector<long> > attrValueBucket;
+	splitOnAttr(attrIndex, features, labels, attrValueBucket);
+
+	double laplacianSum = 0.0;
+
+	double total = static_cast<double>(labels.rows());
+	assert(total > 0);
+	double nClasses = labels.numAttrValues(0);
+	for(std::map<long, std::vector<long> >::iterator itr = attrValueBucket.begin(); itr != attrValueBucket.end(); itr++)
+	{
+		double nLabelsInBucket = itr->second.size(); 	
+		double nMajorityClassInBucket = getMajorityLabel(itr->second);
+
+		laplacianSum += (nLabelsInBucket / total) * 
+				((nMajorityClassInBucket + 1) / (nLabelsInBucket + nClasses));
+	}
+
+	return laplacianSum;
+}
+
+double ID3Node::infoGain(Matrix& features, Matrix& labels, size_t attrIndex, double infoS, size_t level)
+{
+	assert(attrIndex < features.cols());
+	assert(labels.cols() == 1);
+
+	std::map<long, std::vector<long> > attrValueBucket;
+	splitOnAttr(attrIndex, features, labels, attrValueBucket);
 	
 	double total = static_cast<double>(labels.rows());
 	double infoAfterSplit = 0.0;

@@ -28,6 +28,11 @@ public:
 	void logSplitInfoGain(size_t attrSplitOn, double infoGain, size_t level);
 
 	/**
+	 * Logs the Laplacian for splitting on a particular attribute
+     */
+	void logSplitOnLaplacian(size_t attrSplitOn, double laplacian, size_t level);
+
+	/**
 	 * Logs the number of nodes that were pruned
 	 */
 	void logPrunedNodes(size_t nodesPruned);

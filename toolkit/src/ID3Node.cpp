@@ -146,7 +146,7 @@ void ID3Node::induceTreeByLaplacian(Matrix& features, Matrix& labels, size_t lev
 		if(excludedFeatures[i])
 			continue;
 
-		double laplacian = ID3Node::laplacian(features, labels, i);
+		double laplacian = ID3Node::laplacian(features, labels, i, level);
 		if(maxLaplacian < laplacian)
 		{
 			maxLaplacian = laplacian;
@@ -235,7 +235,7 @@ long ID3Node::getMajorityLabel(std::vector<long>& labels)
 	return maxLabel;
 }
 
-double ID3Node::laplacian(Matrix& features, Matrix& labels, size_t attrIndex)
+double ID3Node::laplacian(Matrix& features, Matrix& labels, size_t attrIndex, size_t level)
 {
 	assert(attrIndex < features.cols());
 	assert(labels.cols() == 1);
@@ -256,6 +256,8 @@ double ID3Node::laplacian(Matrix& features, Matrix& labels, size_t attrIndex)
 		laplacianSum += (nLabelsInBucket / total) * 
 				((nMajorityClassInBucket + 1) / (nLabelsInBucket + nClasses));
 	}
+
+	ID3Logger::getInstance().logSplitOnLaplacian(attrIndex, laplacianSum, level);
 
 	return laplacianSum;
 }

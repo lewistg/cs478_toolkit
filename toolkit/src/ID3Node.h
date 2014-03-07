@@ -137,7 +137,7 @@ private:
     /**
      * Calculates the Laplacian for a particular attribute 
      */
-    double laplacian(Matrix& features, Matrix& labels, size_t attrIndex);
+    double laplacian(Matrix& features, Matrix& labels, size_t attrIndex, size_t level);
 
 	/**
 	 * Calculates information gain by splitting on the given

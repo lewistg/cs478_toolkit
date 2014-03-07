@@ -88,13 +88,15 @@ void ID3<T>::train(Matrix& features, Matrix& labels)
 	Rand r(time(NULL));
 	features.shuffleRows(r, &labels);
 
-	double percentValidation = 0.0;
+	size_t validationSetSize = 0; 
 	if(_pruningOn)
-		percentValidation = 0.25;
+    {
+		double percentValidation = 0.25;
+		validationSetSize = static_cast<size_t>(std::max(percentValidation * features.rows(), 1.0));
+    }
 
-	size_t validationSetSize = static_cast<size_t>(std::max(percentValidation * features.rows(), 1.0));
 	size_t trainingSetSize = features.rows() - validationSetSize;
-	assert(validationSetSize > 0 && validationSetSize < features.rows());
+	assert(validationSetSize >= 0 && validationSetSize < features.rows());
 
 	Matrix trainingSet;
 	trainingSet.copyPart(features, 0, 0, trainingSetSize, features.cols());
@@ -110,8 +112,8 @@ void ID3<T>::train(Matrix& features, Matrix& labels)
 
 	//_root.induceTree(features, labels, 0);
 	std::vector<bool> excludedFeatures(trainingSet.cols(), false);
-	//_root.induceTree(trainingSet, trainingSetLabels, 0, excludedFeatures);
-	_root.induceTreeByLaplacian(trainingSet, trainingSetLabels, 0, excludedFeatures);
+	_root.induceTree(trainingSet, trainingSetLabels, 0, excludedFeatures);
+	//_root.induceTreeByLaplacian(trainingSet, trainingSetLabels, 0, excludedFeatures);
 
 	ID3TreePlot::plotTree("before_prune", _root);
 

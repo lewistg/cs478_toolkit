@@ -129,6 +129,12 @@ void ID3Node::induceTree(Matrix& features, Matrix& labels, size_t level, std::ve
 	if(noInfoGain)
 		return;
 
+	splitAndInduce(bestAttr, features, labels, level, excludedFeatures);
+}
+
+void ID3Node::splitAndInduce(size_t bestAttr, Matrix& features, Matrix& labels, 
+		size_t level, std::vector<bool> excludedFeatures)
+{
 	_targetAttr = bestAttr;
 	_targetAttrName = features.attrName(_targetAttr);
 	excludedFeatures[_targetAttr] = true;

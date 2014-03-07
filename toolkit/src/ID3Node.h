@@ -162,9 +162,16 @@ private:
 	long getMajorityLabel(std::vector<long>& labels);
 
 	/**
+	 * Splits and induces the rest of the trees
+     */
+	void splitAndInduce(size_t bestAttr, Matrix& features, Matrix& labels, 
+			size_t level, std::vector<bool> excludedFeatures);
+
+	/**
 	 * Splits instances according to attribute value
 	 */
-	void split(Matrix& features, Matrix& labels, std::vector<Matrix>& featureMatBucket, std::vector<Matrix>& labelMatBucket, size_t attrIndex);
+	void split(Matrix& features, Matrix& labels, std::vector<Matrix>& featureMatBucket, 
+		std::vector<Matrix>& labelMatBucket, size_t attrIndex);
 };
 
 #endif

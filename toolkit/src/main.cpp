@@ -153,9 +153,9 @@ SupervisedLearner* getLearner(string model, Rand& r, ArgParser& parser)
 		return new BackProp(r, parser.getLearningRate(), parser.getMomentum(), parser.getHiddenNodes(), false);
 	else if(model.compare("dtree") == 0)
 		//return new ID3<ReplaceWithAttribute>();
-		//return new ID3<ReplaceWithAttribute>(true);
-		return new ID3<ReplaceWithAttribute>(false);
-		//return new ID3<ReplaceWithMode>(false);
+		return new ID3<ReplaceWithAttribute>(true);
+		//return new ID3<ReplaceWithAttribute>(false);
+		//return new ID3<ReplaceWithMode>(true);
 	else if (model.compare("neuralnet") == 0)
 		ThrowError("Sorry, ", model, " is not yet implemented");
 	else if (model.compare("decisiontree") == 0)

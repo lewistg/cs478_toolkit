@@ -66,8 +66,8 @@ void ID3TreePlot::explore(const ID3Node& node, std::ofstream& treePlot, std::map
 	treePlot << "G.add_node(" << nodeId << ")" << std::endl;
 	nodeAnnot[nodeId] = getNodeLabel(node, nodeId);
 	
-	if(depth >= 3)
-		return;
+	/*if(depth >= 4)
+		return;*/
 	
     std::stringstream ss;
 	for(size_t i = 0; i < node.getNumChildNodes(); i++)	

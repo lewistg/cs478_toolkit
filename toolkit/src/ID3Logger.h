@@ -25,12 +25,18 @@ public:
 	/**
 	 * Logs information gain of splitting on the given attribute
 	 */
-	void logSplitInfoGain(size_t attrSplitOn, double infoGain, size_t level);
+	void logSplitInfoGain(size_t attrSplitOn, const std::string& attrName, double infoGain, size_t level);
 
 	/**
 	 * Logs the Laplacian for splitting on a particular attribute
      */
 	void logSplitOnLaplacian(size_t attrSplitOn, double laplacian, size_t level);
+
+    /**
+     * Log the number of nodes
+     * @param nodesPruned
+     */
+	void logNumberOfInstances(size_t nInstances, size_t level);
 
 	/**
 	 * Logs the number of nodes that were pruned

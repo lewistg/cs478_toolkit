@@ -138,6 +138,8 @@ void ID3Node::induceTreeByLaplacian(Matrix& features, Matrix& labels, size_t lev
 	assert(labels.rows() > 0);
 	assert(excludedFeatures.size() == features.cols());
 
+    ID3Logger::getInstance().logNumberOfInstances(features.rows(), level);
+
 	// find the attribute that provides the greatest Laplacian
 	size_t bestAttr = 0;
 	double maxLaplacian = 0.0;
@@ -189,8 +191,8 @@ void ID3Node::splitAndInduce(size_t bestAttr, Matrix& features, Matrix& labels,
 		}
 		else
 		{
-			//_attrToChildNode[i].induceTree(featureMatBucket[i], labelMatBucket[i], level + 1, excludedFeatures);
-			_attrToChildNode[i].induceTreeByLaplacian(featureMatBucket[i], labelMatBucket[i], level + 1, excludedFeatures);
+			_attrToChildNode[i].induceTree(featureMatBucket[i], labelMatBucket[i], level + 1, excludedFeatures);
+			//_attrToChildNode[i].induceTreeByLaplacian(featureMatBucket[i], labelMatBucket[i], level + 1, excludedFeatures);
 		}
 	}
 }
@@ -282,7 +284,7 @@ double ID3Node::infoGain(Matrix& features, Matrix& labels, size_t attrIndex, dou
 	}
 
 	double infoGain = infoS - infoAfterSplit;
-	ID3Logger::getInstance().logSplitInfoGain(attrIndex, infoGain, level);
+	ID3Logger::getInstance().logSplitInfoGain(attrIndex, features.attrName(attrIndex), infoGain, level);
 	return infoGain; 
 }
 

@@ -46,6 +46,7 @@ CPP_FILES =\
 	ID3Logger.cpp\
 	ID3TreePlotter.cpp\
 	ReplaceMissing.cpp\
+	KNearestNeighbor.cpp\
 
 ################
 # Lists

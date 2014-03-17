@@ -26,7 +26,7 @@ namespace
 	{
 		bool operator() (const std::pair<size_t, double>& lhs, const std::pair<size_t, double>& rhs) 
 		{
-			return lhs.second > rhs.second;
+			return lhs.second < rhs.second;
 		}
 	};
 };
@@ -38,7 +38,7 @@ void KNearestNeighbor::predict(const std::vector<double>& features, std::vector<
 	for(size_t i = 0; i < _examples.rows(); i++)
 	{
 		double exampleDist = dist(_examples.row(i), features);
-		if(nearestKInstances.size() > 0)
+		if(nearestKInstances.size() >= _k)
 		{
 			if(nearestKInstances.top().second > exampleDist)
 			{

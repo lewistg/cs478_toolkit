@@ -12,6 +12,7 @@
 #include "BackProp.h"
 #include "ID3.h"
 #include "ReplaceMissing.h"
+#include "KNearestNeighbor.h"
 #include <iostream>
 #include <fstream>
 #include <map>
@@ -163,7 +164,7 @@ SupervisedLearner* getLearner(string model, Rand& r, ArgParser& parser)
 	else if (model.compare("naivebayes") == 0)
 		ThrowError("Sorry, ", model, " is not yet implemented");
 	else if (model.compare("knn") == 0)
-		ThrowError("Sorry, ", model, " is not yet implemented");
+		return new KNearestNeighbor();
 	else
 		ThrowError("Unrecognized model: ", model);
 	return NULL;

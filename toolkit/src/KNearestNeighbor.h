@@ -44,6 +44,15 @@ private:
 	std::vector<double> _colMaxes;
 	std::vector<double> _colMins;
 
+	double _minLabel;
+	double _maxLabel;
+
+	/**
+	 * Does prediction ignoring certain training examples
+     */
+	void predictWithIgnore(const std::vector<double>& features, std::vector<double>& labels, 
+		std::vector<bool>* ignoredExamples = NULL);
+
 	/**
 	 * Utility function for calculating the distance between a training example
 	 * and the given features.
@@ -68,6 +77,17 @@ private:
 	void regressionPrediction(const std::vector<double>& normFeatures, std::vector<double>& labels, 
 		std::priority_queue<std::pair<size_t, double>, std::vector<std::pair<size_t, double> >, PairCmpr>&
 		nearestKInstances);
+
+	/**
+	 * Test set accuracy
+     * @return 
+     */
+	//double measureTestSetAcc(Matrix& features, Matrix& labels, Matrix* pOutStats = NULL);
+
+    /**
+     * Does leave one out reduction
+     */
+	void leaveOneOutReduction();
 };
 
 #endif

@@ -3,6 +3,7 @@
 #include <cmath>
 #include <queue>
 #include <math.h>
+#include <iostream>
 #include <map>
 #include "KNearestNeighbor.h"
 
@@ -18,6 +19,16 @@ void KNearestNeighbor::train(Matrix& features, Matrix& labels)
 
 	_exampleLabels = Matrix(labels);
 	_exampleLabels.copyPart(labels, 0, 0, labels.rows(), labels.cols());
+
+	// normalize the examples
+	/*for(size_t col = 0; col < _examples.cols(); col++)
+	{
+		_colMaxes.push_back(_examples.columnMax(col));
+		_colMins.push_back(_examples.columnMin(col));
+	}
+
+	for(size_t row = 0; row < _examples.rows(); row++)
+		normalizeFeatures(_examples.row(row));*/
 }
 
 namespace 
@@ -33,11 +44,14 @@ namespace
 
 void KNearestNeighbor::predict(const std::vector<double>& features, std::vector<double>& labels)
 {
+	std::vector<double> normFeatures(features);
+	//normalizeFeatures(normFeatures);
+
 	std::priority_queue<std::pair<size_t, double>, std::vector<std::pair<size_t, double> >, PairCmpr> 
 		nearestKInstances;
 	for(size_t i = 0; i < _examples.rows(); i++)
 	{
-		double exampleDist = dist(_examples.row(i), features);
+		double exampleDist = dist(_examples.row(i), normFeatures);
 		if(nearestKInstances.size() >= _k)
 		{
 			if(nearestKInstances.top().second > exampleDist)
@@ -63,6 +77,18 @@ void KNearestNeighbor::predict(const std::vector<double>& features, std::vector<
 		nearestKInstances.pop();
 
 		double nearNeighborLabel = _exampleLabels.row(nearNeighborIndex)[0];
+		double nearNeighborDist = dist(_examples.row(nearNeighborIndex), normFeatures);
+		if(nearNeighborDist <= 0.00000001)
+		{
+			labels[0] = nearNeighborLabel;
+			return;
+		}
+
+        // weighted voting
+		/*double weight = 1.0 / (nearNeighborDist * nearNeighborDist);
+		labelCounts[nearNeighborLabel] += weight * 1;*/
+
+		// non-weighted voting
 		labelCounts[nearNeighborLabel] += 1;
 	}
 
@@ -94,4 +120,13 @@ double KNearestNeighbor::dist(const std::vector<double>& features, const std::ve
 
 	double dist = sqrt(deltaSum);
 	return dist;
+}
+
+void KNearestNeighbor::normalizeFeatures(std::vector<double>& features)
+{
+	for(size_t col = 0; col < _examples.cols(); col++)
+	{
+		double delta = _colMaxes[col] - _colMins[col];
+		features[col] = (features[col] - _colMins[col]) / delta;
+	}
 }

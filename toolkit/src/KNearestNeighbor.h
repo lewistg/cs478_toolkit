@@ -31,12 +31,20 @@ private:
 	Matrix _examples;
 	/**The neighbor labels*/
 	Matrix _exampleLabels;
+	/**The original min and max points*/
+	std::vector<double> _colMaxes;
+	std::vector<double> _colMins;
 
 	/**
 	 * Utility function for calculating the distance between a training example
 	 * and the given features.
 	 */
 	double dist(const std::vector<double>& features, const std::vector<double>& example);
+
+    /**
+     * Normalizes the training example
+     */
+    void normalizeFeatures(std::vector<double>& features);
 };
 
 #endif

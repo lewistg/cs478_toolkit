@@ -1,8 +1,17 @@
 #ifndef _KNEARESTNEIGHBOR_H_
 #define _KNEARESTNEIGHBOR_H_
 
+#include <queue>
 #include "learner.h"
 
+//struct PairCmpr;
+struct PairCmpr
+{
+	bool operator() (const std::pair<size_t, double>& lhs, const std::pair<size_t, double>& rhs) 
+	{
+		return lhs.second < rhs.second;
+	}
+};
 
 class KNearestNeighbor: public SupervisedLearner
 {
@@ -45,6 +54,20 @@ private:
      * Normalizes the training example
      */
     void normalizeFeatures(std::vector<double>& features);
+
+	/**
+	 * Does prediction using nominal data
+	 */
+	void predictNominal(const std::vector<double>& normFeatures, std::vector<double>& labels, 
+		std::priority_queue<std::pair<size_t, double>, std::vector<std::pair<size_t, double> >, PairCmpr>&
+		nearestKInstances);
+
+	/**
+	 * Does regression
+	 */
+	void regressionPrediction(const std::vector<double>& normFeatures, std::vector<double>& labels, 
+		std::priority_queue<std::pair<size_t, double>, std::vector<std::pair<size_t, double> >, PairCmpr>&
+		nearestKInstances);
 };
 
 #endif

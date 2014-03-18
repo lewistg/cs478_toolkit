@@ -1,7 +1,6 @@
 #include <utility>
 #include <cassert>
 #include <cmath>
-#include <queue>
 #include <math.h>
 #include <iostream>
 #include <map>
@@ -21,17 +20,17 @@ void KNearestNeighbor::train(Matrix& features, Matrix& labels)
 	_exampleLabels.copyPart(labels, 0, 0, labels.rows(), labels.cols());
 
 	// normalize the examples
-	/*for(size_t col = 0; col < _examples.cols(); col++)
+	for(size_t col = 0; col < _examples.cols(); col++)
 	{
 		_colMaxes.push_back(_examples.columnMax(col));
 		_colMins.push_back(_examples.columnMin(col));
 	}
 
 	for(size_t row = 0; row < _examples.rows(); row++)
-		normalizeFeatures(_examples.row(row));*/
+		normalizeFeatures(_examples.row(row));
 }
 
-namespace 
+/*namespace 
 {
 	struct PairCmpr
 	{
@@ -40,12 +39,12 @@ namespace
 			return lhs.second < rhs.second;
 		}
 	};
-};
+};*/
 
 void KNearestNeighbor::predict(const std::vector<double>& features, std::vector<double>& labels)
 {
 	std::vector<double> normFeatures(features);
-	//normalizeFeatures(normFeatures);
+	normalizeFeatures(normFeatures);
 
 	std::priority_queue<std::pair<size_t, double>, std::vector<std::pair<size_t, double> >, PairCmpr> 
 		nearestKInstances;
@@ -68,7 +67,14 @@ void KNearestNeighbor::predict(const std::vector<double>& features, std::vector<
 	}
 
 	assert(nearestKInstances.size() == _k);
+	
+	predictNominal(normFeatures, labels, nearestKInstances);
+}
 
+void KNearestNeighbor::predictNominal(const std::vector<double>& normFeatures, std::vector<double>& labels, 
+	std::priority_queue<std::pair<size_t, double>, std::vector<std::pair<size_t, double> >, PairCmpr>&
+	nearestKInstances)
+{
 	// take a vote of the closest neighbors
 	std::map<double, size_t> labelCounts;
 	while(!nearestKInstances.empty())
@@ -104,6 +110,37 @@ void KNearestNeighbor::predict(const std::vector<double>& features, std::vector<
 	}
 	
 	labels[0] = maxLabel;
+}
+
+void KNearestNeighbor::regressionPrediction(const std::vector<double>& normFeatures, std::vector<double>& labels, 
+	std::priority_queue<std::pair<size_t, double>, std::vector<std::pair<size_t, double> >, PairCmpr>&
+	nearestKInstances)
+{
+	std::map<double, size_t> labelCounts;
+	double labelSum = 0.0;
+	while(!nearestKInstances.empty())
+	{
+		size_t nearNeighborIndex = nearestKInstances.top().first;
+		nearestKInstances.pop();
+
+		double nearNeighborLabel = _exampleLabels.row(nearNeighborIndex)[0];
+		double nearNeighborDist = dist(_examples.row(nearNeighborIndex), normFeatures);
+		if(nearNeighborDist <= 0.00000001)
+		{
+			labels[0] = nearNeighborLabel;
+			return;
+		}
+
+        // weighted voting
+		/*double weight = 1.0 / (nearNeighborDist * nearNeighborDist);
+		labelCounts[nearNeighborLabel] += weight * 1;*/
+
+		// non-weighted voting
+		labelSum += nearNeighborLabel; 
+	}
+
+	double avgLabel = labelSum / static_cast<double>(_k);
+	labels[0] = avgLabel;
 }
 
 double KNearestNeighbor::dist(const std::vector<double>& features, const std::vector<double>& example)

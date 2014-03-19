@@ -107,8 +107,18 @@ private:
 	 */
 	void growthReduction();
 
-	static void printQueue(std::priority_queue<std::pair<size_t, double>, 
+    bool equalQueues(
+	
+		std::priority_queue<std::pair<size_t, double>, 
+		std::vector<std::pair<size_t, double> >, PairCmpr>& q1,
+
+		std::priority_queue<std::pair<size_t, double>, 
+		std::vector<std::pair<size_t, double> >, PairCmpr>& q2);
+
+	void printQueue(std::priority_queue<std::pair<size_t, double>, 
 		std::vector<std::pair<size_t, double> >, PairCmpr>& nearestKInstances);
+
+
 };
 
 #endif

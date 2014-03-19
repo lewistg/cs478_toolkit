@@ -8,9 +8,9 @@
 #include "KNearestNeighbor.h"
 #include "data_utils.h"
 
-#define WEIGHTS true
+#define WEIGHTS false 
 
-KNearestNeighbor::KNearestNeighbor():_k(15)
+KNearestNeighbor::KNearestNeighbor():_k(5)
 {
 
 }
@@ -48,14 +48,46 @@ void KNearestNeighbor::predictWithIgnore(const std::vector<double>& features, st
 	std::vector<double> normFeatures(features);
 	normalizeFeatures(normFeatures);
 
+    // test using euclid
 	std::priority_queue<std::pair<size_t, double>, std::vector<std::pair<size_t, double> >, PairCmpr> 
-		nearestKInstances;
+		nearestEuclid;
+	for(size_t i = 0; i < _examples.rows(); i++)
+	{
+		if(ignoredExamples != NULL && ignoredExamples->at(i))
+			continue;
+
+		//double exampleDist = dist(_examples.row(i), normFeatures);
+		double exampleDist = manhattanDist(_examples.row(i), normFeatures);
+		if(nearestEuclid.size() >= _k)
+		{
+			if(nearestEuclid.top().second > exampleDist)
+			{
+				nearestEuclid.push(std::pair<size_t, double>(i, exampleDist));
+				if(nearestEuclid.size() > _k)
+					nearestEuclid.pop(); 
+			}
+		}
+		else
+		{
+				nearestEuclid.push(std::pair<size_t, double>(i, exampleDist));
+		}
+
+	}
+	assert(nearestEuclid.size() == _k);
+
+    //std::cout << "Nearest using Euclid neighbors: " << std::endl;
+	//printQueue(nearestEuclid);
+
+	std::priority_queue<std::pair<size_t, double>, std::vector<std::pair<size_t, double> >, PairCmpr> 
+	nearestKInstances = 
+            std::priority_queue<std::pair<size_t, double>, std::vector<std::pair<size_t, double> >, PairCmpr> ();
 	for(size_t i = 0; i < _examples.rows(); i++)
 	{
 		if(ignoredExamples != NULL && ignoredExamples->at(i))
 			continue;
 
 		double exampleDist = dist(_examples.row(i), normFeatures);
+		//double exampleDist = manhattanDist(_examples.row(i), normFeatures);
 		if(nearestKInstances.size() >= _k)
 		{
 			if(nearestKInstances.top().second > exampleDist)
@@ -75,6 +107,17 @@ void KNearestNeighbor::predictWithIgnore(const std::vector<double>& features, st
 	
     //std::cout << "Nearest using Manhattan neighbors: " << std::endl;
 	//printQueue(nearestKInstances);
+
+	if(!equalQueues(nearestKInstances, nearestEuclid))
+	{
+		std::cout << "Neighbor: " << vectorToString(features) << std::endl;
+
+		std::cout << "Nearest using Euclid neighbors: " << std::endl;
+		printQueue(nearestEuclid);
+
+		std::cout << "Nearest using Manhattan neighbors: " << std::endl;
+		printQueue(nearestKInstances);
+	}
 
     bool isContinuous = (_exampleLabels.valueCount(0) == 0);
     if(isContinuous)
@@ -182,10 +225,10 @@ void KNearestNeighbor::regressionPrediction(const std::vector<double>& normFeatu
 
 double KNearestNeighbor::dist(const std::vector<double>& features, const std::vector<double>& example)
 {
-	return manhattanDist(features, example);
+	//return manhattanDist(features, example);
 	//return heom(features, example);
 
-	/*assert(features.size() == example.size());
+	assert(features.size() == example.size());
 	
 	double delta = 0;
 	double deltaSum = 0;
@@ -196,7 +239,7 @@ double KNearestNeighbor::dist(const std::vector<double>& features, const std::ve
 	}
 
 	double dist = sqrt(deltaSum);
-	return dist;*/
+	return dist;
 }
 
 double KNearestNeighbor::heom(const std::vector<double>& features, const std::vector<double>& example)
@@ -361,6 +404,7 @@ void KNearestNeighbor::printQueue(std::priority_queue<std::pair<size_t, double>,
 	while(!q.empty())
 	{
 		std::cout << q.top().first << " - " << q.top().second << std::endl;
+		std::cout << vectorToString(_examples[q.top().first]) << std::endl;
 		buffer.push_back(q.top());
 		q.pop();
 	}
@@ -369,4 +413,40 @@ void KNearestNeighbor::printQueue(std::priority_queue<std::pair<size_t, double>,
 	{
 		q.push(buffer[i]);
 	}
+}
+
+bool KNearestNeighbor::equalQueues(std::priority_queue<std::pair<size_t, double>, 
+	std::vector<std::pair<size_t, double> >, PairCmpr>& q1,
+
+	std::priority_queue<std::pair<size_t, double>, 
+	std::vector<std::pair<size_t, double> >, PairCmpr>& q2)
+{
+
+	std::vector<std::pair<size_t, double> > buffer1; 
+	std::vector<std::pair<size_t, double> > buffer2; 
+
+	bool equal = true;
+	assert(q1.size() == q2.size());
+	while(!q1.empty())
+	{
+		if(q1.top().first != q2.top().first)
+		{
+			equal = false;	
+			break;
+		}
+
+		buffer1.push_back(q1.top());
+		q1.pop();
+
+		buffer2.push_back(q2.top());
+		q2.pop();
+	}
+
+	for(size_t i = 0; i < buffer1.size(); i++)
+	{
+		q1.push(buffer1[i]);
+		q2.push(buffer2[i]);
+	}
+	
+	return equal;
 }

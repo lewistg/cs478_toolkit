@@ -88,6 +88,14 @@ private:
      * Does leave one out reduction
      */
 	void leaveOneOutReduction();
+
+	/**
+	 * Does grow reduction
+	 */
+	void growthReduction();
+
+	static void printQueue(std::priority_queue<std::pair<size_t, double>, 
+		std::vector<std::pair<size_t, double> >, PairCmpr>& nearestKInstances);
 };
 
 #endif

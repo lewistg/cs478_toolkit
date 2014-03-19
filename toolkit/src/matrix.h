@@ -61,7 +61,7 @@ public:
 	void setSize(size_t rows, size_t cols);
 
     // Clears the matrix
-    void clear();
+    //void clear();
 
 	// Returns the number of rows in the matrix
 	size_t rows() const { return m_data.size(); }

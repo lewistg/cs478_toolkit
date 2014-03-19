@@ -2,8 +2,10 @@
 #define _DATA_UTILS_H_
 
 #include <string>
+#include <cassert>
 #include <sstream>
 #include <vector>
+#include "matrix.h"
 
 template <class T>
 std::string vectorToString(const std::vector<T>& array)
@@ -18,5 +20,11 @@ std::string vectorToString(const std::vector<T>& array)
 
 	return ss.str();
 }
+/**
+ * Breaks a matrix into a training set and validation set
+ */
+void partitionTrainAndVal(Matrix& features, Matrix& labels, 
+		Matrix& trainingSet, Matrix& trainingSetLabels,
+		Matrix& validationSet, Matrix& validationSetLabels);
 
 #endif

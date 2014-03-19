@@ -40,10 +40,10 @@ void Matrix::setSize(size_t rows, size_t cols)
 	}
 }
 
-void Matrix::clear()
+/*void Matrix::clear()
 {
 	setSize(0, 0);
-}
+}*/
 
 size_t Matrix::addEnumValue(size_t attr, std::string& valueName)
 {

@@ -1,25 +1,27 @@
 #include <utility>
+#include <ctime>
 #include <cassert>
 #include <cmath>
 #include <math.h>
 #include <iostream>
 #include <map>
 #include "KNearestNeighbor.h"
+#include "data_utils.h"
 
-KNearestNeighbor::KNearestNeighbor():_k(5)
+KNearestNeighbor::KNearestNeighbor():_k(11)
 {
 
 }
 
 void KNearestNeighbor::train(Matrix& features, Matrix& labels)
 {
+	// non-reduction
 	_examples = Matrix(features);
 	_examples.copyPart(features, 0, 0, features.rows(), features.cols());
 
 	_exampleLabels = Matrix(labels);
 	_exampleLabels.copyPart(labels, 0, 0, labels.rows(), labels.cols());
 
-	// normalize the examples
 	for(size_t col = 0; col < _examples.cols(); col++)
 	{
 		_colMaxes.push_back(_examples.columnMax(col));
@@ -31,24 +33,15 @@ void KNearestNeighbor::train(Matrix& features, Matrix& labels)
 
 	_minLabel = labels.columnMin(0);
 	_maxLabel = labels.columnMax(0);
+
+	//leaveOneOutReduction();
+	growthReduction();
 }
-
-/*namespace 
-{
-	struct PairCmpr
-	{
-		bool operator() (const std::pair<size_t, double>& lhs, const std::pair<size_t, double>& rhs) 
-		{
-			return lhs.second < rhs.second;
-		}
-	};
-};*/
-
 void KNearestNeighbor::predictWithIgnore(const std::vector<double>& features, std::vector<double>& labels, 
 	std::vector<bool>* ignoredExamples)
 {
 	if(ignoredExamples != NULL)
-		assert(ignoredExamples->size() < _examples.rows());
+		assert(ignoredExamples->size() == _examples.rows());
 
 	std::vector<double> normFeatures(features);
 	normalizeFeatures(normFeatures);
@@ -74,12 +67,17 @@ void KNearestNeighbor::predictWithIgnore(const std::vector<double>& features, st
 		{
 				nearestKInstances.push(std::pair<size_t, double>(i, exampleDist));
 		}
+
+		//printQueue(nearestKInstances);
 	}
 
 	assert(nearestKInstances.size() == _k);
 	
-	predictNominal(normFeatures, labels, nearestKInstances);
-	//regressionPrediction(normFeatures, labels, nearestKInstances);
+    bool isContinuous = (_exampleLabels.valueCount(0) == 0);
+    if(isContinuous)
+		regressionPrediction(normFeatures, labels, nearestKInstances);
+    else
+		predictNominal(normFeatures, labels, nearestKInstances);
 }
 
 void KNearestNeighbor::predict(const std::vector<double>& features, std::vector<double>& labels)
@@ -107,11 +105,11 @@ void KNearestNeighbor::predictNominal(const std::vector<double>& normFeatures, s
 		}
 
         // weighted voting
-		double weight = 1.0 / (nearNeighborDist * nearNeighborDist);
-		labelCounts[nearNeighborLabel] += weight * 1;
+		/*double weight = 1.0 / (nearNeighborDist * nearNeighborDist);
+		labelCounts[nearNeighborLabel] += weight * 1;*/
 
 		// non-weighted voting
-		//labelCounts[nearNeighborLabel] += 1;
+		labelCounts[nearNeighborLabel] += 1;
 	}
 
 	size_t maxCount = 0;
@@ -152,20 +150,20 @@ void KNearestNeighbor::regressionPrediction(const std::vector<double>& normFeatu
 		}
 
         // weighted voting
-		/*double weight = 1.0 / (nearNeighborDist * nearNeighborDist);
+		double weight = 1.0 / (nearNeighborDist * nearNeighborDist);
 		weightSum += weight;
-		labelSum += weight * nearNeighborLabel;*/
+		labelSum += weight * nearNeighborLabel;
 
 		// non-weighted voting
-		labelSum += nearNeighborLabel; 
+		//labelSum += nearNeighborLabel; 
 	}
 
 	// non-weighted voting
-	double avgLabel = labelSum / static_cast<double>(_k);
-	labels[0] = avgLabel;
-
-	/*double avgLabel = labelSum / weightSum; 
+	/*double avgLabel = labelSum / static_cast<double>(_k);
 	labels[0] = avgLabel;*/
+
+	double avgLabel = labelSum / weightSum; 
+	labels[0] = avgLabel;
 }
 
 double KNearestNeighbor::dist(const std::vector<double>& features, const std::vector<double>& example)
@@ -195,9 +193,31 @@ void KNearestNeighbor::normalizeFeatures(std::vector<double>& features)
 
 void KNearestNeighbor::leaveOneOutReduction()
 {
-    std::vector<bool> ignoredExample(false, _examples.rows());
+    std::vector<bool> ignoredExample(_examples.rows(), false);
 	std::vector<double> label(1);
-    for(size_t i = 0; i < _examples.rows(); i++)
+
+    // create a validation set
+	/*Matrix trainingSet; 
+	Matrix trainingSetLabels;
+	Matrix validationSet; 
+	Matrix validationSetLabels;
+
+	void partitionTrainAndVal(Matrix& features, Matrix& labels, 
+			trainingSet, trainingSetLabels,
+			validationSet, validationSetLabels);*/
+
+    // reduce to 2000 
+	/*Rand r(time(NULL));
+	_examples.shuffleRows(r, &_exampleLabels);
+	for(size_t i = 2000; i < _examples.rows(); i++)
+		ignoredExample[i] = true;
+
+	size_t nRows =  2000;
+	if(_examples.rows() < nRows)
+		nRows = _examples.rows();*/
+
+	size_t nRows = _examples.rows();
+    for(size_t i = 0; i < nRows; i++)
     {
         ignoredExample[i] = true;
 		predictWithIgnore(_examples.row(i), label, &ignoredExample);
@@ -214,15 +234,80 @@ void KNearestNeighbor::leaveOneOutReduction()
         if(!ignoredExample[i])
         {
             reducedExamples.copyRow(_examples.row(i));
-            reducedExampleLabels.copyRow(_examples.row(i));
+            reducedExampleLabels.copyRow(_exampleLabels.row(i));
         }
     }
 
-	_examples.clear();
 	_examples = Matrix(reducedExamples);
 	_examples.copyPart(reducedExamples, 0, 0, reducedExamples.rows(), reducedExamples.cols());
 
-	_exampleLabels.clear();
 	_exampleLabels = Matrix(_exampleLabels);
 	_exampleLabels.copyPart(reducedExampleLabels, 0, 0, reducedExampleLabels.rows(), reducedExampleLabels.cols());
+
+	std::cout << "Reduced to: " << _examples.rows() << std::endl;
+}
+
+
+void KNearestNeighbor::growthReduction()
+{
+    std::vector<bool> ignoredExample(_examples.rows(), true);
+	std::vector<double> label(1);
+
+	Rand r(time(NULL));
+	_examples.shuffleRows(r, &_exampleLabels);
+
+	// keep the first k instances
+	for(size_t i = 0; i < _k; i++)
+		ignoredExample[i] = false;
+
+    for(size_t i = _k; i < _examples.rows(); i++)
+    {
+		predictWithIgnore(_examples.row(i), label, &ignoredExample);
+        bool correctlyPredicted = false; 
+		if(_exampleLabels.numAttrValues(0) == 0)
+			correctlyPredicted = (fabs(label[0] - _exampleLabels[i][0]) < 0.1);
+		else
+			correctlyPredicted = (label[0] == _exampleLabels[i][0]);
+
+        if(!correctlyPredicted)
+			ignoredExample[i] = false;
+	}
+
+	Matrix reducedExamples(_examples);
+    Matrix reducedExampleLabels(_exampleLabels);
+    for(size_t i = 0; i < _examples.rows(); i++)
+    {
+        if(!ignoredExample[i])
+        {
+            reducedExamples.copyRow(_examples.row(i));
+            reducedExampleLabels.copyRow(_exampleLabels.row(i));
+        }
+    }
+
+	_examples = Matrix(reducedExamples);
+	_examples.copyPart(reducedExamples, 0, 0, reducedExamples.rows(), reducedExamples.cols());
+
+	_exampleLabels = Matrix(_exampleLabels);
+	_exampleLabels.copyPart(reducedExampleLabels, 0, 0, reducedExampleLabels.rows(), reducedExampleLabels.cols());
+
+	std::cout << "Reduced to: " << _examples.rows() << std::endl;
+}
+
+void KNearestNeighbor::printQueue(std::priority_queue<std::pair<size_t, double>, 
+	std::vector<std::pair<size_t, double> >, PairCmpr>& q)
+{
+	std::vector<std::pair<size_t, double> > buffer; 
+
+	std::cout << "Queue: " << std::endl;
+	while(!q.empty())
+	{
+		std::cout << q.top().first << " - " << q.top().second << std::endl;
+		buffer.push_back(q.top());
+		q.pop();
+	}
+
+	for(size_t i = 0; i < buffer.size(); i++)
+	{
+		q.push(buffer[i]);
+	}
 }

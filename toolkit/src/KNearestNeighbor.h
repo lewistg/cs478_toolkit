@@ -60,6 +60,19 @@ private:
 	double dist(const std::vector<double>& features, const std::vector<double>& example);
 
     /**
+     * Calculates the heom distance between two points
+     * @param features
+     * @return 
+     */
+	double heom(const std::vector<double>& features, const std::vector<double>& example);
+
+	/**
+	 * Calculates the Manhattan distance between two points
+     * @param features
+     */
+	double manhattanDist(const std::vector<double>& features, const std::vector<double>& example);
+
+    /**
      * Normalizes the training example
      */
     void normalizeFeatures(std::vector<double>& features);

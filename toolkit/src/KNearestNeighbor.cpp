@@ -8,7 +8,9 @@
 #include "KNearestNeighbor.h"
 #include "data_utils.h"
 
-KNearestNeighbor::KNearestNeighbor():_k(11)
+#define WEIGHTS true
+
+KNearestNeighbor::KNearestNeighbor():_k(15)
 {
 
 }
@@ -35,7 +37,7 @@ void KNearestNeighbor::train(Matrix& features, Matrix& labels)
 	_maxLabel = labels.columnMax(0);
 
 	//leaveOneOutReduction();
-	growthReduction();
+	//growthReduction();
 }
 void KNearestNeighbor::predictWithIgnore(const std::vector<double>& features, std::vector<double>& labels, 
 	std::vector<bool>* ignoredExamples)
@@ -68,11 +70,12 @@ void KNearestNeighbor::predictWithIgnore(const std::vector<double>& features, st
 				nearestKInstances.push(std::pair<size_t, double>(i, exampleDist));
 		}
 
-		//printQueue(nearestKInstances);
 	}
-
 	assert(nearestKInstances.size() == _k);
 	
+    //std::cout << "Nearest using Manhattan neighbors: " << std::endl;
+	//printQueue(nearestKInstances);
+
     bool isContinuous = (_exampleLabels.valueCount(0) == 0);
     if(isContinuous)
 		regressionPrediction(normFeatures, labels, nearestKInstances);
@@ -105,11 +108,15 @@ void KNearestNeighbor::predictNominal(const std::vector<double>& normFeatures, s
 		}
 
         // weighted voting
-		/*double weight = 1.0 / (nearNeighborDist * nearNeighborDist);
-		labelCounts[nearNeighborLabel] += weight * 1;*/
-
-		// non-weighted voting
-		labelCounts[nearNeighborLabel] += 1;
+		if(WEIGHTS)
+		{
+			double weight = 1.0 / (nearNeighborDist * nearNeighborDist);
+			labelCounts[nearNeighborLabel] += weight * 1;
+		}
+		else
+		{
+			labelCounts[nearNeighborLabel] += 1;
+		}
 	}
 
 	size_t maxCount = 0;
@@ -149,26 +156,36 @@ void KNearestNeighbor::regressionPrediction(const std::vector<double>& normFeatu
 			return;
 		}
 
-        // weighted voting
-		double weight = 1.0 / (nearNeighborDist * nearNeighborDist);
-		weightSum += weight;
-		labelSum += weight * nearNeighborLabel;
-
-		// non-weighted voting
-		//labelSum += nearNeighborLabel; 
+        if(WEIGHTS)
+        {
+			double weight = 1.0 / (nearNeighborDist * nearNeighborDist);
+			weightSum += weight;
+			labelSum += weight * nearNeighborLabel;
+        }
+        else
+        {
+			labelSum += nearNeighborLabel; 
+        }
 	}
 
-	// non-weighted voting
-	/*double avgLabel = labelSum / static_cast<double>(_k);
-	labels[0] = avgLabel;*/
-
-	double avgLabel = labelSum / weightSum; 
-	labels[0] = avgLabel;
+	if(WEIGHTS)
+	{
+		double avgLabel = labelSum / weightSum; 
+		labels[0] = avgLabel;
+	}
+	else
+	{
+		double avgLabel = labelSum / static_cast<double>(_k);
+		labels[0] = avgLabel;
+	}
 }
 
 double KNearestNeighbor::dist(const std::vector<double>& features, const std::vector<double>& example)
 {
-	assert(features.size() == example.size());
+	return manhattanDist(features, example);
+	//return heom(features, example);
+
+	/*assert(features.size() == example.size());
 	
 	double delta = 0;
 	double deltaSum = 0;
@@ -179,6 +196,42 @@ double KNearestNeighbor::dist(const std::vector<double>& features, const std::ve
 	}
 
 	double dist = sqrt(deltaSum);
+	return dist;*/
+}
+
+double KNearestNeighbor::heom(const std::vector<double>& features, const std::vector<double>& example)
+{
+	assert(_examples.cols() == features.size());
+	assert(_examples.cols() == example.size());
+
+	double sum = 0.0;
+	for(size_t i = 0; i < _examples.cols(); i++)
+	{
+		if(features[i] == UNKNOWN_VALUE || example[i] == UNKNOWN_VALUE)
+		{
+			sum += 1.0;
+		}
+		else if(_examples.valueCount(0) == 0)
+		{
+			double delta = (features[i] - example[i]);
+			sum += delta * delta;
+		}
+		else if(features[i] != example[i]) 
+		{
+			sum += 1.0;
+		}
+	}
+
+	double dist = sqrt(sum);
+	return dist;
+}
+
+double KNearestNeighbor::manhattanDist(const std::vector<double>& features, const std::vector<double>& example)
+{
+	double dist = 0.0;
+	for(size_t i = 0; i < features.size(); i++)
+		dist += fabs(features[i] - example[i]);
+
 	return dist;
 }
 
@@ -221,7 +274,13 @@ void KNearestNeighbor::leaveOneOutReduction()
     {
         ignoredExample[i] = true;
 		predictWithIgnore(_examples.row(i), label, &ignoredExample);
-        bool correctlyPredicted = (label[0] == _exampleLabels[i][0]);
+
+        bool correctlyPredicted = false; 
+		if(_exampleLabels.numAttrValues(0) == 0)
+			correctlyPredicted = (fabs(label[0] - _exampleLabels[i][0]) < 0.1);
+		else
+			correctlyPredicted = (label[0] == _exampleLabels[i][0]);
+
         if(!correctlyPredicted)
 			ignoredExample[i] = false;
     }

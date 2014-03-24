@@ -47,6 +47,7 @@ CPP_FILES =\
 	ID3TreePlotter.cpp\
 	ReplaceMissing.cpp\
 	KNearestNeighbor.cpp\
+	KMeans.cpp\
 
 ################
 # Lists

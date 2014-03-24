@@ -8,7 +8,7 @@
 #include "KNearestNeighbor.h"
 #include "data_utils.h"
 
-#define WEIGHTS false 
+#define WEIGHTS false
 
 KNearestNeighbor::KNearestNeighbor():_k(5)
 {
@@ -39,6 +39,7 @@ void KNearestNeighbor::train(Matrix& features, Matrix& labels)
 	//leaveOneOutReduction();
 	//growthReduction();
 }
+
 void KNearestNeighbor::predictWithIgnore(const std::vector<double>& features, std::vector<double>& labels, 
 	std::vector<bool>* ignoredExamples)
 {
@@ -47,36 +48,6 @@ void KNearestNeighbor::predictWithIgnore(const std::vector<double>& features, st
 
 	std::vector<double> normFeatures(features);
 	normalizeFeatures(normFeatures);
-
-    // test using euclid
-	std::priority_queue<std::pair<size_t, double>, std::vector<std::pair<size_t, double> >, PairCmpr> 
-		nearestEuclid;
-	for(size_t i = 0; i < _examples.rows(); i++)
-	{
-		if(ignoredExamples != NULL && ignoredExamples->at(i))
-			continue;
-
-		//double exampleDist = dist(_examples.row(i), normFeatures);
-		double exampleDist = manhattanDist(_examples.row(i), normFeatures);
-		if(nearestEuclid.size() >= _k)
-		{
-			if(nearestEuclid.top().second > exampleDist)
-			{
-				nearestEuclid.push(std::pair<size_t, double>(i, exampleDist));
-				if(nearestEuclid.size() > _k)
-					nearestEuclid.pop(); 
-			}
-		}
-		else
-		{
-				nearestEuclid.push(std::pair<size_t, double>(i, exampleDist));
-		}
-
-	}
-	assert(nearestEuclid.size() == _k);
-
-    //std::cout << "Nearest using Euclid neighbors: " << std::endl;
-	//printQueue(nearestEuclid);
 
 	std::priority_queue<std::pair<size_t, double>, std::vector<std::pair<size_t, double> >, PairCmpr> 
 	nearestKInstances = 
@@ -107,17 +78,6 @@ void KNearestNeighbor::predictWithIgnore(const std::vector<double>& features, st
 	
     //std::cout << "Nearest using Manhattan neighbors: " << std::endl;
 	//printQueue(nearestKInstances);
-
-	if(!equalQueues(nearestKInstances, nearestEuclid))
-	{
-		std::cout << "Neighbor: " << vectorToString(features) << std::endl;
-
-		std::cout << "Nearest using Euclid neighbors: " << std::endl;
-		printQueue(nearestEuclid);
-
-		std::cout << "Nearest using Manhattan neighbors: " << std::endl;
-		printQueue(nearestKInstances);
-	}
 
     bool isContinuous = (_exampleLabels.valueCount(0) == 0);
     if(isContinuous)
@@ -226,9 +186,9 @@ void KNearestNeighbor::regressionPrediction(const std::vector<double>& normFeatu
 double KNearestNeighbor::dist(const std::vector<double>& features, const std::vector<double>& example)
 {
 	//return manhattanDist(features, example);
-	//return heom(features, example);
+	return heom(features, example);
 
-	assert(features.size() == example.size());
+	/*assert(features.size() == example.size());
 	
 	double delta = 0;
 	double deltaSum = 0;
@@ -239,7 +199,7 @@ double KNearestNeighbor::dist(const std::vector<double>& features, const std::ve
 	}
 
 	double dist = sqrt(deltaSum);
-	return dist;
+	return dist;*/
 }
 
 double KNearestNeighbor::heom(const std::vector<double>& features, const std::vector<double>& example)

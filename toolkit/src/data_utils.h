@@ -27,4 +27,8 @@ void partitionTrainAndVal(Matrix& features, Matrix& labels,
 		Matrix& trainingSet, Matrix& trainingSetLabels,
 		Matrix& validationSet, Matrix& validationSetLabels);
 
+/**
+ * Gets the string version of a particular instance
+ */
+std::string getInstanceString(const std::vector<double>& instance, Matrix& features);
 #endif

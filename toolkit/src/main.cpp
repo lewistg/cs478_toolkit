@@ -13,6 +13,7 @@
 #include "ID3.h"
 #include "ReplaceMissing.h"
 #include "KNearestNeighbor.h"
+#include "KMeans.h"
 #include <iostream>
 #include <fstream>
 #include <map>
@@ -157,6 +158,8 @@ SupervisedLearner* getLearner(string model, Rand& r, ArgParser& parser)
 		return new ID3<ReplaceWithAttribute>(true);
 		//return new ID3<ReplaceWithAttribute>(false);
 		//return new ID3<ReplaceWithMode>(true);
+	else if(model.compare("kmeans") == 0)
+		return new KMeans(5);
 	else if (model.compare("neuralnet") == 0)
 		ThrowError("Sorry, ", model, " is not yet implemented");
 	else if (model.compare("decisiontree") == 0)

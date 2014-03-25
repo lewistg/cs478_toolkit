@@ -7,7 +7,7 @@
 #include "matrix.h"
 #include "data_utils.h"
 
-KMeans::KMeans(size_t numMeans): _numMeans(numMeans), _log(true)
+KMeans::KMeans(size_t numMeans): _numMeans(numMeans),  _log(true)
 {
 
 }
@@ -21,47 +21,57 @@ void KMeans::train(Matrix& features, Matrix& labels)
 {
 	assert(features.rows() > _numMeans);
 
-	std::vector<std::vector<double> > clusterMeans(_numMeans);
+	_clusterMeans = std::vector<std::vector<double> >(_numMeans);
 	for(size_t i = 0; i < _numMeans; i++)
 	{
-		clusterMeans[i] = features[i];
+		_clusterMeans[i] = features[i];
 		if(_log)
 		{
 			std::cout << "Centroid " << i << ": ";
-			std::cout << getInstanceString(clusterMeans[i], features) << std::endl;
+			std::cout << getInstanceString(_clusterMeans[i], features) << std::endl;
 		}
 	}
 
 	std::vector<size_t> assignedCluster(features.rows(), _numMeans + 10);
 	bool converged = false;
-	std::vector<Matrix> clusters(_numMeans, features);
+	_clusters = std::vector<Matrix>(_numMeans, features);
 	while(!converged)
 	{
 		converged = true;
-		clusters = std::vector<Matrix>(_numMeans, features);
+		_clusters = std::vector<Matrix>(_numMeans, features);
 
         for(size_t i = 0; i < features.rows(); i++)
 		{
-			size_t instanceCluster = closestCluster(features, i, clusterMeans);
+			size_t instanceCluster = closestCluster(features, i, _clusterMeans);
 			if(assignedCluster[i] != instanceCluster)
-			{
-				clusters[instanceCluster].copyRow(features[i]);
-				assignedCluster[i] = instanceCluster;
 				converged = false;
-			}
+
+			assignedCluster[i] = instanceCluster;
+			_clusters[instanceCluster].copyRow(features[i]);
 
 			if(_log)
 				std::cout << i << "=" << instanceCluster << std::endl;
 		}
 
+		calcSSE();
+
+		if(_log)
+			std::cout << "Recomputing cluster means..." << std::endl;
+
 		for(size_t i = 0; i < _numMeans; i++)
 		{
 			for(size_t j = 0; j < features.cols(); j++)
 			{
-				if(features.valueCount(i) == 0) // continuous data
-					clusterMeans[i][j] = clusters[i].columnMean(j);
+				if(features.valueCount(j) == 0) // continuous data
+					_clusterMeans[i][j] = _clusters[i].columnMean(j);
 				else
-					clusterMeans[i][j] = clusters[i].mostCommonValue(j);
+					_clusterMeans[i][j] = _clusters[i].mostCommonValue(j);
+			}
+
+			if(_log)
+			{
+				std::cout << "Centroid " << i << ": ";
+				std::cout << getInstanceString(_clusterMeans[i], features) << std::endl;
 			}
 		}
 	}
@@ -114,4 +124,20 @@ double KMeans::dist(Matrix& features, size_t instanceIndex, const std::vector<do
 
 	double dist = sqrt(deltaSum);
 	return dist;
+}
+
+void KMeans::calcSSE()
+{
+	double sse = 0.0;
+	for(size_t i = 0; i < _numMeans; i++)
+	{
+		for(size_t j = 0; j < _clusters[i].rows(); j++)
+		{
+			double sseSqrt = dist(_clusters[i], j, _clusterMeans[i]);
+			sse += (sseSqrt * sseSqrt);
+		}
+	}
+
+	if(_log)
+		std::cout << "Sum squared - distance of each row with its centroid = " << sse << std::endl;
 }

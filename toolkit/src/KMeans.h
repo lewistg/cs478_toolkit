@@ -30,6 +30,10 @@ public:
 private:
 	/**The number of means*/
 	size_t _numMeans;
+	/**The clusters*/
+	std::vector<Matrix> _clusters;
+	/**The cluster means*/
+	std::vector<std::vector<double> > _clusterMeans;
 	/**Turns logging on*/
 	bool _log;
 
@@ -48,6 +52,11 @@ private:
      * @return 
      */
 	double dist(Matrix& features, size_t instanceIndex, const std::vector<double>& clusterMean);
+
+	/**
+	 * Calculates the SSE for all clusters
+	 */
+	void calcSSE();
 };
 
 #endif

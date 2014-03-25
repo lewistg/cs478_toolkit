@@ -91,7 +91,11 @@ double Matrix::columnMean(size_t col)
 			count++;
 		}
 	}
-	return sum / count;
+
+	if(count == 0)
+		return UNKNOWN_VALUE;
+	else
+		return sum / count;
 }
 
 double Matrix::columnMin(size_t col)

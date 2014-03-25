@@ -2,10 +2,12 @@
 #include <cmath>
 #include <cassert>
 #include <cfloat>
+#include <iostream>
 #include "KMeans.h"
 #include "matrix.h"
+#include "data_utils.h"
 
-KMeans::KMeans(size_t numMeans): _numMeans(numMeans)
+KMeans::KMeans(size_t numMeans): _numMeans(numMeans), _log(true)
 {
 
 }
@@ -21,7 +23,14 @@ void KMeans::train(Matrix& features, Matrix& labels)
 
 	std::vector<std::vector<double> > clusterMeans(_numMeans);
 	for(size_t i = 0; i < _numMeans; i++)
+	{
 		clusterMeans[i] = features[i];
+		if(_log)
+		{
+			std::cout << "Centroid " << i << ": ";
+			std::cout << getInstanceString(clusterMeans[i], features) << std::endl;
+		}
+	}
 
 	std::vector<size_t> assignedCluster(features.rows(), _numMeans + 10);
 	bool converged = false;
@@ -40,6 +49,9 @@ void KMeans::train(Matrix& features, Matrix& labels)
 				assignedCluster[i] = instanceCluster;
 				converged = false;
 			}
+
+			if(_log)
+				std::cout << i << "=" << instanceCluster << std::endl;
 		}
 
 		for(size_t i = 0; i < _numMeans; i++)
@@ -94,7 +106,7 @@ double KMeans::dist(Matrix& features, size_t instanceIndex, const std::vector<do
 			delta = features[instanceIndex][i]	- clusterMean[i];
 			deltaSum += (delta * delta);
 		}
-		else if(features[instanceIndex][i] == clusterMean[i]) // nominal
+		else if(features[instanceIndex][i] != clusterMean[i]) // nominal
 		{
 			deltaSum += 1;
 		}

@@ -30,6 +30,8 @@ public:
 private:
 	/**The number of means*/
 	size_t _numMeans;
+	/**Turns logging on*/
+	bool _log;
 
 	/**
 	 * Calculates the closest cluster

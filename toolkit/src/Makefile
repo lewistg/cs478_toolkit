@@ -48,6 +48,7 @@ CPP_FILES =\
 	ReplaceMissing.cpp\
 	KNearestNeighbor.cpp\
 	KMeans.cpp\
+	ClusteringUtils.cpp\
 
 ################
 # Lists

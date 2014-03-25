@@ -5,6 +5,7 @@
 #include <iostream>
 #include "KMeans.h"
 #include "matrix.h"
+#include "ClusteringUtils.h"
 #include "data_utils.h"
 
 KMeans::KMeans(size_t numMeans): _numMeans(numMeans),  _log(true)
@@ -92,7 +93,7 @@ size_t KMeans::closestCluster(Matrix& features, size_t instanceIndex, const std:
 	size_t closestMean = 0;
 	for(size_t i = 0; i < clusterMeans.size(); i++)
 	{
-		double distToMean = dist(features, instanceIndex, clusterMeans[i]);
+		double distToMean = ClusteringUtils::dist(features, instanceIndex, clusterMeans[i]);
 		if(distToMean < closestMeanDist)
 		{
 			closestMean = i;	
@@ -103,33 +104,6 @@ size_t KMeans::closestCluster(Matrix& features, size_t instanceIndex, const std:
 	return closestMean;
 }
 
-double KMeans::dist(Matrix& features, size_t instanceIndex, const std::vector<double>& clusterMean)
-{
-	assert(features.cols() == clusterMean.size());
-	
-	double delta = 0;
-	double deltaSum = 0;
-	for(size_t i = 0; i < features.cols(); i++)
-	{
-		if(features[instanceIndex][i] == UNKNOWN_VALUE || clusterMean[i] == UNKNOWN_VALUE)
-		{
-			deltaSum += 1;
-		}
-		else if(features.valueCount(i) == 0) // continuous
-		{
-			delta = features[instanceIndex][i]	- clusterMean[i];
-			deltaSum += (delta * delta);
-		}
-		else if(features[instanceIndex][i] != clusterMean[i]) // nominal
-		{
-			deltaSum += 1;
-		}
-	}
-
-	double dist = sqrt(deltaSum);
-	return dist;
-}
-
 double KMeans::calcSSE()
 {
 	double sse = 0.0;
@@ -137,7 +111,7 @@ double KMeans::calcSSE()
 	{
 		for(size_t j = 0; j < _clusters[i].rows(); j++)
 		{
-			double sseSqrt = dist(_clusters[i], j, _clusterMeans[i]);
+			double sseSqrt = ClusteringUtils::dist(_clusters[i], j, _clusterMeans[i]);
 			sse += (sseSqrt * sseSqrt);
 		}
 	}

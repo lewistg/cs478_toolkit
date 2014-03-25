@@ -46,14 +46,6 @@ private:
 	size_t closestCluster(Matrix& features, size_t instanceIndex, const std::vector<std::vector<double> >& clusterMeans);
 
 	/**
-	 * Calculates the distance between
-     * @param features
-     * @param example
-     * @return 
-     */
-	double dist(Matrix& features, size_t instanceIndex, const std::vector<double>& clusterMean);
-
-	/**
 	 * Calculates the SSE for all clusters
 	 */
 	double calcSSE();

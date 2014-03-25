@@ -56,7 +56,7 @@ private:
 	/**
 	 * Calculates the SSE for all clusters
 	 */
-	void calcSSE();
+	double calcSSE();
 };
 
 #endif

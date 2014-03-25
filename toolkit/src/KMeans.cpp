@@ -33,19 +33,18 @@ void KMeans::train(Matrix& features, Matrix& labels)
 	}
 
 	std::vector<size_t> assignedCluster(features.rows(), _numMeans + 10);
-	bool converged = false;
 	_clusters = std::vector<Matrix>(_numMeans, features);
-	while(!converged)
+
+	size_t nItersWithoutImprovement = 0;
+	double prevSSE = DBL_MIN;
+
+	while(nItersWithoutImprovement < 3)
 	{
-		converged = true;
 		_clusters = std::vector<Matrix>(_numMeans, features);
 
         for(size_t i = 0; i < features.rows(); i++)
 		{
 			size_t instanceCluster = closestCluster(features, i, _clusterMeans);
-			if(assignedCluster[i] != instanceCluster)
-				converged = false;
-
 			assignedCluster[i] = instanceCluster;
 			_clusters[instanceCluster].copyRow(features[i]);
 
@@ -53,7 +52,12 @@ void KMeans::train(Matrix& features, Matrix& labels)
 				std::cout << i << "=" << instanceCluster << std::endl;
 		}
 
-		calcSSE();
+		double sse = calcSSE();
+		if(sse > prevSSE)
+			nItersWithoutImprovement = 0;
+		else
+			nItersWithoutImprovement += 1;
+		prevSSE = sse;
 
 		if(_log)
 			std::cout << "Recomputing cluster means..." << std::endl;
@@ -126,7 +130,7 @@ double KMeans::dist(Matrix& features, size_t instanceIndex, const std::vector<do
 	return dist;
 }
 
-void KMeans::calcSSE()
+double KMeans::calcSSE()
 {
 	double sse = 0.0;
 	for(size_t i = 0; i < _numMeans; i++)
@@ -140,4 +144,6 @@ void KMeans::calcSSE()
 
 	if(_log)
 		std::cout << "Sum squared - distance of each row with its centroid = " << sse << std::endl;
+
+	return sse;
 }

@@ -2,9 +2,12 @@
 #include <cassert>
 #include <cfloat>
 #include <map>
+#include <cmath>
 #include "HAC.h"
 #include "data_utils.h"
 #include "ClusteringUtils.h"
+
+#define SINGLE_LINK 0
 
 HAC::HAC(size_t numClusters):_logOn(true), _numClusters(numClusters)
 {
@@ -30,10 +33,12 @@ void HAC::train(Matrix& features, Matrix& labels)
 	size_t numClusters = features.rows();
 	while(numClusters > _numClusters)
 	{
-		// find the min-dist (single link)
-		double minDist = DBL_MAX;
 		size_t cluster0 = 0;
 		size_t cluster1 = 0;
+
+#if SINGLE_LINK
+		// find the min-dist (single link)
+		double minDist = DBL_MAX;
 		for(size_t i = 0; i < features.rows(); i++)
 		{
 			for(size_t j = i + 1; j < features.rows(); j++)
@@ -46,12 +51,48 @@ void HAC::train(Matrix& features, Matrix& labels)
 				}
 			}
 		}
-
 		if(_logOn)
 		{
 			std::cout << "Merging clusters: " << cluster0 << " and " << cluster1 << std::endl;
 			std::cout << "Distance: " << minDist << std::endl;
 		}
+#else // complete link (find the minimum largest distance between clusters)
+		std::vector<std::vector<double> > clusterDistances(numClusters, std::vector<double>(numClusters, DBL_MIN));
+		for(size_t i = 0; i < features.rows(); i++)
+		{
+			for(size_t j = i + 1; j < features.rows(); j++)
+			{
+				if(_instanceToCluster[i] == _instanceToCluster[j])
+					continue;
+
+				size_t lowClusterIndex = std::min(_instanceToCluster[i],_instanceToCluster[j]);
+				size_t highClusterIndex = std::max(_instanceToCluster[i],_instanceToCluster[j]);
+
+				if(_adjMatrix[i][j] > clusterDistances[lowClusterIndex][highClusterIndex])
+					clusterDistances[lowClusterIndex][highClusterIndex] = _adjMatrix[i][j];
+			}
+		}
+
+        double minLargestDist = DBL_MAX;
+		for(size_t i = 0; i < clusterDistances.size(); i++)
+		{
+			for(size_t j = i + 1; j < clusterDistances.size(); j++)
+			{
+				if(clusterDistances[i][j] < minLargestDist)
+				{
+					minLargestDist = clusterDistances[i][j];
+					cluster0 = i; 
+					cluster1 = j; 
+				}
+			}
+		}
+
+		if(_logOn)
+		{
+			std::cout << "Merging clusters: " << cluster0 << " and " << cluster1 << std::endl;
+			std::cout << "Distance: " << minLargestDist << std::endl;
+		}
+#endif
 
 		// group clusters
 		assert(cluster0 != cluster1);
@@ -59,12 +100,18 @@ void HAC::train(Matrix& features, Matrix& labels)
 		{
 			if(_instanceToCluster[i] == cluster1)
 				_instanceToCluster[i] = cluster0;
-		}
-		numClusters -= 1;
 
+			if(_logOn && (_instanceToCluster[i] == cluster0 || _instanceToCluster[i] == cluster1))
+			{
+				std::cout << i << ", ";
+			}
+		}
+		std::cout << std::endl;
+		
+		normalizeLabels();
+		numClusters -= 1;
 	}
 
-	normalizeLabels();
 
 	std::vector<Matrix> clusters(_numClusters, features);
 	for(size_t i = 0; i < _instanceToCluster.size(); i++)
@@ -101,7 +148,7 @@ void HAC::normalizeLabels()
 	{
 		if(oldClustIdToNew.find(_instanceToCluster[i]) == oldClustIdToNew.end())		
 		{
-			oldClustIdToNew[i] = newId;
+			oldClustIdToNew[_instanceToCluster[i]] = newId;
 			newId += 1;
 		}
 

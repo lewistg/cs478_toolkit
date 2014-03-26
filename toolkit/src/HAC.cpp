@@ -100,11 +100,6 @@ void HAC::train(Matrix& features, Matrix& labels)
 		{
 			if(_instanceToCluster[i] == cluster1)
 				_instanceToCluster[i] = cluster0;
-
-			if(_logOn && (_instanceToCluster[i] == cluster0 || _instanceToCluster[i] == cluster1))
-			{
-				std::cout << i << ", ";
-			}
 		}
 		std::cout << std::endl;
 		
@@ -137,6 +132,19 @@ void HAC::train(Matrix& features, Matrix& labels)
 			std::cout << "Centroid " << i << ": ";
 			std::cout << getInstanceString(clusterMeans[i], features) << std::endl;
 		}
+	}
+
+	// calculate SSE
+	double sse = 0.0;
+	for(size_t i = 0; i < _instanceToCluster.size(); i++)
+	{
+		double d = ClusteringUtils::dist(features, i, clusterMeans[_instanceToCluster[i]]);
+		sse += d * d;	
+	}
+
+	if(_logOn)
+	{
+		std::cout << "Total sse: " << sse << std::endl;
 	}
 }
 

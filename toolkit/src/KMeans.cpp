@@ -37,12 +37,14 @@ void KMeans::train(Matrix& features, Matrix& labels)
 	std::vector<size_t> assignedCluster(features.rows(), _numMeans + 10);
 	_clusters = std::vector<Matrix>(_numMeans, features);
 
-	size_t nItersWithoutImprovement = 0;
+	size_t nIters = 0;
 	double prevSSE = DBL_MIN;
 	std::set<size_t> clusterNums;
 
-	while(nItersWithoutImprovement < 3)
+	while(true)
 	{
+		nIters += 1;
+
 		_clusters = std::vector<Matrix>(_numMeans, features);
 
         for(size_t i = 0; i < features.rows(); i++)
@@ -56,10 +58,12 @@ void KMeans::train(Matrix& features, Matrix& labels)
 		}
 
 		double sse = calcSSE();
-		if(sse > prevSSE)
-			nItersWithoutImprovement = 0;
-		else
-			nItersWithoutImprovement += 1;
+		if(sse >= prevSSE && nIters > 3)
+		{
+			ClusteringUtils::outputClusterStats(_clusters, std::cout);
+			break;
+		}
+
 		prevSSE = sse;
 
 		if(_log)

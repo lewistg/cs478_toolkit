@@ -32,7 +32,6 @@ namespace ClusteringUtils
 	 * Outputs the clustering statistics
 	 */
 	void outputClusterStats(std::vector<Matrix>& clusters, std::ostream& dataOut);
-
 };
 
 #endif

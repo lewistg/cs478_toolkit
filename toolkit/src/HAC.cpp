@@ -146,6 +146,15 @@ void HAC::train(Matrix& features, Matrix& labels)
 	{
 		std::cout << "Total sse: " << sse << std::endl;
 	}
+
+	if(_logOn)
+	{
+		std::vector<Matrix> clusters(_numClusters, features); 
+		for(size_t i = 0; i < _instanceToCluster.size(); i++)
+			clusters[_instanceToCluster[i]].copyRow(features[i]);
+
+		ClusteringUtils::outputClusterStats(clusters, std::cout);
+	}
 }
 
 void HAC::normalizeLabels()

@@ -49,6 +49,7 @@ CPP_FILES =\
 	KNearestNeighbor.cpp\
 	KMeans.cpp\
 	ClusteringUtils.cpp\
+	HAC.cpp\
 
 ################
 # Lists

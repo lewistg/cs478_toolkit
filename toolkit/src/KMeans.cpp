@@ -3,6 +3,7 @@
 #include <cassert>
 #include <cfloat>
 #include <iostream>
+#include <set>
 #include "KMeans.h"
 #include "matrix.h"
 #include "ClusteringUtils.h"
@@ -38,6 +39,7 @@ void KMeans::train(Matrix& features, Matrix& labels)
 
 	size_t nItersWithoutImprovement = 0;
 	double prevSSE = DBL_MIN;
+	std::set<size_t> clusterNums;
 
 	while(nItersWithoutImprovement < 3)
 	{

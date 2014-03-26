@@ -150,7 +150,10 @@ double Matrix::mostCommonValue(size_t col)
 			valueCount = i->second;
 		}
 	}
-	return value;
+	if(valueCount == 0)
+		return UNKNOWN_VALUE;
+	else
+		return value;
 }
 
 void Matrix::copyRow(vector<double>& row)

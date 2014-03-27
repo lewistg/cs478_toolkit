@@ -7,15 +7,16 @@
 #include "data_utils.h"
 #include "ClusteringUtils.h"
 
-#define SINGLE_LINK 0
+#define SINGLE_LINK 1
 
 HAC::HAC(size_t numClusters):_logOn(true), _numClusters(numClusters)
 {
-
+	assert(_numClusters > 1);
 }
 
 void HAC::train(Matrix& features, Matrix& labels)
 {
+
 	_instanceToCluster = std::vector<size_t>(features.rows()); 
 	_adjMatrix = std::vector<std::vector<double> >(features.rows(), std::vector<double>(features.rows(), 0));
 	for(size_t i = 0; i < features.rows(); i++)

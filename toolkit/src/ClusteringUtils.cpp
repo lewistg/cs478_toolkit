@@ -6,22 +6,32 @@
 
 double ClusteringUtils::dist(Matrix& features, size_t instanceIndex, const std::vector<double>& clusterMean)
 {
-	assert(features.cols() == clusterMean.size());
+	return dist(features, features[instanceIndex], clusterMean);
+}
+
+double ClusteringUtils::dist(Matrix& features, size_t instanceIndex0, size_t instanceIndex1)
+{
+	return dist(features, instanceIndex0, features[instanceIndex1]);
+}
+
+double ClusteringUtils::dist(Matrix& features, const std::vector<double>& centroid0, const std::vector<double>& centroid1)
+{
+	assert(features.cols() == centroid0.size() && features.cols() == centroid1.size());
 	
 	double delta = 0;
 	double deltaSum = 0;
 	for(size_t i = 0; i < features.cols(); i++)
 	{
-		if(features[instanceIndex][i] == UNKNOWN_VALUE || clusterMean[i] == UNKNOWN_VALUE)
+		if(centroid0[i] == UNKNOWN_VALUE || centroid1[i] == UNKNOWN_VALUE)
 		{
 			deltaSum += 1;
 		}
 		else if(features.valueCount(i) == 0) // continuous
 		{
-			delta = features[instanceIndex][i]	- clusterMean[i];
+			delta = centroid0[i] - centroid1[i];
 			deltaSum += (delta * delta);
 		}
-		else if(features[instanceIndex][i] != clusterMean[i]) // nominal
+		else if(centroid0[i] != centroid1[i]) // nominal
 		{
 			deltaSum += 1;
 		}
@@ -29,11 +39,6 @@ double ClusteringUtils::dist(Matrix& features, size_t instanceIndex, const std::
 
 	double dist = sqrt(deltaSum);
 	return dist;
-}
-
-double ClusteringUtils::dist(Matrix& features, size_t instanceIndex0, size_t instanceIndex1)
-{
-	return dist(features, instanceIndex0, features[instanceIndex1]);
 }
 
 std::vector<double> ClusteringUtils::getCentroid(Matrix& cluster)
@@ -66,18 +71,51 @@ void ClusteringUtils::outputClusterStats(std::vector<Matrix>& clusters, std::ost
 {
 	dataOut << "Number of clusters: " << clusters.size() << std::endl;
 
-	dataOut << "Cluster centroids: " << std::endl;
+	dataOut << "Clusters: " << std::endl;
     double totalSSE = 0.0;
 	for(size_t i = 0; i < clusters.size(); i++)
 	{
 		std::vector<double> centroid = getCentroid(clusters[i]);
         double sse = calcSSE(clusters[i], centroid);
-		dataOut << "\tCentroid " << i << ": " << getInstanceString(centroid, clusters[i]);
-		dataOut << " (number of instances = " << clusters[i].rows() << ", ";
-        dataOut << "SSE = " << sse << ")" << std::endl;
+
+		dataOut<< "(Cluster id = " << i << ", Centroid = [" << getInstanceString(centroid, clusters[i]) << "], ";
+		dataOut << "Number of instances = " << clusters[i].rows() << ", " << "Cluster SSE = " << sse << ")";
+		dataOut << std::endl << std::endl;
 
         totalSSE += sse;
 	}
 
+	dataOut << "Davies Bouldin Clustering Index: " << getDaviesBouldin(clusters) << std::endl << std::endl;
+
     dataOut << "Total SSE: " << totalSSE << std::endl;
+}
+
+double ClusteringUtils::getDaviesBouldin(std::vector<Matrix>& clusters)
+{
+	assert(clusters.size() > 0);
+	
+	std::vector<double> r(clusters.size(), 0);
+	double rSum = 0.0;
+	for(size_t i = 0; i < clusters.size(); i++)
+	{
+		std::vector<double> centroidI = getCentroid(clusters[i]);
+		double scatterI = calcSSE(clusters[i], centroidI) / clusters[i].rows();
+		double maxR = 0.0;
+		for(size_t j = 0; j < clusters.size(); j++)
+		{
+			if(i == j)
+				continue;
+			
+			std::vector<double> centroidJ = getCentroid(clusters[j]);
+			double scatterJ = calcSSE(clusters[j], centroidJ) / clusters[j].rows();
+			
+			double r = (scatterI + scatterJ) / dist(clusters[j], centroidI, centroidJ);
+			if(r > maxR)
+				maxR = r;
+		}
+		rSum += maxR;
+	}
+	
+	double dbIndex = rSum / clusters.size();
+	return dbIndex;
 }

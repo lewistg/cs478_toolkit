@@ -19,6 +19,11 @@ namespace ClusteringUtils
 	double dist(Matrix& features, size_t instanceIndex0, size_t instanceIndex1);
 
 	/**
+	 * Calcualtes the distance between two centroids
+     */
+	double dist(Matrix& features, const std::vector<double>& centroid0, const std::vector<double>& centroid1);
+
+	/**
 	 * Calculates the centroid value of a cluster
      */
 	std::vector<double> getCentroid(Matrix& cluster);
@@ -32,6 +37,11 @@ namespace ClusteringUtils
 	 * Outputs the clustering statistics
 	 */
 	void outputClusterStats(std::vector<Matrix>& clusters, std::ostream& dataOut);
+
+    /**
+     * Calculates the Davies-Bouldin Index
+     */
+    double getDaviesBouldin(std::vector<Matrix>& clusters);
 };
 
 #endif

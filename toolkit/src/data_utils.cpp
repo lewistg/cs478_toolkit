@@ -1,3 +1,4 @@
+#include <iostream>
 #include "data_utils.h"
 
 void partitionTrainAndVal(Matrix& features, Matrix& labels, 

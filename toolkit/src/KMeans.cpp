@@ -11,7 +11,7 @@
 
 KMeans::KMeans(size_t numMeans): _numMeans(numMeans),  _log(true)
 {
-
+	assert(_numMeans > 1);
 }
 
 KMeans::~KMeans()
@@ -21,7 +21,12 @@ KMeans::~KMeans()
 
 void KMeans::train(Matrix& features, Matrix& labels)
 {
+	static size_t runNum = 0;
+	runNum += 1;
+
 	assert(features.rows() > _numMeans);
+	Rand r(time(NULL) + runNum);
+	features.shuffleRows(r, &labels);
 
 	_clusterMeans = std::vector<std::vector<double> >(_numMeans);
 	for(size_t i = 0; i < _numMeans; i++)
@@ -79,11 +84,11 @@ void KMeans::train(Matrix& features, Matrix& labels)
 					_clusterMeans[i][j] = _clusters[i].mostCommonValue(j);
 			}
 
-			if(_log)
+			/*if(_log)
 			{
 				std::cout << "Centroid " << i << ": ";
 				std::cout << getInstanceString(_clusterMeans[i], features) << std::endl;
-			}
+			}*/
 		}
 	}
 }

@@ -49,6 +49,7 @@ class ArgParser
 	double learningRate;
 	long hiddenNodes;
 	double momentum;
+	size_t numClusters;
 
 public:
 	//You may need to add more options for specific learning models
@@ -64,6 +65,7 @@ public:
 		learningRate = 0.1;
 		hiddenNodes = 2;
 		momentum = 0.0;
+		numClusters = 0;
 		for ( int i = 1; i < argc; i++ )
 		{
 			if ( strcmp ( argv[i], "-A" ) == 0 )
@@ -101,6 +103,8 @@ public:
 				hiddenNodes = atoi(argv[++i]);
 			else if(strcmp(argv[i],"-MO") == 0)
 				momentum = atof(argv[++i]);
+			else if(strcmp(argv[i],"-NC") == 0)
+				numClusters = atoi(argv[++i]);
 			else
 				ThrowError ( "Invalid paramater: ", argv[i] );
 		}
@@ -129,6 +133,7 @@ public:
 	double getLearningRate(){return learningRate;}
 	long getHiddenNodes(){return hiddenNodes;}
 	double getMomentum(){return momentum;}
+	size_t getNumClusters(){return numClusters;}
 };
 
 // Returns the number of seconds since some fixed point in the past, with at least millisecond precision
@@ -160,9 +165,9 @@ SupervisedLearner* getLearner(string model, Rand& r, ArgParser& parser)
 		//return new ID3<ReplaceWithAttribute>(false);
 		//return new ID3<ReplaceWithMode>(true);
 	else if(model.compare("kmeans") == 0)
-		return new KMeans(5);
+		return new KMeans(parser.getNumClusters());
 	else if(model.compare("hac") == 0)
-		return new HAC(5);
+		return new HAC(parser.getNumClusters());
 	else if (model.compare("neuralnet") == 0)
 		ThrowError("Sorry, ", model, " is not yet implemented");
 	else if (model.compare("decisiontree") == 0)
